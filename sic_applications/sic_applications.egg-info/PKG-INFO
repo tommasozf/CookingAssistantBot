@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: sic_applications
+Version: 2.0.0
+Requires-Dist: social-interaction-cloud>=2.0.13
+Provides-Extra: dev
+Requires-Dist: pre-commit==4.0.1; extra == "dev"
+Requires-Dist: isort==5.13.2; extra == "dev"
+Requires-Dist: black==24.10.0; extra == "dev"
+Requires-Dist: yamllint==1.35.1; extra == "dev"
