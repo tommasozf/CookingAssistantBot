@@ -224,6 +224,12 @@ pattern([a21removeKeyFromMemory,
 %	Add a pattern with pattern ID a50recipeSelect here where the agent asks the user
 %	for input on what recipe to select and the user just asks for a recommendation.  
 
+pattern([a50recipeSelect, 
+    [agent, specifyGoal],           % Agent: "What do you want to cook?"
+    [user, requestRecommendation],  % User: "Just give me anything."
+    [agent, recommend],             % Agent: "How about Lasagna?"
+    [agent, insert(a50recipeConfirm)] % Go to confirmation phase
+]).
 
 % Pattern a50recipeSelect: user asks for a recipe.
 % Variant where user requests a specific recipe by mentioning the recipe's name.
@@ -235,6 +241,14 @@ pattern([a21removeKeyFromMemory,
 %	Add a pattern with pattern ID a50recipeSelect here where the agent asks the user
 %	for input on what recipe to select and the user asks for a specific recipe by name.
 
+% 1. Retrieve the chosen recipe from memory
+currentRecipe(RecipeID) :-
+    memoryKeyValue('recipe', RecipeName),
+    recipeName(RecipeID, RecipeName).
+
+% 2. Retrieve all IDs (already in your file, but ensure it looks like this)
+recipeIDs(RecipeIDs) :- 
+    findall(ID, recipeID(ID), RecipeIDs).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,7 +305,6 @@ pattern([a21removeKeyFromMemory,
 %	starts) greeting and then the user is expected to greet.
 pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 
-% Pattern C1.1: Opening Self-Identification (Agent)
 
 
 % Pattern C1.1: Opening Self-Identification (Agent)
@@ -306,6 +319,9 @@ pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 %
 % NB: We deviate here from Moore and Arar's taxonomy of pattern codes and also label this 
 % 	pattern c10 to simplify things from an agenda management perspective.
+
+% Pattern C1.1: Opening Self-Identification (Agent)
+pattern([c10, [agent, greeting], [agent, selfIdentification], [user, greeting]]) :- not(agentName('')).
 
 
 %%% C3 Patterns: Capabilities
@@ -327,9 +343,11 @@ pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 % 	Add a pattern here where the agent initiates (i.e. starts) saying goodbye and then 
 %	the user says goodbye.
 
+pattern([c43, [agent, farewell], [user, farewell]]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Special Patterns									%%%
+%%% Special Patterns																	%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Button Patterns
