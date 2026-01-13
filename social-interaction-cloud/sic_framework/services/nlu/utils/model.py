@@ -36,20 +36,23 @@ class BERTNLUModel(nn.Module):
         # self.intent_classifier -> Initialize as nn.Linear with appropriate dimensions
         # just a small assumption that there are 86 different (non exsiitng) and 14 (exisitng recipe)intents 
         # 14 different intents avaialbe in our ontology -> so the function will try to categorize amongst these
-        self.intent_classifier = nn.Linear(128, num_intents) 
+        self.intent_classifier = nn.Linear(768, num_intents) 
         # we got to define the output trheshold
         # self.slot_classifier -> Initialize as nn.Linear with appropriate dimensions
         #dk if thats correct but there might be 8 different slot types (ingredietns/ cuisine, time duration etc..)
         # another small assumption that the function will take about 100 (in total) different inpute slots to be classified 
-        self.slot_classifier = nn.Linear(128, num_slots) #missing dimenisions 
+        self.slot_classifier = nn.Linear(768, num_slots) #missing dimenisions 
 
     def forward(self, input_ids, attention_mask):
         # outputs -> Call self.bert with input_ids and attention_mask as argumentsx
         outputs = self.bert(input_ids, attention_mask)
         # sequence_output -> Extract last_hidden_state from outputs
+        sequence_output = outputs.last_hidden_state
         # pooled_output -> Extract pooler_output from outputs
-
+        pooled_output = outputs.pooler_output
         # intent_logits -> Pass pooled_output through self.intent_classifier
+        intent_logits = self.intent_classifier(pooled_output)
         # slot_logits -> Pass sequence_output through self.slot_classifier
+        slot_logits = self.slot_classifier(sequence_output)
 
-        return None, None # intent_logits, slot_logits
+        return intent_logits, slot_logits # intent_logits, slot_logits
