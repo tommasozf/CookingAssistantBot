@@ -231,6 +231,18 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('ingredienttype', IngredientType, RecipeIDsIn, RecipeIDsOut)
 
+%%% Apply filter checking that a recipe uses a specific ingredient
+applyFilter('ingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), hasIngredient(RecipeID, Ingredient)), 
+        RecipeIDsOut).
+
+%%% Apply filter for Cuisine (Direct match)
+applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), cuisine(RecipeID, Cuisine)), 
+        RecipeIDsOut).
+
 
 %%% 
 % Apply filter that excludes recipes that use a specific ingredient type.

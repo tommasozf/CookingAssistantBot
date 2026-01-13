@@ -349,6 +349,14 @@ typeIngredient('nduja', 'non-vegan').
 %		for checking a plain ingredient, a second for checking an ingredient type.
 
 
+% Case 1: Direct match (Recipe has "onions")
+hasIngredient(RecipeID, Ingredient) :-
+    ingredient(RecipeID, Ingredient).
+
+% Case 2: Type match (Recipe has "chicken thighs", which is type "chicken")
+hasIngredient(RecipeID, IngredientType) :-
+    ingredient(RecipeID, SpecificIngredient),
+    typeIngredient(SpecificIngredient, IngredientType).
 
 % Identify all filters that conflict with the (newly requested) Params. 
 conflicts([], _, []).
@@ -356,6 +364,9 @@ conflicts([ Param1 = Value1 | Params ], Filters, Conflicts) :-
 	conflicts(Param1, Value1, Filters, Conflicts1),
 	conflicts(Params, Filters, Conflicts2),
 	union(Conflicts1, Conflicts2, Conflicts).
+
+
+
 
 % Identify conflicts between (new) request (ParamName = Value) and filters (that are 
 % already in place).
