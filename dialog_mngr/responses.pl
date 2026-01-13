@@ -118,6 +118,11 @@ string_concat("My name is", Name, Text).
 
 
 % Intent: recommend (a recipe)
+text(recommend, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat("How about ", Name, Part1),
+    string_concat(Part1, "?", Text).
 
 
 % Intent: recipeCheck
