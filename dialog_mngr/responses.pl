@@ -77,15 +77,18 @@ text_generator(Intent, SelectedText) :-
 
 
 % Intent: farewell
+text(farewell, "Goodbye! Bon appetit.").
 
 
 % Intent: greeting
-text(greeting, "Hey there!").
+text(greeting, "Hey there! I am your personal recipe assistant. I will help you come up with a recipe for whatever you want to eat.").
 
 % Intent: paraphraseRequest
 
 
 % Intent: selfIdentification (for self-identification of the agent)
+text(selfIdentification, Text) :- agentName(Name),
+string_concat("My name is", Name, Text).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -121,6 +124,7 @@ text(greeting, "Hey there!").
 
 
 % Intent: specifyGoal (asking a user about recipe features they are looking for)
+text(specifyGoal, "What kind of recipe are you looking for today?").
 
 
 text(clearMemory, ".").
