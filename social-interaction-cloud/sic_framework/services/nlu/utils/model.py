@@ -32,8 +32,11 @@ class BERTNLUModel(nn.Module):
     def __init__(self, num_intents, num_slots):
         super(BERTNLUModel, self).__init__()
         # self.bert -> Initialize with BertModel.from_pretrained('bert-base-uncased')
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
         # self.intent_classifier -> Initialize as nn.Linear with appropriate dimensions
+        self.intent_classifier = nn.Linear()
         # self.slot_classifier -> Initialize as nn.Linear with appropriate dimensions
+        self.slot_classifier = nn.Linear() #missing dimenisions 
 
     def forward(self, input_ids, attention_mask):
         # outputs -> Call self.bert with input_ids and attention_mask as arguments
