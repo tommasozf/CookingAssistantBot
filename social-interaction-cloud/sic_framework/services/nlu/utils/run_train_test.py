@@ -44,12 +44,10 @@ def analyze_distribution(data):
     # Count the frequency of each intent using Counter
     # intent_distribution -> Use Counter on the intents list
     intent_distribution = Counter(intents)
-    print(intent_distribution)
 
     # Count the frequency of each slot using Counter
     # slot_distribution -> Use Counter on the slots list
     slot_distribution = Counter(slots)
-    print(slot_distribution)
 
     # Return intent_distribution and slot_distribution as a tuple
     # return intent_distribution, slot_distribution

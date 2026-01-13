@@ -50,9 +50,9 @@ def train_model(model, dataset, num_epochs=3, batch_size=2, learning_rate=5e-5, 
 
     # Define the loss functions for intent and slot classification
     # intent_loss_fn -> Use nn.
-    intent_loss_fn = nn.CrossEntropyLoss
+    intent_loss_fn = nn.CrossEntropyLoss()
     # slot_loss_fn -> Use nn.
-    slot_loss_fn = nn.CrossEntropyLoss
+    slot_loss_fn = nn.CrossEntropyLoss()
 
     # Define the optimizer (use torch.optim.Adam with the model parameters and learning_rate)
     # optimizer -> Initialize with model.parameters() and lr=learning_rate
@@ -82,7 +82,7 @@ def train_model(model, dataset, num_epochs=3, batch_size=2, learning_rate=5e-5, 
 
             # Perform a forward pass through the model
             # intent_logits, slot_logits -> Call the model with input_ids and attention_mask
-            intent_logits, slot_logits = model(input_ids, attetniton_mask)
+            intent_logits, slot_logits = model(input_ids, attention_mask)
 
             # Compute the intent and slot losses
             # intent_loss -> Compute using intent_loss_fn and intent_logits, intent_labels
