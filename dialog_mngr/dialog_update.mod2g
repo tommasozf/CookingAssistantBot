@@ -175,7 +175,13 @@ module dialog_update {
 	% Request Recommendation Function Goes here!
 	% Copy-paste random recommendation rule here...
 
-
+	%Request a Recommendation
+	%when user requests a rec pick random one and store in memory 
+	if intent(requestRecommendation, _, _, _, _),
+	    recipesFiltered(RecipeIDs), random_member(RecipeID, RecipeIDs),
+	    recipeName(RecipeID, RecipeName), Params = ['recipe'= RecipeName],
+	    updateMemory(Params, OldMemory, NewMemory), log_info("memory: ", NewMemory, Info)
+	then delete(memory(OldMemory)) + insert(memory(NewMemory)) + log(Info).
 		
 	% Check if intent can be used in a (currently active) pattern (otherwise, we cannot
 	% handle it). If this is not the case, then print message to the console as a warning.

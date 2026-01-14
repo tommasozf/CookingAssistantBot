@@ -13,8 +13,11 @@
 **/
 % Project Assignment: Capability 2: Request a Recommendation
 %
-% Instruction: Add a definition for currentRecipe/1 here.
+% Instruction: Add a definition for currentRecipe/1 here. alr bro
 
+currentRecipe(RecipeID) :-
+    memoryKeyValue('recipe', RecipeName),
+    recipeName(RecipeID, RecipeName).
 
 /**
  * ingredients(+RecipeID:atom, -IngredientList:list)
