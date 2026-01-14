@@ -93,6 +93,14 @@ socket.on("pattern", (pattern) => {
       }
 })
 
+// Allow explicit page navigation from the agent
+socket.on("page", (pageName) => {
+    // Only redirect if we aren't already on that page to prevent loops
+    if (window.location.pathname.indexOf(pageName) === -1) {
+        window.location.href = pageName;
+    }
+});
+
 // Event handler for switching turns
 socket.on("set_turn", (whoseturn) => {
     if (whoseturn=="true") {
@@ -125,6 +133,34 @@ socket.on("filters", (filterString) => {
 })
 
 // TODO: Show recipe cards on HTML page
+
+// Handle the grid of recipes (for recipe_overview2.html)
+socket.on("show_recipes", (data) => {
+    // data comes in as a JSON string from Prolog/Python
+    console.log("Received recipes:", data);
+    var recipes = JSON.parse(data); 
+    
+    var container = document.getElementById("recipeContainer"); // Matches HTML ID
+    var template = document.querySelector("#recipeCardTemplate");
+    
+    // Only run if we are on the correct page
+    if (container && template) {
+        container.innerHTML = ""; // Clear existing
+
+        recipes.forEach((recipe) => {
+            var clone = template.content.cloneNode(true);
+            
+            // Set Title
+            clone.querySelector(".recipe-title").textContent = recipe.name;
+            
+            // Set Image
+            var img = clone.querySelector(".recipe-img");
+            if (img) img.src = recipe.image;
+            
+            container.appendChild(clone);
+        });
+    }
+});
 
 // TODO: After selection has been made, show a specific recipe in a card with its details
 
