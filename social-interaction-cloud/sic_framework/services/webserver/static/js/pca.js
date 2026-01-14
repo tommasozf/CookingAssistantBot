@@ -132,7 +132,7 @@ socket.on("filters", (filterString) => {
     }
 })
 
-// TODO: Show recipe cards on HTML page
+// DONE: TODO: Show recipe cards on HTML page
 
 // Handle the grid of recipes (for recipe_overview2.html)
 socket.on("show_recipes", (data) => {
@@ -162,7 +162,26 @@ socket.on("show_recipes", (data) => {
     }
 });
 
-// TODO: After selection has been made, show a specific recipe in a card with its details
+// DONE: TODO: After selection has been made, show a specific recipe in a card with its details
+
+// Handle single recipe confirmation (for recipe_confirmation.html)
+socket.on("show_confirmation", (data) => {
+    console.log("Confirming:", data);
+    var recipe = JSON.parse(data);
+
+    // Update the DOM elements if they exist
+    var title = document.getElementById("confirmTitle");
+    var img = document.getElementById("confirmImg");
+    var time = document.getElementById("confirmTime");
+    var serv = document.getElementById("confirmServings");
+    var cuis = document.getElementById("confirmCuisine");
+
+    if (title) title.textContent = recipe.name;
+    if (img) img.src = recipe.image;
+    if (time) time.textContent = recipe.time;
+    if (serv) serv.textContent = recipe.servings;
+    if (cuis) cuis.textContent = recipe.cuisine;
+});
 
 // TODO: Utility function to parse string representations of arrays (e.g., "[chorizo, cheese]")
 
