@@ -116,6 +116,10 @@ string_concat("My name is", Name, Text).
 
 % Intent: recipeChoiceReceipt (acknowledge user's choice of recipe)
 
+text(recipeChoiceReceipt, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat(Name, " is a great choice!", Text).
 
 % Intent: recommend (a recipe)
 text(recommend, Text) :-

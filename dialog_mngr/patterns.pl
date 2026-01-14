@@ -250,6 +250,14 @@ currentRecipe(RecipeID) :-
 recipeIDs(RecipeIDs) :- 
     findall(ID, recipeID(ID), RecipeIDs).
 
+% Variant where user requests a specific recipe by name
+pattern([a50recipeSelect, 
+    [agent, specifyGoal],
+    [user, recipeRequest],
+    [agent, recipeChoiceReceipt],
+    [agent, insert(a50recipeConfirm)]
+]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Sequence Management Patterns (Moore Ch6)               %%%
