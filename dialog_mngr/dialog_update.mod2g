@@ -345,10 +345,6 @@ module dialog_update {
     % PHASE 3: VISUAL PAGE UPDATES
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % 1. Show Welcome Page on Start
-    if intent(start_interaction, _, _, _, _) 
-    then webinfo('page', 'welcome.html') + log('UI: Switched to Welcome Page').
-
     % 2. Update Recipe Grid (When list is small <= 15)
     if currentPattern(a50recipeSelect),
        recipesFiltered(RecipeIDs),
@@ -380,7 +376,4 @@ module dialog_update {
          webinfo('page', 'recipe_confirmation.html') +
          log('UI: Showed Confirmation').
        
-    % 5. Show Farewell
-    if currentPattern(c43)
-    then webinfo('page', 'closing.html').
 }
