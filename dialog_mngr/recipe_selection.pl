@@ -33,7 +33,9 @@ currentRecipe(RecipeID) :-
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
 % Instruction: Add a definition for ingredients/2 here.
-	
+
+ingredients(RecipeID, IngredientList) :-
+    findall(Ingredient, ingredient(RecipeID, Ingredient), IngredientList).
 
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
