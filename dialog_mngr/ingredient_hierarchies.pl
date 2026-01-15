@@ -333,7 +333,14 @@ typeIngredient('nduja', 'non-vegan').
 % Instruction: Add several rules to conclude that an ingredient fits into a diet that is:
 %		pescatarian (no meat), vegetarian, vegan.
 
+typeIngredient(Ingredient, 'vegetarian') :-
+	not(typeIngredient(Ingredient, 'non-vegetarian')), !.
 
+typeIngredient(Ingredient, 'pescatarian') :-
+	not(typeIngredient(Ingredient, 'meat')), !.
+
+typeIngredient(Ingredient, 'vegan') :-
+	not(typeIngredient(Ingredient, 'non-vegan')), !.
 
 /**
  * hasIngredient(?RecipeID:atom, ?Ingr:atom)
