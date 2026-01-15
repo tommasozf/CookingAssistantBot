@@ -51460,4 +51460,177 @@ ingredientAndQuantity('891', '8 slices of parma ham').
 ingredientAndQuantity('891', '4 frozen cod fillets'). 
 ingredientAndQuantity('891', 'salt'). 
 ingredientAndQuantity('891', 'pepper'). 
-ingredientAndQuantity('891', 'olive oil'). 
+ingredientAndQuantity('891', 'olive oil').
+
+%%%% Recipe 892: simple nduja pasta (Tommaso) %%%% 
+ 
+recipeID('892'). 
+recipeName('892', 'simple nduja pasta'). 
+picture('892', 'https://files.mob-cdn.co.uk/recipes/2023/09/Nduja-Roast-Potatoes.jpg'). 
+time('892', 15). 
+servings('892', 2). 
+cuisine('892', 'italian'). 
+step('892', 1, 'boil the pasta in salted water until al dente.'). 
+step('892', 2, 'meanwhile, mince the garlic and fry in olive oil until fragrant.'). 
+step('892', 3, 'add the nduja to the pan and stir until it melts into the oil.'). 
+step('892', 4, 'toss the cooked pasta into the pan with a splash of pasta water.'). 
+step('892', 5, 'finish with grated parmesan and fresh parsley.'). 
+ingredient('892', 'pasta'). 
+ingredient('892', 'nduja'). 
+ingredient('892', 'garlic'). 
+ingredient('892', 'parmesan'). 
+ingredient('892', 'parsley'). 
+ingredient('892', 'olive oil'). 
+ingredientAndQuantity('892', '300g pasta'). 
+ingredientAndQuantity('892', '2 tbsp nduja'). 
+ingredientAndQuantity('892', '2 cloves of garlic'). 
+ingredientAndQuantity('892', '30g parmesan'). 
+ingredientAndQuantity('892', 'handful of parsley'). 
+ingredientAndQuantity('892', 'olive oil'). 
+
+ 
+%%%% Recipe 893: spicy chicken thighs with honey (Nico) %%%% 
+ 
+recipeID('893'). 
+recipeName('893', 'spicy chicken thighs with honey'). 
+picture('893', 'https://files.mob-cdn.co.uk/recipes/849A4292-1-1.jpg'). 
+time('893', 35). 
+servings('893', 4). 
+cuisine('893', 'asian'). 
+step('893', 1, 'mix the chilli oil, honey, and soy sauce in a bowl.'). 
+step('893', 2, 'place chicken thighs in a roasting tray and season with salt and pepper.'). 
+step('893', 3, 'pour the honey mixture over the chicken and toss to coat.'). 
+step('893', 4, 'bake at 200c for 25-30 mins until the chicken is sticky and cooked through.'). 
+step('893', 5, 'garnish with sliced spring onions and serve with grain rice.'). 
+ingredient('893', 'chicken thighs'). 
+ingredient('893', 'chilli oil'). 
+ingredient('893', 'honey'). 
+ingredient('893', 'soy sauce'). 
+ingredient('893', 'spring onions'). 
+ingredient('893', 'grain rice'). 
+ingredientAndQuantity('893', '800g chicken thighs'). 
+ingredientAndQuantity('893', '2 tbsp chilli oil'). 
+ingredientAndQuantity('893', '2 tbsp honey'). 
+ingredientAndQuantity('893', '1 tbsp soy sauce'). 
+ingredientAndQuantity('893', '2 spring onions'). 
+ingredientAndQuantity('893', '400g grain rice'). 
+
+ 
+%%%% Recipe 894: garlic mushroom on sourdough (Louis) %%%% 
+ 
+recipeID('894'). 
+recipeName('894', 'garlic mushroom on sourdough'). 
+picture('894', 'https://files.mob-cdn.co.uk/recipes/849A0690-2.jpg'). 
+time('894', 15). 
+servings('894', 2). 
+cuisine('894', 'british'). 
+mealType('894', 'brunch'). 
+step('894', 1, 'slice the oyster mushrooms and mince the garlic.'). 
+step('894', 2, 'melt the butter in a pan and saute the mushrooms until golden.'). 
+step('894', 3, 'add the garlic and parsley and cook for 1 more minute.'). 
+step('894', 4, 'toast the sourdough slices and spread with a little butter.'). 
+step('894', 5, 'pile the mushrooms onto the toast and serve immediately.'). 
+ingredient('894', 'oyster mushrooms'). 
+ingredient('894', 'garlic'). 
+ingredient('894', 'parsley'). 
+ingredient('894', 'sourdough'). 
+ingredient('894', 'butter'). 
+ingredientAndQuantity('894', '250g oyster mushrooms'). 
+ingredientAndQuantity('894', '2 cloves of garlic'). 
+ingredientAndQuantity('894', 'handful of parsley'). 
+ingredientAndQuantity('894', '2 slices of sourdough'). 
+ingredientAndQuantity('894', '20g butter'). 
+
+ 
+%%%% Recipe 895: chorizo and chickpea stew (Youssef) %%%% 
+ 
+recipeID('895'). 
+recipeName('895', 'chorizo and chickpea stew'). 
+picture('895', 'https://files.mob-cdn.co.uk/recipes/2024/01/Coconutty-Potato-and-Chickpea-Soup.jpg'). 
+time('895', 30). 
+servings('895', 4). 
+cuisine('895', 'spanish'). 
+step('895', 1, 'slice the chorizo and fry in a large pan until the fat renders.'). 
+step('895', 2, 'add the diced onion and garlic and cook until softened.'). 
+step('895', 3, 'pour in the chopped tomatoes and the chickpeas (with their liquid).'). 
+step('895', 4, 'simmer for 15 mins until the sauce has thickened.'). 
+step('895', 5, 'season with salt and pepper and serve with a dollop of yoghurt.'). 
+ingredient('895', 'chorizo'). 
+ingredient('895', 'chickpeas'). 
+ingredient('895', 'tomato'). 
+ingredient('895', 'onion'). 
+ingredient('895', 'garlic'). 
+ingredient('895', 'yoghurt'). 
+ingredientAndQuantity('895', '200g chorizo'). 
+ingredientAndQuantity('895', '1 tin of chickpeas'). 
+ingredientAndQuantity('895', '1 tin of chopped tomatoes'). 
+ingredientAndQuantity('895', '1 onion'). 
+ingredientAndQuantity('895', '2 cloves of garlic'). 
+ingredientAndQuantity('895', '4 tbsp yoghurt'). 
+
+ 
+%%%% Recipe 896: crispy pork and cabbage stir-fry (Bartosz) %%%% 
+ 
+recipeID('896'). 
+recipeName('896', 'crispy pork and cabbage stir-fry'). 
+picture('896', 'https://files.mob-cdn.co.uk/recipes/2023/09/Crispy-Chilli-and-Mint-Pork.jpg'). 
+time('896', 20). 
+servings('896', 2). 
+cuisine('896', 'asian'). 
+step('896', 1, 'heat vegetable oil in a wok until smoking.'). 
+step('896', 2, 'add the pork mince and fry until very crispy and brown.'). 
+step('896', 3, 'add minced ginger, garlic, and sliced cabbage.'). 
+step('896', 4, 'pour in soy sauce and fish sauce and stir-fry for 2 mins until the cabbage wilts.'). 
+step('896', 5, 'serve over grain rice with a drizzle of chilli oil.'). 
+ingredient('896', 'pork mince'). 
+ingredient('896', 'cabbage'). 
+ingredient('896', 'ginger'). 
+ingredient('896', 'garlic'). 
+ingredient('896', 'soy sauce'). 
+ingredient('896', 'fish sauce'). 
+ingredient('896', 'grain rice'). 
+ingredient('896', 'chilli oil'). 
+ingredient('896', 'vegetable oil'). 
+ingredientAndQuantity('896', '300g pork mince'). 
+ingredientAndQuantity('896', '1/4 white cabbage'). 
+ingredientAndQuantity('896', '2cm knob of ginger'). 
+ingredientAndQuantity('896', '2 cloves of garlic'). 
+ingredientAndQuantity('896', '1 tbsp soy sauce'). 
+ingredientAndQuantity('896', '1 tsp fish sauce'). 
+ingredientAndQuantity('896', '200g grain rice'). 
+ingredientAndQuantity('896', '1 tsp chilli oil'). 
+ingredientAndQuantity('896', 'vegetable oil'). 
+
+ 
+%%%% Recipe 897: lamb and feta salad (Krista) %%%% 
+ 
+recipeID('897'). 
+recipeName('897', 'lamb and feta salad'). 
+picture('897', 'https://files.mob-cdn.co.uk/recipes/849A4241-2.jpg'). 
+time('897', 25). 
+servings('897', 2). 
+cuisine('897', 'middle-eastern'). 
+mealType('897', 'healthy'). 
+step('897', 1, 'season the lamb mince with cumin and fry in a pan until cooked through.'). 
+step('897', 2, 'toss the cooked lentils with chopped parsley and cucumber.'). 
+step('897', 3, 'add a squeeze of lemon juice and a glug of olive oil.'). 
+step('897', 4, 'top the lentil mix with the crispy lamb and crumble over the feta.'). 
+step('897', 5, 'garnish with fresh mint and serve.'). 
+ingredient('897', 'lamb mince'). 
+ingredient('897', 'feta'). 
+ingredient('897', 'lentils'). 
+ingredient('897', 'parsley'). 
+ingredient('897', 'cucumber'). 
+ingredient('897', 'lemon'). 
+ingredient('897', 'mint'). 
+ingredient('897', 'cumin'). 
+ingredient('897', 'olive oil'). 
+ingredientAndQuantity('897', '250g lamb mince'). 
+ingredientAndQuantity('897', '100g feta'). 
+ingredientAndQuantity('897', '1 tin of cooked lentils'). 
+ingredientAndQuantity('897', 'handful of parsley'). 
+ingredientAndQuantity('897', '1/2 cucumber'). 
+ingredientAndQuantity('897', '1/2 lemon'). 
+ingredientAndQuantity('897', 'small handful of mint'). 
+ingredientAndQuantity('897', '1 tsp ground cumin'). 
+ingredientAndQuantity('897', 'olive oil').
