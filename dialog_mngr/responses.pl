@@ -98,14 +98,51 @@ string_concat("My name is", Name, Text).
 
 % Intent: ackFilter (acknowledge filters added; there are recipes that satisfy all filters)
 
+text(ackFilter, Txt) :-
+	not(recipesFiltered([])),
+	getParamsPatternInitiatingIntent(user, addFilter, Params),
+	filters_to_text(Params, TxtPart2),
+	string_concat("Here are recipes that ", TxtPart2, Txt1),
+	string_concat(Txt1, ". Anything else I should add?", Txt).
+
+text(ackFilter, Txt) :-
+	not(recipesFiltered([])),
+	getParamsPatternInitiatingIntent(user, addFilter, Params),
+	filters_to_text(Params, TxtPart2),
+	string_concat("Okay, I filtered the recipes so that they ", TxtPart2, Txt1),
+	string_concat(Txt1, ". Would you like to add another preference?", Txt).
+
+text(ackFilter, Txt) :-
+	not(recipesFiltered([])),
+	getParamsPatternInitiatingIntent(user, addFilter, Params),
+	filters_to_text(Params, TxtPart2),
+	string_concat("These recipes now all ", TxtPart2, Txt1),
+	string_concat(Txt1, ". Any other features you want to include?", Txt).
+
 
 % Intent: featureInquiry
 
 
 % Intent: featureRemovalRequest
 
+text(featureRemovalRequest,
+     "Can you have a look again and remove one of your recipe requirements?").
+
 
 % Intent: noRecipesLeft
+
+text(noRecipesLeft,
+     "I added your request, but I could not find a recipe that matches all of your preferences. Please remove a filter.") :-
+	recipesFiltered([]).
+
+text(noRecipesLeft,
+     "Unfortunately, there are no recipes left that satisfy all your requirements. You may want to remove one of the filters.") :-
+	recipesFiltered([]).
+
+text(noRecipesLeft,
+     "That combination of features leaves no matching recipes. Try removing or changing one of your preferences.") :-
+	recipesFiltered([]).
+
 
 
 % Intent: pictureGranted
