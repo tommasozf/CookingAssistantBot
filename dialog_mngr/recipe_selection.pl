@@ -180,6 +180,11 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('dietaryrestriction', Restriction, RecipeIDsIn, RecipeIDsOut)
 
+applyFilter('dietaryrestriction', Restriction, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), diet(RecipeID, Restriction)),
+        RecipeIDsOut).
+
 
 %%% 
 % Apply filter that excludes recipes that have a dietary restriction.
@@ -195,12 +200,25 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 %
 % Instruction: Add a clause for the helper predicate diet(RecipeID, DietaryRestriction).
 
+diet(RecipeID, DietaryRestriction) :-
+    ingredients(RecipeID, IngredientList),
+    ingredientsMeetDiet(IngredientList, DietaryRestriction).
+
 
 % Project Assignment: Capability 7: Filter on Dietary Restrictions
 %
 % Instruction: Define a base and recursive clause for the helper predicate
 % 		ingredientsMeetDiet(IngredientList, DietaryRestriction).
 
+% Base case: empty list always meets any dietary restriction
+
+ingredientsMeetDiet([], _).
+
+% Recursive case: check first ingredient meets restriction, then check rest
+
+ingredientsMeetDiet([Ingredient | Rest], DietaryRestriction) :-
+    typeIngredient(Ingredient, DietaryRestriction),
+    ingredientsMeetDiet(Rest, DietaryRestriction).
 
 %%%
 % Apply filter to filter for easy recipes.
@@ -262,6 +280,11 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 
 %%%
 % Apply a filter on meal type (e.g., breakfast).
+
+applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), mealType(RecipeID, MealType)), 
+        RecipeIDsOut).
 
 		
 %%% 
