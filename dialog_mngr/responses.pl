@@ -126,6 +126,33 @@ text(ackFilter, Txt) :-
 
 % Intent: featureInquiry
 
+% Intent: featureInquiry
+% Scenario 1: Huge list (> 800). Prompt for broad preferences.
+text(featureInquiry, "What kind of recipe would you like?") :-
+    recipesFiltered(Recipes), 
+    length(Recipes, N), 
+    N > 800.
+
+% Scenario 2: Moderate list (16-800). 
+% Prompt for specific filters.
+text(featureInquiry, "What other preference would you like to add?") :-
+    recipesFiltered(Recipes), 
+    length(Recipes, N),
+    N > 15, N =< 800,
+    not(memoryKeyValue('show', 'true')).
+
+% Scenario 3: Empty list (0). 
+% Tell user they over-filtered.
+text(featureInquiry, "There are no recipes, please remove further requirements.") :-
+    recipesFiltered([]).
+
+% Scenario 4: Small list (1-15) OR User forced 'show'.
+% Present the results.
+text(featureInquiry, "Here are some recipes that fit your requirements.") :-
+    recipesFiltered(Recipes), 
+    length(Recipes, N),
+    ( (N > 0, N =< 15) ; memoryKeyValue('show', 'true') ).
+
 
 % Intent: featureRemovalRequest
 

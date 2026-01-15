@@ -366,10 +366,11 @@ module dialog_update {
 
 	%% NOT TOO SURE ABOUT THIS PART, IF HTML DOESNT PROPERLY DISPLAY/CHANGE, PROBABLY BECAUSE OF THIS
 
-	
+
 	% Show recipe grid when:
 	%  - list <= 15 normally
 	%  - OR user said "no more filters" and agent granted request (<= 100)
+	%  - OR user explicitly asked to show recipes (show=true)
 	if recipesFiltered(RecipeIDs),
 	length(RecipeIDs, Count),
 	Count > 0,
@@ -377,6 +378,8 @@ module dialog_update {
 		(currentPattern(a50recipeSelect), Count =< 15)
 		;
 		(lastAddedIntentTriple([agent, pictureGranted, _]), Count =< 100)
+		;
+		memoryKeyValue('show', 'true')
 	),
 	recipes_to_json(RecipeIDs, JSONData)
 	then webinfo('show_recipes', JSONData) +
