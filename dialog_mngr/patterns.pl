@@ -241,15 +241,6 @@ pattern([a50recipeSelect,
 %	Add a pattern with pattern ID a50recipeSelect here where the agent asks the user
 %	for input on what recipe to select and the user asks for a specific recipe by name.
 
-% 1. Retrieve the chosen recipe from memory
-currentRecipe(RecipeID) :-
-    memoryKeyValue('recipe', RecipeName),
-    recipeName(RecipeID, RecipeName).
-
-% 2. Retrieve all IDs (already in your file, but ensure it looks like this)
-recipeIDs(RecipeIDs) :- 
-    findall(ID, recipeID(ID), RecipeIDs).
-
 % Variant where user requests a specific recipe by name
 pattern([a50recipeSelect, 
     [agent, specifyGoal],
