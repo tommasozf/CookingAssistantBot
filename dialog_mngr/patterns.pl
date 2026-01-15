@@ -80,6 +80,17 @@ slotFill(dummyP, dummyI).
 %	feature request; make sure the context is changed by inserting the a50recipeSelect 
 %	pattern again into the session.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, ackFilter],
+    [agent, insert(a50recipeSelect)]
+]) :-
+    currentTopLevel(a50recipeConfirm),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    not(recipesFiltered([])).
+
 
 % Variant where user requests a feature while already checking a recipe.
 % Example:
@@ -90,6 +101,17 @@ slotFill(dummyP, dummyI).
 %	feature request; make sure the context is changed by inserting the a50recipeSelect 
 %	pattern again into the session.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, noRecipesLeft],
+    [agent, insert(a50recipeSelect)]
+]) :-
+    currentTopLevel(a50recipeConfirm),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    recipesFiltered([]).
+
 
 % Variant where user requests a feature while still in the recipe selection context.
 % Example:
@@ -99,6 +121,15 @@ slotFill(dummyP, dummyI).
 %	Add a pattern with pattern ID a21featureRequest here where the user makes a
 %	feature request.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, ackFilter]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    not(recipesFiltered([])).
 
 % Variant where user requests a feature while still in the recipe selection context.
 % Example:
@@ -107,6 +138,16 @@ slotFill(dummyP, dummyI).
 % Instruction:
 %	Add a pattern with pattern ID a21featureRequest here where the user makes a
 %	feature request.
+
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, noRecipesLeft]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    recipesFiltered([]).
 
 
 
