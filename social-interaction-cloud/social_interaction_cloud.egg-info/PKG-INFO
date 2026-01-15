@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: social-interaction-cloud
+Version: 2.0.23
+Author: Koen Hindriks
+Author-email: k.v.hindriks@vu.nl
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*, !=3.7.*, !=3.8.*, !=3.9.*, <3.13
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: opencv-python
+Requires-Dist: paramiko
+Requires-Dist: Pillow
+Requires-Dist: pyaudio
+Requires-Dist: PyTurboJPEG
+Requires-Dist: pyspacemouse
+Requires-Dist: redis
+Requires-Dist: scp
+Requires-Dist: six
+Provides-Extra: dev
+Requires-Dist: black==24.10.0; extra == "dev"
+Requires-Dist: isort==5.13.2; extra == "dev"
+Requires-Dist: pre-commit==4.0.1; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: wheel; extra == "dev"
+Provides-Extra: dialogflow
+Requires-Dist: google-cloud-dialogflow; extra == "dialogflow"
+Provides-Extra: nlu
+Requires-Dist: torch~=2.4.1; extra == "nlu"
+Requires-Dist: transformers~=4.45.1; extra == "nlu"
+Requires-Dist: scikit-learn~=1.5.2; extra == "nlu"
+Provides-Extra: webserver
+Requires-Dist: Flask; extra == "webserver"
+Requires-Dist: Flask-SocketIO; extra == "webserver"
+Provides-Extra: whisper-speech-to-text
+Requires-Dist: openai>=1.52.2; extra == "whisper-speech-to-text"
+Requires-Dist: SpeechRecognition>=3.11.0; extra == "whisper-speech-to-text"
+Requires-Dist: openai-whisper; extra == "whisper-speech-to-text"
+Requires-Dist: soundfile; extra == "whisper-speech-to-text"
+Requires-Dist: python-dotenv; extra == "whisper-speech-to-text"
+Provides-Extra: text2speech
+Requires-Dist: google-cloud-texttospeech; extra == "text2speech"
+Provides-Extra: google-stt
+Requires-Dist: google-cloud-speech; extra == "google-stt"
+
+# Social Interaction Cloud
