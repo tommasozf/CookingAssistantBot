@@ -150,9 +150,10 @@ text(noRecipesLeft,
 
 
 % Intent: pictureGranted
-
+text(pictureGranted, "OK. Here is a list of recipes that you can choose from.").
 
 % Intent: pictureNotGranted
+text(pictureNotGranted, "Sorry, there are still too many recipes left to show them all. Please add more preferences.").
 
 
 % Intent: recipeChoiceReceipt (acknowledge user's choice of recipe)

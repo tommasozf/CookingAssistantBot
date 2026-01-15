@@ -157,19 +157,37 @@ pattern([
 % Pattern a21noMoreFilters: user indicates they do not want to add more feature requests.
 % Variant for when there are 100 or fewer recipes left.
 % Example:
-% 	U: I don't want to add anything else.
+% 	U: I don't want to add anything else.
 %	A: OK. Here is a list of recipes that you can choose from.
 % Instruction:
 %	Add a pattern with pattern ID a21noMoreFilters here.
 
+pattern([
+    a21noMoreFilters,
+    [user, noMoreFilters],
+    [agent, pictureGranted]
+]) :-
+    recipesFiltered(L),
+    length(L, N),
+    N =< 100,
+    N > 0.
 
 % Variant for when there are more than 100 recipes left.
 % Example:
-% 	U: I don't want to add anything else.
+% 	U: I don't want to add anything else.
 % 	A: Sorry, there are still too many recipes left to show them all. 
 %		Please add more preferences.
 % Instruction:
 %	Add a pattern with pattern ID a21noMoreFilters here.
+
+pattern([
+    a21noMoreFilters,
+    [user, noMoreFilters],
+    [agent, pictureNotGranted]
+]) :-
+    recipesFiltered(L),
+    length(L, N),
+    N > 100.
 
 
 

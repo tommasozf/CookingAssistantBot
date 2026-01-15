@@ -363,17 +363,28 @@ module dialog_update {
     % PHASE 3: VISUAL PAGE UPDATES
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % 2. Update Recipe Grid (When list is small <= 15)
-    if currentPattern(a50recipeSelect),
-       recipesFiltered(RecipeIDs),
-       length(RecipeIDs, Count),
-       Count =< 15, Count > 0,
-       recipes_to_json(RecipeIDs, JSONData)
-    then webinfo('show_recipes', JSONData) +
-         webinfo('page', 'recipe_overview2.html') +
-         log('UI: Updated Recipe Grid').
 
-    % 3. Show Filters List (When list is big > 15)
+	%% NOT TOO SURE ABOUT THIS PART, IF HTML DOESNT PROPERLY DISPLAY/CHANGE, PROBABLY BECAUSE OF THIS
+
+	
+	% Show recipe grid when:
+	%  - list <= 15 normally
+	%  - OR user said "no more filters" and agent granted request (<= 100)
+	if recipesFiltered(RecipeIDs),
+	length(RecipeIDs, Count),
+	Count > 0,
+	(
+		(currentPattern(a50recipeSelect), Count =< 15)
+		;
+		(lastAddedIntentTriple([agent, pictureGranted, _]), Count =< 100)
+	),
+	recipes_to_json(RecipeIDs, JSONData)
+	then webinfo('show_recipes', JSONData) +
+		webinfo('page', 'recipe_overview2.html') +
+		log('UI: Updated Recipe Grid (extended)').
+
+
+    % Show Filters List (When list is big > 15)
     % Note: Uses existing filters_to_strings helper
     if currentPattern(a50recipeSelect),
        recipesFiltered(RecipeIDs),
@@ -386,7 +397,7 @@ module dialog_update {
          webinfo('page', 'recipe_overview.html') +
          log('UI: Updated Filter List').
 
-    % 4. Show Recipe Confirmation
+    % Show Recipe Confirmation
     if currentPattern(a50recipeConfirm),
        currentRecipe(ID),
        recipe_to_json(ID, JSONData)
