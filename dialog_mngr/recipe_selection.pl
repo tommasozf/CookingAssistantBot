@@ -68,6 +68,8 @@ currentRecipe(RecipeID) :-
 %
 % Instruction: Add a definition for recipeIDs/1 here.
 
+recipeIDs(RecipeIDs) :- setof(RecipeID, recipeID(RecipeID), RecipeIDs).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,6 +100,7 @@ recipeIDs(RecipeIDs) :- setof(RecipeID, recipeID(RecipeID), RecipeIDs).
 % retrieves all recipes that are filtered with the currently active feature selections 
 % this is done by retrieving all recipes and the memory, filtering the memory by feature selection parameters
 % and then recursively filter all recipes on the filters.
+
 recipesFiltered(RecipeIDs) :-
 	recipeIDs(RecipeIDsAll),
 	filters_from_memory(Filters),
