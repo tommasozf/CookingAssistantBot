@@ -78,6 +78,10 @@ text_generator(Intent, SelectedText) :-
 
 % Intent: farewell
 text(farewell, "Goodbye! Bon appetit.").
+text(farewell, "See you later! Enjoy your meal.").
+text(farewell, "Bye! Hope you have fun cooking.").
+text(farewell, "Take care! Let me know if you need any more recipes.").
+text(farewell, "Farewell! Happy cooking.").
 
 
 % Intent: greeting
