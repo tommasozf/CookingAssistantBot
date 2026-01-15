@@ -168,6 +168,12 @@ text(recommend, Text) :-
 
 % Intent: recipeCheck
 
+% Ask user to confirm the specific recipe currently in memory.
+text(recipeCheck, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat("Can you confirm ", Name, Part1),
+    string_concat(Part1, " is the recipe you would like to cook?", Text).
 
 % Intent: specifyGoal (asking a user about recipe features they are looking for)
 text(specifyGoal, "What kind of recipe are you looking for today?").

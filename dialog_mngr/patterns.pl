@@ -248,11 +248,30 @@ pattern([a21removeKeyFromMemory,
 % Two variants where user confirms they like the recipe by either a confirmation or
 % appreciation intent. 
 
+% Variant 1: User confirms the recipe.
+% The pattern ends, allowing the agent to move to the next agenda item (Farewell).
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, confirmation]
+]).
+
+% Variant 2: User appreciates (treat as confirmation).
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, appreciation]
+]).
 
 
 % Variant where user disconfirms, i.e. expresses they do not like the recipe. The
 % conversation should move back to the recipe selection stage (a50recipeSelect).
 
+% Variant 3: User disconfirms (says No).
+% Inserts the Selection pattern back into the agenda to try again.
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, disconfirmation], 
+    [agent, insert(a50recipeSelect)]
+]).
 
 
 % Pattern a50recipeSelect: user asks for a recipe.
