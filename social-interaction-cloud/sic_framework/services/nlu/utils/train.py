@@ -56,7 +56,7 @@ def train_model(model, dataset, num_epochs=3, batch_size=2, learning_rate=5e-5, 
 
     # Define the optimizer (use torch.optim.Adam with the model parameters and learning_rate)
     # optimizer -> Initialize with model.parameters() and lr=learning_rate
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     # Prepare the DataLoader
     #dataloader -> Use DataLoader(dataset, batch_size=batch_size, shuffle=True)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
