@@ -79,19 +79,24 @@ socket.on("transcript", (text) => {
 
 socket.on("pattern", (pattern) => {
     switch(pattern) {
+        case "a50recipeSelect":
+            if (recipecounter > 15) {
+                window.location.href = "recipe_overview.html";
+            } else {
+                window.location.href = "recipe_overview2.html";
+            }
+            break;
         case "start":
             window.location.href = "start.html";
             break;
         case "c10":
             window.location.href = "welcome.html";
             break;
-        case "a50recipeSelect":
-            window.location.href = "recipe_overview.html";
-            break;
         default:
-          window.location.href = "closing.html";
-      }
-})
+            window.location.href = "closing.html";
+    }
+});
+
 
 // Allow explicit page navigation from the agent
 socket.on("page", (pageName) => {
@@ -175,13 +180,35 @@ socket.on("show_confirmation", (data) => {
     var time = document.getElementById("confirmTime");
     var serv = document.getElementById("confirmServings");
     var cuis = document.getElementById("confirmCuisine");
+    var ingredientsList = document.getElementById("confirmIngredients");
+    var instructionsList = document.getElementById("confirmInstructions");
 
     if (title) title.textContent = recipe.name;
     if (img) img.src = recipe.image;
     if (time) time.textContent = recipe.time;
     if (serv) serv.textContent = recipe.servings;
     if (cuis) cuis.textContent = recipe.cuisine;
+
+    if (ingredientsList && Array.isArray(recipe.ingredients)) {
+        ingredientsList.innerHTML = "";
+        recipe.ingredients.forEach((ing) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item";
+            li.textContent = ing;
+            ingredientsList.appendChild(li);
+        });
+    }
+
+    if (instructionsList && Array.isArray(recipe.instructions)) {
+        instructionsList.innerHTML = "";
+        recipe.instructions.forEach((step) => {
+            let li = document.createElement("li");
+            li.textContent = step;
+            instructionsList.appendChild(li);
+        });
+    }
 });
+
 
 // TODO: Utility function to parse string representations of arrays (e.g., "[chorizo, cheese]")
 
