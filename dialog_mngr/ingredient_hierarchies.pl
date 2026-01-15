@@ -324,6 +324,132 @@ typeIngredient('sausages', 'non-vegan').
 typeIngredient('steak', 'non-vegan').
 typeIngredient('nduja', 'non-vegan').
 
+% gluten
+typeIngredient('barley squashes', 'gluten'). 
+typeIngredient('beer', 'gluten'). 
+typeIngredient('lager', 'gluten'). 
+typeIngredient('stout', 'gluten'). 
+typeIngredient('barley', 'gluten'). 
+typeIngredient('couscous', 'gluten'). 
+typeIngredient('bulgar wheat', 'gluten'). 
+typeIngredient('dinkel', 'gluten'). 
+typeIngredient('einkorn', 'gluten'). 
+typeIngredient('emmer wheat', 'gluten'). 
+typeIngredient('farro', 'gluten'). 
+typeIngredient('freekeh', 'gluten'). 
+typeIngredient('khorasan wheat', 'gluten'). 
+typeIngredient('pearl barley', 'gluten'). 
+typeIngredient('rye', 'gluten'). 
+typeIngredient('semolina', 'gluten'). 
+typeIngredient('spelt', 'gluten'). 
+typeIngredient('triticale', 'gluten'). 
+typeIngredient('wheat', 'gluten'). 
+typeIngredient('wheat flour', 'gluten'). 
+typeIngredient('rye flour', 'gluten'). 
+typeIngredient('barley flour', 'gluten'). 
+typeIngredient('plain flour', 'gluten'). 
+typeIngredient('self raising flour', 'gluten'). 
+typeIngredient('flour', 'gluten'). 
+typeIngredient('oats', 'gluten'). 
+typeIngredient('oat milk', 'gluten'). 
+typeIngredient('biscuits', 'gluten'). 
+typeIngredient('bread', 'gluten'). 
+typeIngredient('cake', 'gluten'). 
+typeIngredient('chapattis', 'gluten'). 
+typeIngredient('crackers', 'gluten'). 
+typeIngredient('muffins', 'gluten'). 
+typeIngredient('pastry', 'gluten'). 
+typeIngredient('pizza', 'gluten'). 
+typeIngredient('muesli', 'gluten'). 
+typeIngredient('pasta', 'gluten'). 
+typeIngredient('noodles', 'gluten'). 
+typeIngredient('batter', 'gluten'). 
+typeIngredient('soy sauce', 'gluten'). 
+typeIngredient('liquorice', 'gluten'). 
+typeIngredient('bread crumbs', 'gluten').
+
+% dairy (for lactose-free filtering)
+typeIngredient('milk', 'dairy').
+typeIngredient('butter', 'dairy').
+typeIngredient('cheese', 'dairy').
+typeIngredient('cream', 'dairy').
+typeIngredient('yogurt', 'dairy').
+typeIngredient('yoghurt', 'dairy').
+typeIngredient('cheddar', 'dairy').
+typeIngredient('cheddar cheese', 'dairy').
+typeIngredient('parmesan', 'dairy').
+typeIngredient('parmesan cheese', 'dairy').
+typeIngredient('mozzarella', 'dairy').
+typeIngredient('mozzarella cheese', 'dairy').
+typeIngredient('cream cheese', 'dairy').
+typeIngredient('sour cream', 'dairy').
+typeIngredient('single cream', 'dairy').
+typeIngredient('double cream', 'dairy').
+typeIngredient('ricotta', 'dairy').
+typeIngredient('ricotta cheese', 'dairy').
+typeIngredient('feta', 'dairy').
+typeIngredient('feta cheese', 'dairy').
+typeIngredient('mascarpone', 'dairy').
+typeIngredient('halloumi', 'dairy').
+typeIngredient('halloumi cheese', 'dairy').
+typeIngredient('cottage cheese', 'dairy').
+typeIngredient('brie', 'dairy').
+typeIngredient('camembert', 'dairy').
+typeIngredient('blue cheese', 'dairy').
+typeIngredient('pecorino', 'dairy').
+typeIngredient('pecorino cheese', 'dairy').
+typeIngredient('manchego', 'dairy').
+typeIngredient('manchego cheese', 'dairy').
+typeIngredient('provolone cheese', 'dairy').
+typeIngredient('red leicester', 'dairy').
+typeIngredient('taleggio', 'dairy').
+typeIngredient('burrata', 'dairy').
+typeIngredient('condensed milk', 'dairy').
+typeIngredient('buttermilk', 'dairy').
+typeIngredient('melted butter', 'dairy').
+typeIngredient('tzatziki', 'dairy').
+typeIngredient('horseradish cream', 'dairy').
+typeIngredient('saag', 'dairy').
+typeIngredient('milk yoghurt', 'dairy').
+typeIngredient('skyr yogurt', 'dairy').
+typeIngredient('vanilla ice cream', 'dairy').
+typeIngredient('caramel ice cream', 'dairy').
+typeIngredient('vanilla buttercream', 'dairy').
+typeIngredient('cheese slices', 'dairy').
+typeIngredient('edam cheese slices', 'dairy').
+% there are probably more in the database, these should cover most common ones but finding all of them takes way too long
+
+% spicy
+typeIngredient('chilli', 'spicy').
+typeIngredient('chillies', 'spicy').
+typeIngredient('red chilli', 'spicy').
+typeIngredient('chilli powder', 'spicy').
+typeIngredient('chilli flakes', 'spicy').
+typeIngredient('chilli oil', 'spicy').
+typeIngredient('cayenne pepper', 'spicy').
+typeIngredient('hot sauce', 'spicy').
+typeIngredient('tabasco', 'spicy').
+typeIngredient('jalapeño', 'spicy').
+typeIngredient('jalapeños', 'spicy').
+typeIngredient('habanero', 'spicy').
+typeIngredient('serrano', 'spicy').
+typeIngredient('gochujang', 'spicy').
+typeIngredient('gochujang base', 'spicy').
+typeIngredient('sriracha', 'spicy').
+typeIngredient('wasabi', 'spicy').
+typeIngredient('horseradish', 'spicy').
+typeIngredient('sichuan pepper', 'spicy').
+typeIngredient('sichuan peppercorns', 'spicy').
+typeIngredient('black pepper', 'spicy').
+typeIngredient('pepper', 'spicy').
+typeIngredient('crushed black pepper', 'spicy').
+typeIngredient('chilli bean sauce', 'spicy').
+typeIngredient('sweet chilli sauce', 'spicy').
+typeIngredient('chilli sauce', 'spicy').
+typeIngredient('curry powder', 'spicy').
+typeIngredient('paprika', 'spicy').
+typeIngredient('smoked paprika', 'spicy').
+% probably more, but same reasoning as above with dairy (see comment on line 420).
 
 %%%
 % Add logic to conclude that if an ingredient is not non-vegetarian, it is vegetarian, etc.  
@@ -341,6 +467,15 @@ typeIngredient(Ingredient, 'pescatarian') :-
 
 typeIngredient(Ingredient, 'vegan') :-
 	not(typeIngredient(Ingredient, 'non-vegan')), !.
+
+typeIngredient(Ingredient, 'gluten-free') :-
+not(typeIngredient(Ingredient, 'gluten')), !.
+
+typeIngredient(Ingredient, 'lactose-free') :-
+	not(typeIngredient(Ingredient, 'dairy')), !.
+
+% Note: For spicy, a recipe is spicy if it has at least one spicy ingredient, so we can use hasIngredient/2 at the recipe level, not typeIngredient
+
 
 /**
  * hasIngredient(?RecipeID:atom, ?Ingr:atom)
