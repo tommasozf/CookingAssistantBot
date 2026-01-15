@@ -134,6 +134,8 @@ text(recommend, Text) :-
 
 % Intent: specifyGoal (asking a user about recipe features they are looking for)
 text(specifyGoal, "What kind of recipe are you looking for today?").
+text(specifyGoal, "What would you like to cook today?").
+text(specifyGoal, "Do you have anything in mind for today\'s meal?").
 
 
 text(clearMemory, ".").
