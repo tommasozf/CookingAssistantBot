@@ -1,10 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Project Conversational Agents - Select Recipe</title>
+        <link rel="stylesheet" href="static/css/bootstrap.min.css">
+        <script src="static/js/bootstrap.bundle.min.js"></script>
+        <script src="static/js/jquery-3.7.1.min.js"></script>
+        <script src="static/js/socket.io.min.js"></script>
+        <script src="static/js/pca.js" defer></script>
+    </head>
+    <body>
+        <div id="main">
+            <nav class="navbar mb-1" style="position: absolute; top: 0; right: 0; z-index: 100;">
+                <button class="btn" id="mic">
+                    <img class="img-fluid" style="width:2.5rem;" id="micimg" src="static/images/mic_out.png" alt="Mic">
+                </button>
+            </nav>
+
+            <main class="container-fluid pt-5">
+                <div class="text-center mb-4">
+                    <h2 class="bg-white d-inline-block p-2 rounded">I found these recipes for you!</h2>
+                </div>
+
+                <div class="alert alert-info text-center mx-auto w-75 mb-4" id="currentFilters">
+                    Filters: <span id="filterListDisplay">None</span>
+                </div>
+
+                <div class="row justify-content-center" id="recipeContainer">
+                    </div>
+
+                <template id="recipeCardTemplate">
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="" class="card-img-top recipe-img" alt="Recipe" style="height: 150px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title recipe-title font-weight-bold">Title</h6>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </main>
+
+            <footer class="fixed-bottom">
+                <p class="lead mb-0 bg-light text-center" style="min-height:2rem; font-size: 0.8rem;" id="transcript">...</p>
+            </footer>
+        </div>
+    </body>
 </html>

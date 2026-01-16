@@ -1,45 +1,37 @@
 <!DOCTYPE html>
 <html>
-	<head>
+    <head>
         <meta charset="utf-8"/>
-
         <title>Project Conversational Agents - Welcome</title>
-
-        <!-- Suppress favicon.ico request; https://www.reddit.com/r/flask/comments/aucgy9/template_rendering/ -->
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-
-        <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="static/css/bootstrap.min.css">
-
-        <!-- Bootstrap JS Bundle -->
         <script src="static/js/bootstrap.bundle.min.js"></script>
-
-         <!-- jQuery from a CDN -->
-         <script src="static/js/jquery-3.7.1.min.js"></script>
-
-        <!-- Socket.IO JS Bundle -->
+        <script src="static/js/jquery-3.7.1.min.js"></script>
         <script src="static/js/socket.io.min.js"></script>
-
-        <!-- JS for Project Conversational Agents (feel free to add and/or edit) -->
         <script src="static/js/pca.js" defer></script>
-	</head>
-	<body>
+    </head>
+    <body>
         <div id="main">
-            </div><nav class="navbar mb-1" style="position: static">
+            <nav class="navbar mb-1" style="position: absolute; top: 0; right: 0;">
                 <button class="btn" id="mic">
-                    <img class="img-fluid" style="width:1.5rem;" id="micimg" src="static/images/mic_out.png" alt="Can not show this image">
+                    <img class="img-fluid" style="width:2.5rem;" id="micimg" src="static/images/mic_out.png" alt="Mic">
                 </button>
             </nav>
-            <main class="container-fluid" style="width:100vw; height:60vh">
-                <img class="bg-image" style="width: 100%; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1;" src="https://images.pexels.com/photos/349609/pexels-photo-349609.jpeg" alt="Can not show this image">
-                <br>
-                <center>
-                    <h2>WELCOME, my name is Cookpanion</h2>
-                </center>
+
+            <main class="container-fluid d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
+                <img class="bg-image" style="width: 100%; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8;" src="https://images.pexels.com/photos/349609/pexels-photo-349609.jpeg" alt="Background">
+                
+                <div class="jumbotron text-center bg-white p-5 rounded shadow" style="opacity: 0.9;">
+                    <h1 class="display-4">Welcome!</h1>
+                    <hr class="my-4">
+                    <p class="lead">I am <b>Cookpanion</b>, your personal sous-chef.</p>
+                    <p>I'm here to assist you in finding the perfect recipe. Let's get started!</p>
+                    <p class="text-muted"><i>(Click the microphone icon in the top right to speak)</i></p>
+                </div>
             </main>
-            <!-- Footer is used to show transcripts received from ASR -->
+
             <footer class="fixed-bottom">
-                <p class="lead mb-0 bg-light text-center" style="min-height:0rem" id="transcript"></p>
+                <p class="lead mb-0 bg-light text-center" style="min-height:2rem; font-size: 0.8rem;" id="transcript">...</p>
             </footer>
         </div>
     </body>

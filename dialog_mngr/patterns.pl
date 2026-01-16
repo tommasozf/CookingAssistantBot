@@ -80,6 +80,17 @@ slotFill(dummyP, dummyI).
 %	feature request; make sure the context is changed by inserting the a50recipeSelect 
 %	pattern again into the session.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, ackFilter],
+    [agent, insert(a50recipeSelect)]
+]) :-
+    currentTopLevel(a50recipeConfirm),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    not(recipesFiltered([])).
+
 
 % Variant where user requests a feature while already checking a recipe.
 % Example:
@@ -90,6 +101,17 @@ slotFill(dummyP, dummyI).
 %	feature request; make sure the context is changed by inserting the a50recipeSelect 
 %	pattern again into the session.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, noRecipesLeft],
+    [agent, insert(a50recipeSelect)]
+]) :-
+    currentTopLevel(a50recipeConfirm),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    recipesFiltered([]).
+
 
 % Variant where user requests a feature while still in the recipe selection context.
 % Example:
@@ -99,6 +121,15 @@ slotFill(dummyP, dummyI).
 %	Add a pattern with pattern ID a21featureRequest here where the user makes a
 %	feature request.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, ackFilter]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    not(recipesFiltered([])).
 
 % Variant where user requests a feature while still in the recipe selection context.
 % Example:
@@ -108,6 +139,16 @@ slotFill(dummyP, dummyI).
 %	Add a pattern with pattern ID a21featureRequest here where the user makes a
 %	feature request.
 
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, noRecipesLeft]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    getParamsPatternInitiatingIntent(user, addFilter, Params),
+    recipesFiltered([]).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,19 +157,37 @@ slotFill(dummyP, dummyI).
 % Pattern a21noMoreFilters: user indicates they do not want to add more feature requests.
 % Variant for when there are 100 or fewer recipes left.
 % Example:
-% 	U: I don't want to add anything else.
+% 	U: I don't want to add anything else.
 %	A: OK. Here is a list of recipes that you can choose from.
 % Instruction:
 %	Add a pattern with pattern ID a21noMoreFilters here.
 
+pattern([
+    a21noMoreFilters,
+    [user, noMoreFilters],
+    [agent, pictureGranted]
+]) :-
+    recipesFiltered(L),
+    length(L, N),
+    N =< 100,
+    N > 0.
 
 % Variant for when there are more than 100 recipes left.
 % Example:
-% 	U: I don't want to add anything else.
+% 	U: I don't want to add anything else.
 % 	A: Sorry, there are still too many recipes left to show them all. 
 %		Please add more preferences.
 % Instruction:
 %	Add a pattern with pattern ID a21noMoreFilters here.
+
+pattern([
+    a21noMoreFilters,
+    [user, noMoreFilters],
+    [agent, pictureNotGranted]
+]) :-
+    recipesFiltered(L),
+    length(L, N),
+    N > 100.
 
 
 
@@ -207,11 +266,30 @@ pattern([a21removeKeyFromMemory,
 % Two variants where user confirms they like the recipe by either a confirmation or
 % appreciation intent. 
 
+% Variant 1: User confirms the recipe.
+% The pattern ends, allowing the agent to move to the next agenda item (Farewell).
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, confirmation]
+]).
+
+% Variant 2: User appreciates (treat as confirmation).
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, appreciation]
+]).
 
 
 % Variant where user disconfirms, i.e. expresses they do not like the recipe. The
 % conversation should move back to the recipe selection stage (a50recipeSelect).
 
+% Variant 3: User disconfirms (says No).
+% Inserts the Selection pattern back into the agenda to try again.
+pattern([a50recipeConfirm, 
+    [agent, recipeCheck], 
+    [user, disconfirmation], 
+    [agent, insert(a50recipeSelect)]
+]).
 
 
 % Pattern a50recipeSelect: user asks for a recipe.
@@ -224,6 +302,12 @@ pattern([a21removeKeyFromMemory,
 %	Add a pattern with pattern ID a50recipeSelect here where the agent asks the user
 %	for input on what recipe to select and the user just asks for a recommendation.  
 
+pattern([a50recipeSelect, 
+    [agent, specifyGoal],           % Agent: "What do you want to cook?"
+    [user, requestRecommendation],  % User: "Just give me anything."
+    [agent, recommend],             % Agent: "How about Lasagna?"
+    [agent, insert(a50recipeConfirm)] % Go to confirmation phase
+]).
 
 % Pattern a50recipeSelect: user asks for a recipe.
 % Variant where user requests a specific recipe by mentioning the recipe's name.
@@ -235,6 +319,13 @@ pattern([a21removeKeyFromMemory,
 %	Add a pattern with pattern ID a50recipeSelect here where the agent asks the user
 %	for input on what recipe to select and the user asks for a specific recipe by name.
 
+% Variant where user requests a specific recipe by name
+pattern([a50recipeSelect, 
+    [agent, specifyGoal],
+    [user, recipeRequest],
+    [agent, recipeChoiceReceipt],
+    [agent, insert(a50recipeConfirm)]
+]).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,7 +382,6 @@ pattern([a21removeKeyFromMemory,
 %	starts) greeting and then the user is expected to greet.
 pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 
-% Pattern C1.1: Opening Self-Identification (Agent)
 
 
 % Pattern C1.1: Opening Self-Identification (Agent)
@@ -306,6 +396,9 @@ pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 %
 % NB: We deviate here from Moore and Arar's taxonomy of pattern codes and also label this 
 % 	pattern c10 to simplify things from an agenda management perspective.
+
+% Pattern C1.1: Opening Self-Identification (Agent)
+pattern([c10, [agent, greeting], [agent, selfIdentification], [user, greeting]]) :- not(agentName('')).
 
 
 %%% C3 Patterns: Capabilities
@@ -327,9 +420,11 @@ pattern([c10, [agent, greeting], [user, greeting]]) :- agentName('').
 % 	Add a pattern here where the agent initiates (i.e. starts) saying goodbye and then 
 %	the user says goodbye.
 
+pattern([c43, [agent, farewell], [user, farewell]]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Special Patterns									%%%
+%%% Special Patterns																	%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Button Patterns

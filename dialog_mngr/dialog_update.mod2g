@@ -175,7 +175,25 @@ module dialog_update {
 	% Request Recommendation Function Goes here!
 	% Copy-paste random recommendation rule here...
 
-
+	%Request a Recommendation
+	%when user requests a rec pick random one and store in memory 
+	if intent(requestRecommendation, _, _, _, _),
+	    recipesFiltered(RecipeIDs), random_member(RecipeID, RecipeIDs),
+	    recipeName(RecipeID, RecipeName), Params = ['recipe'= RecipeName],
+	    updateMemory(Params, OldMemory, NewMemory), log_info("memory: ", NewMemory, Info)
+	then delete(memory(OldMemory)) + insert(memory(NewMemory)) + log(Info).
+		
+	
+	
+	% Capability: Select Recipe by Name
+	if intent(recipeRequest, Params, _, _, _),
+	    member('recipe'= RecipeName, Params),
+	    updateMemory(['recipe'= RecipeName], OldMemory, NewMemory),
+	    log_info("memory: ", NewMemory, Info)
+	then delete(memory(OldMemory)) + insert(memory(NewMemory)) + log(Info).
+	
+	
+	
 		
 	% Check if intent can be used in a (currently active) pattern (otherwise, we cannot
 	% handle it). If this is not the case, then print message to the console as a warning.
@@ -339,5 +357,55 @@ module dialog_update {
 	% filters_to_strings is defined in dialogflow.pl - check it out! You need to do something
 	% similar for converting recipes to strings in dialogflow.pl, then come back here and create a similar rule to the one below
 	% to send the recipe strings using webinfo
-	if filters_to_strings(Strings) then webinfo('filters', Strings).  
+	if filters_to_strings(Strings) then webinfo('filters', Strings).
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % PHASE 3: VISUAL PAGE UPDATES
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+	%% NOT TOO SURE ABOUT THIS PART, IF HTML DOESNT PROPERLY DISPLAY/CHANGE, PROBABLY BECAUSE OF THIS
+
+
+	% Show recipe grid when:
+	%  - list <= 15 normally
+	%  - OR user said "no more filters" and agent granted request (<= 100)
+	%  - OR user explicitly asked to show recipes (show=true)
+	if recipesFiltered(RecipeIDs),
+	length(RecipeIDs, Count),
+	Count > 0,
+	(
+		(currentPattern(a50recipeSelect), Count =< 15)
+		;
+		(lastAddedIntentTriple([agent, pictureGranted, _]), Count =< 100)
+		;
+		memoryKeyValue('show', 'true')
+	),
+	recipes_to_json(RecipeIDs, JSONData)
+	then webinfo('show_recipes', JSONData) +
+		webinfo('page', 'recipe_overview2.html') +
+		log('UI: Updated Recipe Grid (extended)').
+
+
+    % Show Filters List (When list is big > 15)
+    % Note: Uses existing filters_to_strings helper
+    if currentPattern(a50recipeSelect),
+       recipesFiltered(RecipeIDs),
+       length(RecipeIDs, Count),
+       Count > 15,
+       filters_to_strings(FilterList),
+       atomic_list_concat(FilterList, ',', FilterString),
+       atom_concat('[', FilterString, Temp1), atom_concat(Temp1, ']', FinalJSON)
+    then webinfo('filters', FinalJSON) + 
+         webinfo('page', 'recipe_overview.html') +
+         log('UI: Updated Filter List').
+
+    % Show Recipe Confirmation
+    if currentPattern(a50recipeConfirm),
+       currentRecipe(ID),
+       recipe_to_json(ID, JSONData)
+    then webinfo('show_confirmation', JSONData) +
+         webinfo('page', 'recipe_confirmation.html') +
+         log('UI: Showed Confirmation').
+       
 }

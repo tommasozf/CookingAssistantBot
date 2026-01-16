@@ -78,3 +78,54 @@ applyTemplate(Template, ParameterList, Result) :-
 **/
 log_info(TypeString, Term, InfoString) :-
 	term_to_atom(Term, Atom), string_concat(TypeString, Atom, InfoString).
+
+
+
+% ---------------------------------------------------------
+% JSON Formatters for Visuals
+% ---------------------------------------------------------
+
+% Convert a list of Recipe IDs into a JSON string for the Grid View (Overview 2)
+% Output format: '[{"name":"Pizza", "image":"url"}, ...]'
+recipes_to_json([], "[]").
+recipes_to_json(RecipeIDs, JSONString) :-
+    findall(JsonObj, (
+        member(ID, RecipeIDs),
+        recipeName(ID, NameAtom),
+        picture(ID, URLAtom),
+        
+        % Convert atoms to strings to avoid quote issues
+        atom_string(NameAtom, Name),
+        atom_string(URLAtom, URL),
+        
+        % Construct one JSON object string
+        % Note: We use single quotes for Prolog atoms, double quotes for JSON content
+        atomic_list_concat(['{"name":"', Name, '", "image":"', URL, '"}'], JsonObj)
+    ), JsonList),
+    
+    % Join all objects with commas
+    atomic_list_concat(JsonList, ',', InnerContent),
+    % Wrap in brackets
+    atomic_list_concat(['[', InnerContent, ']'], JSONString).
+
+% Convert a single Recipe ID to a JSON string for Confirmation View
+% Used for: The Confirmation Page
+% Output: '{"name":"Pizza", "image":"url", "time":45, ...}'
+recipe_to_json(ID, JSONString) :-
+    recipeName(ID, NameAtom),
+    picture(ID, URLAtom),
+    time(ID, Time),
+    servings(ID, Servings),
+    cuisine(ID, CuisineAtom),
+    
+    atom_string(NameAtom, Name),
+    atom_string(URLAtom, URL),
+    atom_string(CuisineAtom, Cuisine),
+    
+    atomic_list_concat([
+        '{"name":"', Name, '", ',
+        '"image":"', URL, '", ',
+        '"time":', Time, ', ',
+        '"servings":', Servings, ', ',
+        '"cuisine":"', Cuisine, '"}'
+    ], JSONString).

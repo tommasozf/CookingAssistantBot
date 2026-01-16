@@ -13,8 +13,11 @@
 **/
 % Project Assignment: Capability 2: Request a Recommendation
 %
-% Instruction: Add a definition for currentRecipe/1 here.
+% Instruction: Add a definition for currentRecipe/1 here. alr bro
 
+currentRecipe(RecipeID) :-
+    memoryKeyValue('recipe', RecipeName),
+    recipeName(RecipeID, RecipeName).
 
 /**
  * ingredients(+RecipeID:atom, -IngredientList:list)
@@ -30,7 +33,9 @@
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
 % Instruction: Add a definition for ingredients/2 here.
-	
+
+ingredients(RecipeID, IngredientList) :-
+    findall(Ingredient, ingredient(RecipeID, Ingredient), IngredientList).
 
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
@@ -65,6 +70,8 @@
 %
 % Instruction: Add a definition for recipeIDs/1 here.
 
+recipeIDs(RecipeIDs) :- setof(RecipeID, recipeID(RecipeID), RecipeIDs).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,6 +102,7 @@ recipeIDs(RecipeIDs) :- setof(RecipeID, recipeID(RecipeID), RecipeIDs).
 % retrieves all recipes that are filtered with the currently active feature selections 
 % this is done by retrieving all recipes and the memory, filtering the memory by feature selection parameters
 % and then recursively filter all recipes on the filters.
+
 recipesFiltered(RecipeIDs) :-
 	recipeIDs(RecipeIDsAll),
 	filters_from_memory(Filters),
@@ -174,6 +182,11 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('dietaryrestriction', Restriction, RecipeIDsIn, RecipeIDsOut)
 
+applyFilter('dietaryrestriction', Restriction, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), diet(RecipeID, Restriction)),
+        RecipeIDsOut).
+
 
 %%% 
 % Apply filter that excludes recipes that have a dietary restriction.
@@ -189,12 +202,25 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 %
 % Instruction: Add a clause for the helper predicate diet(RecipeID, DietaryRestriction).
 
+diet(RecipeID, DietaryRestriction) :-
+    ingredients(RecipeID, IngredientList),
+    ingredientsMeetDiet(IngredientList, DietaryRestriction).
+
 
 % Project Assignment: Capability 7: Filter on Dietary Restrictions
 %
 % Instruction: Define a base and recursive clause for the helper predicate
 % 		ingredientsMeetDiet(IngredientList, DietaryRestriction).
 
+% Base case: empty list always meets any dietary restriction
+
+ingredientsMeetDiet([], _).
+
+% Recursive case: check first ingredient meets restriction, then check rest
+
+ingredientsMeetDiet([Ingredient | Rest], DietaryRestriction) :-
+    typeIngredient(Ingredient, DietaryRestriction),
+    ingredientsMeetDiet(Rest, DietaryRestriction).
 
 %%%
 % Apply filter to filter for easy recipes.
@@ -231,6 +257,18 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('ingredienttype', IngredientType, RecipeIDsIn, RecipeIDsOut)
 
+%%% Apply filter checking that a recipe uses a specific ingredient
+applyFilter('ingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), hasIngredient(RecipeID, Ingredient)), 
+        RecipeIDsOut).
+
+%%% Apply filter for Cuisine (Direct match)
+applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), cuisine(RecipeID, Cuisine)), 
+        RecipeIDsOut).
+
 
 %%% 
 % Apply filter that excludes recipes that use a specific ingredient type.
@@ -244,6 +282,11 @@ applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 
 %%%
 % Apply a filter on meal type (e.g., breakfast).
+
+applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID, 
+        (member(RecipeID, RecipeIDsIn), mealType(RecipeID, MealType)), 
+        RecipeIDsOut).
 
 		
 %%% 
