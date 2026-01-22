@@ -164,14 +164,19 @@ applyFilterCheck(ParamName, Value, RecipeIDsIn, RecipeIDsOut) :-
 applyFilter('cuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
 	findall(RecipeID, (member(RecipeID, RecipeIDsIn), cuisine(RecipeID, Cuisine)), RecipeIDsOut).
 
-%%% 
+%%%
 % Apply filter that excludes recipes that are of a particular cuisine.
 % Example: the user wants recipes that are NOT Japanese.
 %
 % Project Assignment: Capability 8: Filter Recipes by Excluding Features
 %
-% Instruction: Add a clause for 
+% Instruction: Add a clause for
 %		applyFilter('excludecuisine', Ingredient, RecipeIDsIn, RecipeIDsOut)
+
+applyFilter('excludecuisine', Cuisine, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), \+ cuisine(RecipeID, Cuisine)),
+        RecipeIDsOut).
 
 
 %%%
@@ -239,14 +244,19 @@ ingredientsMeetDiet([Ingredient | Rest], DietaryRestriction) :-
 %		applyFilter('ingredient', Ingredient, RecipeIDsIn, RecipeIDsOut)
 
 
-%%% 
+%%%
 % Apply filter that excludes recipes that use a specific ingredient.
 % Example: the user wants recipes that do NOT include the ingredient tahini.
 %
 % Project Assignment: Capability 8: Filter Recipes by Excluding Features
 %
-% Instruction: Add a clause for 
+% Instruction: Add a clause for
 %		applyFilter('excludeingredient', Ingredient, RecipeIDsIn, RecipeIDsOut)
+
+applyFilter('excludeingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), \+ hasIngredient(RecipeID, Ingredient)),
+        RecipeIDsOut).
 
 
 %%%

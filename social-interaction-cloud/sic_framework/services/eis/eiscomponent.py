@@ -456,15 +456,17 @@ class EISComponent(SICComponent):
 
         # Remove empty values and sanitize values
         for key, value in parameters.items():
+            # Lowercase key for Prolog compatibility (e.g., excludeIngredient -> excludeingredient)
+            key_lower = key.lower()
             if isinstance(value, list) and value:
-                # Remove punctuation from each item in the list
-                sanitized_list = [item.translate(translator) for item in value]
+                # Remove punctuation and lowercase each item in the list
+                sanitized_list = [item.translate(translator).lower() for item in value]
                 list_values = "#3#".join(sanitized_list)
-                processed_entities.append(f"{key}=[{list_values}]")  # Turn list into string
+                processed_entities.append(f"{key_lower}=[{list_values}]")  # Turn list into string
             elif isinstance(value, str) and value:
-                # Remove punctuation from the string
-                sanitized_value = value.translate(translator)
-                processed_entities.append(f"{key}={sanitized_value}")
+                # Remove punctuation and lowercase the string
+                sanitized_value = value.translate(translator).lower()
+                processed_entities.append(f"{key_lower}={sanitized_value}")
         return "#2#".join(processed_entities)
 
     def _handle_stop_listening_command(self):
