@@ -382,7 +382,12 @@ class EISComponent(SICComponent):
             if transcript is None or not isinstance(transcript, str):
                 raise ValueError(f"Invalid transcript: expected a string, got {type(transcript).__name__}")
             if not transcript.strip():
-                raise ValueError("Empty transcript: no speech detected or silence")
+                # Handle empty transcript gracefully - let user try again
+                self.logger.warning("Empty transcript: no speech detected or silence. User can try again.")
+                self.logger.info("Sending event: ListeningDone")
+                self.redis_client.publish(self.marbel_channel, "event('ListeningDone')")
+                # Keep user turn so they can try speaking again
+                return
 
             self.logger.info(f"Received transcript: {transcript}")
 

@@ -157,8 +157,12 @@ class WhisperComponent(SICComponent):
             )
         # print("FULL RESPONSE", response)
 
-        if no_speech_prob > 0.5:
-            print("Whisper heard silence")
+        print(f"Whisper no_speech_prob: {no_speech_prob:.3f}")
+        if no_speech_prob > 0.8:
+            print("Whisper heard silence (high confidence)")
+            return Transcript("")
+        if not transcript.strip():
+            print("Whisper returned empty transcript")
             return Transcript("")
         print("Whisper thinks you said: " + transcript)
 
