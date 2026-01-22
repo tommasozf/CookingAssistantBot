@@ -172,6 +172,34 @@ pattern([
     N =< 100,
     N > 0.
 
+% Variant: Handle disconfirmation as noMoreFilters during recipe selection.
+% When user says "No" to "Would you like to add another preference?", treat as done with filters.
+% Example:
+%	A: Would you like to add another preference?
+%	U: No.
+%	A: OK. Here is a list of recipes that you can choose from.
+pattern([
+    a21noMoreFilters,
+    [user, disconfirmation],
+    [agent, pictureGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N =< 100,
+    N > 0.
+
+% Variant: Handle disconfirmation when too many recipes remain.
+pattern([
+    a21noMoreFilters,
+    [user, disconfirmation],
+    [agent, pictureNotGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N > 100.
+
 % Variant for when there are more than 100 recipes left.
 % Example:
 % 	U: I don't want to add anything else.

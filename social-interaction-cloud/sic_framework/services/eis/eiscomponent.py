@@ -379,8 +379,10 @@ class EISComponent(SICComponent):
                 if response_obj and hasattr(response_obj, "alternatives") and response_obj.alternatives:
                     transcript = response_obj.alternatives[0].transcript
 
-            if transcript is None or not isinstance(transcript, str) or not transcript:
+            if transcript is None or not isinstance(transcript, str):
                 raise ValueError(f"Invalid transcript: expected a string, got {type(transcript).__name__}")
+            if not transcript.strip():
+                raise ValueError("Empty transcript: no speech detected or silence")
 
             self.logger.info(f"Received transcript: {transcript}")
 

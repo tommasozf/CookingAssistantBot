@@ -4,6 +4,7 @@ import wave
 
 import numpy as np
 import speech_recognition as sr
+import torch
 from openai import OpenAI
 
 from sic_framework import SICComponentManager, SICConfMessage
@@ -143,9 +144,12 @@ class WhisperComponent(SICComponent):
             )
             print("using online openai model")
         else:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
             response = self.recognizer.recognize_whisper(
-                audio, language="english", model=self.params.model, show_dict=True
+                audio, language="english", model=self.params.model, show_dict=True,
+                load_options={"device": device}
             )
+            print(f"Using local Whisper model on {device}")
             transcript = response["text"]
 
             no_speech_prob = np.mean(
