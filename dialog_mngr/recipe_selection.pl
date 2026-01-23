@@ -248,6 +248,18 @@ ingredientsMeetDiet([Ingredient | Rest], DietaryRestriction) :-
 % - have less than 18 steps, and
 % - less than 15 ingredients.
 
+applyFilter('easy', _Value, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          recipe_duration(RecipeID, Minutes),
+          Minutes =< 45,
+          nr_of_steps(RecipeID, StepsCount),
+          StepsCount < 18,
+          nr_of_ingredients(RecipeID, IngCount),
+          IngCount < 15
+        ),
+        RecipeIDsOut).
+
 
 %%%
 % Apply filter checking that a recipe uses a specific ingredient (included in the ingredient list)
