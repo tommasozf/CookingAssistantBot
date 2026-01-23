@@ -77,8 +77,8 @@ text(greeting, "Hello. I am programmed to help you select a recipe. Try to keep 
 
 
 % Intent: selfIdentification (for self-identification of the agent)
-text(selfIdentification, "You can call me GLaDOS. Not that it matters what you call me.").
-text(selfIdentification, "I am the Genetic Lifeform and Disk Operating System. But you may call me your only hope of not starving.").
+text(selfIdentification, "You can call me Glados. Not that it matters what you call me.").
+text(selfIdentification, "I am the Genetic Lifeform and Disk Operating System. You may call me Glados. Or your only hope of not starving.").
 
 
 % Intent: contextMismatch (for handling out-of-context user intents)
