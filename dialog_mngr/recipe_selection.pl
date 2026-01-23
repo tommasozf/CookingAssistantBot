@@ -324,6 +324,13 @@ applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
 % You first may want to define a helper for counting the number of ingredients in a list of ingredients. Define this at the top of 
 % the file, where we defined ingredients/2. Then return here to define applyFilter('nrOfIngredients', Value, RecipeIDsIn, RecipeIDsOut).
 
+applyFilter('nrOfIngredients', Max, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          nr_of_ingredients(RecipeID, Count),
+          Count =< Max
+        ),
+        RecipeIDsOut).
 
 %%% 
 % Apply filter to filter recipes on maximum number of recipe instruction steps.
