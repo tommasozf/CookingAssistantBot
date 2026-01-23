@@ -343,6 +343,14 @@ applyFilter('nrOfIngredients', Max, RecipeIDsIn, RecipeIDsOut) :-
 % the file. Then return here to define applyFilter('nrOfSteps', Value, RecipeIDsIn, RecipeIDsOut)
 
 
+applyFilter('nrOfSteps', Max, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          nr_of_steps(RecipeID, Count),
+          Count =< Max
+        ),
+        RecipeIDsOut).
+
 %%% 
 % Apply filter to filter recipes on maximum duration.
 %
