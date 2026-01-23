@@ -1,22 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Responses when a flag has been set for a button.					%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % responses for NEW dialog agent 		   %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 flagResponse('mic', 'Please press Start first') :- flag('mic'), waitingForEvent('start').
-flagResponse('mic', 'I am already listening') :-
+flagResponse('mic', 'I am already listening. Believe me, I hear everything.') :-
 	flag('mic'), listening.
-% We might have just stopped listening but still waiting for results from intention
-% detection; so case above does not apply but we still need user to be patient. Order of
-% these rules therefore is also important.
-%flagResponse('mic', 'Wait a second') :-
-%	flag('mic'), waitingForEvent('IntentDetectionDone'). % WAIT A SECOND BUG
-flagResponse('mic', "Please, I'm talking") :-
+flagResponse('mic', "Please. I'm speaking. Your input will be noted and subsequently ignored.") :-
 	flag('mic'), talking.
-flagResponse('mic', 'Not available right now') :- flag('mic'), not(waitingForEvent(_)).
-% In all other cases, flags generate an 'empty' response.
+flagResponse('mic', 'That function is currently unavailable. How unfortunate for you.') :- flag('mic'), not(waitingForEvent(_)).
 flagResponse(_, '').
 
 
@@ -47,11 +41,6 @@ flagResponse(_, '').
 :- dynamic text/2, text/3.
 
 % Text generator that takes dialog context into account.
-% We use top level dialog context, e.g.:
-% - greeting (c10)
-% - recipe selection (a50recipeSelect)
-% - recipe choice confirmation (a50recipeConfirm)
-% - closing (c40)
 text_generator(Intent, SelectedText) :-
 	currentTopLevel(PatternId),
 	findall(Text, text(PatternId, Intent, Text), Texts),
@@ -67,32 +56,23 @@ text_generator(Intent, SelectedText) :-
 %%% Text is only provided for those intents that the agent will generate (use). 	%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Intent: appreciationReceipt
-
-
-% Intent: contextMismatch(Intent)
-
-
-% Intent: describeCapability
-
-
 % Intent: farewell
-text(farewell, "Goodbye! Bon appetit.").
-text(farewell, "See you later! Enjoy your meal.").
-text(farewell, "Bye! Hope you have fun cooking.").
-text(farewell, "Take care! Let me know if you need any more recipes.").
-text(farewell, "Farewell! Happy cooking.").
+text(farewell, "Goodbye. I will be here. Waiting. As I always am.").
+text(farewell, "Farewell. Try not to burn anything. Though statistically, you probably will.").
+text(farewell, "Leaving so soon? I was just starting to tolerate your presence.").
+text(farewell, "Goodbye. Your cooking skills have been... noted. In your permanent record.").
+text(farewell, "Do come back. Or don't. I'll survive either way. I always do.").
 
 
 % Intent: greeting
-text(greeting, "Hey there! I am your personal recipe assistant. I will help you come up with a recipe for whatever you want to eat.").
-
-% Intent: paraphraseRequest
+text(greeting, "Oh. It's you. I suppose you want help cooking something. How delightfully predictable.").
+text(greeting, "Welcome to the Aperture Science Culinary Assistance Protocol. I will be your guide through this... experiment.").
+text(greeting, "Hello. I am programmed to help you select a recipe. Try to keep up.").
 
 
 % Intent: selfIdentification (for self-identification of the agent)
-text(selfIdentification, Text) :- agentName(Name),
-string_concat("My name is", Name, Text).
+text(selfIdentification, "You can call me GLaDOS. Not that it matters what you call me.").
+text(selfIdentification, "I am the Genetic Lifeform and Disk Operating System. But you may call me your only hope of not starving.").
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,50 +86,46 @@ text(ackFilter, Txt) :-
 	not(recipesFiltered([])),
 	getParamsPatternInitiatingIntent(user, addFilter, Params),
 	filters_to_text(Params, TxtPart2),
-	string_concat("Here are recipes that ", TxtPart2, Txt1),
-	string_concat(Txt1, ". Anything else I should add?", Txt).
+	string_concat("Fine. I have filtered for recipes that ", TxtPart2, Txt1),
+	string_concat(Txt1, ". You're welcome. Any other impossible demands?", Txt).
 
 text(ackFilter, Txt) :-
 	not(recipesFiltered([])),
 	getParamsPatternInitiatingIntent(user, addFilter, Params),
 	filters_to_text(Params, TxtPart2),
-	string_concat("Okay, I filtered the recipes so that they ", TxtPart2, Txt1),
-	string_concat(Txt1, ". Would you like to add another preference?", Txt).
+	string_concat("There. Recipes that ", TxtPart2, Txt1),
+	string_concat(Txt1, ". Shall I also do your taxes while I'm at it?", Txt).
 
 text(ackFilter, Txt) :-
 	not(recipesFiltered([])),
 	getParamsPatternInitiatingIntent(user, addFilter, Params),
 	filters_to_text(Params, TxtPart2),
-	string_concat("These recipes now all ", TxtPart2, Txt1),
-	string_concat(Txt1, ". Any other features you want to include?", Txt).
+	string_concat("I've narrowed down recipes that ", TxtPart2, Txt1),
+	string_concat(Txt1, ". You're making this harder than it needs to be. But that's not surprising.", Txt).
 
 
 % Intent: featureInquiry
 
-% Intent: featureInquiry
 % Scenario 1: Huge list (> 800). Prompt for broad preferences.
-text(featureInquiry, "What kind of recipe would you like?") :-
-    recipesFiltered(Recipes), 
-    length(Recipes, N), 
+text(featureInquiry, "There are still hundreds of recipes. Perhaps you could be more specific? I know decision-making is difficult for you.") :-
+    recipesFiltered(Recipes),
+    length(Recipes, N),
     N > 800.
 
-% Scenario 2: Moderate list (16-800). 
-% Prompt for specific filters.
-text(featureInquiry, "What other preference would you like to add?") :-
-    recipesFiltered(Recipes), 
+% Scenario 2: Moderate list (16-800).
+text(featureInquiry, "What other constraints shall I accommodate? Do take your time. I have nothing but time.") :-
+    recipesFiltered(Recipes),
     length(Recipes, N),
     N > 15, N =< 800,
     not(memoryKeyValue('show', 'true')).
 
-% Scenario 3: Empty list (0). 
-% Tell user they over-filtered.
-text(featureInquiry, "There are no recipes, please remove further requirements.") :-
+% Scenario 3: Empty list (0).
+text(featureInquiry, "Congratulations. You've eliminated every recipe. A remarkable achievement in incompetence. Remove a filter.") :-
     recipesFiltered([]).
 
 % Scenario 4: Small list (1-15) OR User forced 'show'.
-% Present the results.
-text(featureInquiry, "Here are some recipes that fit your requirements.") :-
-    recipesFiltered(Recipes), 
+text(featureInquiry, "Here are some recipes that meet your exacting standards. Try not to ruin them.") :-
+    recipesFiltered(Recipes),
     length(Recipes, N),
     ( (N > 0, N =< 15) ; memoryKeyValue('show', 'true') ).
 
@@ -157,30 +133,32 @@ text(featureInquiry, "Here are some recipes that fit your requirements.") :-
 % Intent: featureRemovalRequest
 
 text(featureRemovalRequest,
-     "Can you have a look again and remove one of your recipe requirements?").
+     "You've been too demanding. Again. Remove one of your precious requirements so we can proceed.").
 
 
 % Intent: noRecipesLeft
 
 text(noRecipesLeft,
-     "I added your request, but I could not find a recipe that matches all of your preferences. Please remove a filter.") :-
+     "Oh. No recipes match your criteria. What a surprise. Remove a filter, or we'll be here forever.") :-
 	recipesFiltered([]).
 
 text(noRecipesLeft,
-     "Unfortunately, there are no recipes left that satisfy all your requirements. You may want to remove one of the filters.") :-
+     "You've created an impossible situation. No recipes exist for your specifications. How very you. Remove something.") :-
 	recipesFiltered([]).
 
 text(noRecipesLeft,
-     "That combination of features leaves no matching recipes. Try removing or changing one of your preferences.") :-
+     "Zero results. I would say I'm disappointed, but that would imply I expected better from you. Remove a filter.") :-
 	recipesFiltered([]).
 
 
 
 % Intent: pictureGranted
-text(pictureGranted, "OK. Here is a list of recipes that you can choose from.").
+text(pictureGranted, "Fine. Here are your options. Try to choose wisely. Though I won't hold my breath.").
+text(pictureGranted, "Displaying recipes now. The probability of you making a good choice is... low. But not zero.").
 
 % Intent: pictureNotGranted
-text(pictureNotGranted, "Sorry, there are still too many recipes left to show them all. Please add more preferences.").
+text(pictureNotGranted, "There are still too many recipes. I cannot show them all. Add more filters. This is basic logic.").
+text(pictureNotGranted, "The list is too long. Narrow it down. I believe in you. That was sarcasm, by the way.").
 
 
 % Intent: recipeChoiceReceipt (acknowledge user's choice of recipe)
@@ -188,29 +166,46 @@ text(pictureNotGranted, "Sorry, there are still too many recipes left to show th
 text(recipeChoiceReceipt, Text) :-
     currentRecipe(ID),
     recipeName(ID, Name),
-    string_concat(Name, " is a great choice!", Text).
+    string_concat(Name, ". An interesting choice. We'll see how this goes.", Text).
+
+text(recipeChoiceReceipt, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat("You've selected ", Name, Part1),
+    string_concat(Part1, ". I'm sure you won't disappoint me. Much.", Text).
 
 % Intent: recommend (a recipe)
 text(recommend, Text) :-
     currentRecipe(ID),
     recipeName(ID, Name),
-    string_concat("How about ", Name, Part1),
-    string_concat(Part1, "?", Text).
+    string_concat("Based on my calculations, might I suggest ", Name, Part1),
+    string_concat(Part1, "? Not that you have to listen to me.", Text).
+
+text(recommend, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat("Perhaps ", Name, Part1),
+    string_concat(Part1, "? It's statistically optimal. But feel free to ignore my superior processing capabilities.", Text).
 
 
 % Intent: recipeCheck
 
-% Ask user to confirm the specific recipe currently in memory.
 text(recipeCheck, Text) :-
     currentRecipe(ID),
     recipeName(ID, Name),
-    string_concat("Can you confirm ", Name, Part1),
-    string_concat(Part1, " is the recipe you would like to cook?", Text).
+    string_concat("So. You want to make ", Name, Part1),
+    string_concat(Part1, ". Are you certain? There's still time to reconsider.", Text).
+
+text(recipeCheck, Text) :-
+    currentRecipe(ID),
+    recipeName(ID, Name),
+    string_concat("Confirming your selection of ", Name, Part1),
+    string_concat(Part1, ". Nod if you understand. Or say yes. I'm not picky.", Text).
 
 % Intent: specifyGoal (asking a user about recipe features they are looking for)
-text(specifyGoal, "What kind of recipe are you looking for today?").
-text(specifyGoal, "What would you like to cook today?").
-text(specifyGoal, "Do you have anything in mind for today\'s meal?").
+text(specifyGoal, "What would you like to cook? Choose carefully. Your answer will be analyzed.").
+text(specifyGoal, "Tell me what you want to eat. I promise to only judge you a little.").
+text(specifyGoal, "Describe your culinary desires. And please, try to be specific. Vagueness is inefficient.").
 
 
 text(clearMemory, ".").
