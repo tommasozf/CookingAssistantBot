@@ -46,7 +46,7 @@ def train_model(model, dataset, num_epochs=3, batch_size=2, learning_rate=5e-5, 
         BERTNLUModel: The trained model, ready for evaluation or inference.
     """
     # Move the model to the specified device (e.g., CPU or CUDA)
-    model.to(device = "cpu")
+    model.to(device)
 
     # Define the loss functions for intent and slot classification
     # intent_loss_fn -> Use nn.
