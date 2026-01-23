@@ -359,6 +359,13 @@ applyFilter('nrOfSteps', Max, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('duration', MaxMinutes, RecipeIDsIn, RecipeIDsOut)
 
+applyFilter('duration', MaxMinutes, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          recipe_duration(RecipeID, Minutes),
+          Minutes =< MaxMinutes
+        ),
+        RecipeIDsOut).
 
 %%%
 % Apply filter to select recipes that can be made fast (meaning e.g. under 30 minutes).
