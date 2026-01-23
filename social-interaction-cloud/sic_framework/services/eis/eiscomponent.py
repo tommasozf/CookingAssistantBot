@@ -369,7 +369,7 @@ class EISComponent(SICComponent):
             # Perform ASR transcription
             if self.params.use_whisper:
                 self.logger.info("Requesting transcript from Whisper...")
-                transcript_response = self.whisper.request(GetTranscript(timeout=60, phrase_time_limit=60))
+                transcript_response = self.whisper.request(GetTranscript(timeout=15, phrase_time_limit=15))
                 transcript = getattr(transcript_response, "transcript", None)
             else:
                 self.logger.info("Requesting transcript from Google STT...")
@@ -416,7 +416,10 @@ class EISComponent(SICComponent):
             # Log any errors that occur during processing
             self.logger.error(f"Error in NLU handling: {e}")
             self.logger.debug("Exception details", exc_info=True)
-            # Optionally, send error event to MARBEL or webserver
+            # Send ListeningDone so system doesn't stay stuck
+            self.logger.info("Sending event: ListeningDone (after error)")
+            self.redis_client.publish(self.marbel_channel, "event('ListeningDone')")
+            # Also send error event
             self.redis_client.publish(self.marbel_channel, "event('ErrorOccurred')")
 
     def _intent_string(self, query_result: QueryResult) -> str:
