@@ -3,6 +3,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- dynamic recipeCounter/1.
 
+count_items(List, Count) :-
+    length(List, Count).
+
+nr_of_ingredients(RecipeID, Count) :-
+    ingredients(RecipeID, Ingredients),
+    count_items(Ingredients, Count).
+
+nr_of_steps(RecipeID, Count) :-
+    steps(RecipeID, Steps),
+    count_items(Steps, Count).
+
+recipe_duration(RecipeID, Minutes) :-
+    duration(RecipeID, Minutes).
+
 /**
  * currentRecipe(-RecipeID:atom)
  *
