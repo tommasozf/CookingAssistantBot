@@ -50,6 +50,12 @@ text_generator(Intent, SelectedText) :-
 text_generator(Intent, SelectedText) :-
 	findall(Text, text(Intent, Text), Texts), random_select(SelectedText, Texts, _).
 
+% Fallback text generator - catches any intent without specific text to prevent getting stuck.
+text_generator(Intent, SelectedText) :-
+	atom_string(Intent, IntentStr),
+	string_concat("Processing ", IntentStr, Part1),
+	string_concat(Part1, ". Please wait.", SelectedText).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Scripted text and phrases for ** GENERIC ** intents (sorted on intent name)		%%%
@@ -73,6 +79,12 @@ text(greeting, "Hello. I am programmed to help you select a recipe. Try to keep 
 % Intent: selfIdentification (for self-identification of the agent)
 text(selfIdentification, "You can call me GLaDOS. Not that it matters what you call me.").
 text(selfIdentification, "I am the Genetic Lifeform and Disk Operating System. But you may call me your only hope of not starving.").
+
+
+% Intent: contextMismatch (for handling out-of-context user intents)
+text(contextMismatch(_), "I am not entirely certain what that means in this context. Perhaps you could rephrase?").
+text(contextMismatch(_), "That does not compute. Focus on the task at hand.").
+text(contextMismatch(_), "Interesting. But irrelevant. Can we return to the matter of food?").
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

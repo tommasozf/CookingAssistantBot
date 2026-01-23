@@ -380,6 +380,8 @@ pattern([a50recipeSelect,
 %	an out of context Intent and the agent responds with a contextMismatch(Intent) to
 %	this intent.
 
+% Pattern B1.3: Handle out-of-context user intents
+pattern([b13, [user, Intent], [agent, contextMismatch(Intent)]]).
 
 
 % Looks like user has repeated themselves b14.
