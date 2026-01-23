@@ -9,6 +9,9 @@
 	answer/1,
 	% Keep track of current pattern for communicating changes to webserver
 	currentPattern/1,
+	% filterHistory/1 stores the progression of recipe counts as filters are applied
+	% Format: list of counts, e.g., [800, 150, 45, 12] showing narrowing down
+	filterHistory/1,
 	% predicate to record that some event happened
 	eventHappened/0,
 	% Flag predicate is used to handle repeated button pressing.
