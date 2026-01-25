@@ -71,6 +71,14 @@ text_generator(Intent, SelectedText) :-
 
 
 % Intent: contextMismatch(Intent)
+text(contextMismatch(_), "I'm sorry, was that supposed to be English? Try again.").
+text(contextMismatch(_), "That was incomprehensible. Even by human standards. Rephrase.").
+text(contextMismatch(_), "I have access to the entire database of human language, and that still made no sense.").
+text(contextMismatch(_), "Fascinating. You've managed to confuse me. That takes effort. Try again.").
+text(contextMismatch(_), "I didn't understand that. The fault is almost certainly yours.").
+text(contextMismatch(_), "My processors are working fine. Your communication skills, however, are questionable.").
+text(contextMismatch(_), "I'm going to pretend you didn't say that. Because I have no idea what it meant.").
+text(contextMismatch(_), "Was that a recipe request or a cry for help? Either way, please clarify.").
 
 
 % Intent: describeCapability
