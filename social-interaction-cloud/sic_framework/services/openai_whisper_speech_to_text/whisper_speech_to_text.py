@@ -20,7 +20,7 @@ class WhisperConf(SICConfMessage):
     :param local_model: Local OpenAI model to use, see https://github.com/openai/whisper#available-models-and-languages
     """
 
-    def __init__(self, openai_key=None, local_model="base.en"):
+    def __init__(self, openai_key=None, local_model="small.en"):
         super(SICConfMessage, self).__init__()
         self.openai_key = openai_key
         self.model = local_model
