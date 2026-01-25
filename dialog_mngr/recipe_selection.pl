@@ -67,6 +67,10 @@ ingredients(RecipeID, IngredientList) :-
 %
 % Instruction: Add a definition for steps/2 here.
 
+steps(RecipeID, StepList) :-
+    findall(Text, step(RecipeID, _, Text), StepList).
+
+
 
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
