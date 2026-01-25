@@ -1,22 +1,273 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Goodbye!</title>
-        <link rel="stylesheet" href="static/css/bootstrap.min.css">
-        <script src="static/js/bootstrap.bundle.min.js"></script>
-        <script src="static/js/jquery-3.7.1.min.js"></script>
-        <script src="static/js/socket.io.min.js"></script>
-        <script src="static/js/pca.js" defer></script>
-    </head>
-    <body class="text-center bg-dark text-white">
-        <div class="cover-container d-flex h-100 p-3 mx-auto flex-column align-items-center justify-content-center" style="height: 100vh;">
-            <main role="main" class="inner cover">
-                <h1 class="cover-heading">Bon Appétit!</h1>
-                <p class="lead">Thank you for exploring recipes with Cookpanion.</p>
-                <p class="lead">We hope you found something delicious.</p>
-                <p><i>Feel free to restart the agent to find another recipe.</i></p>
-            </main>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Goodbye!</title>
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <script src="static/js/socket.io.min.js"></script>
+    <script src="static/js/pca.js" defer></script>
+
+    <style>
+      :root{
+        --text: rgba(35,24,16,.92);
+        --muted: rgba(35,24,16,.65);
+        --muted2: rgba(35,24,16,.50);
+        --border: rgba(80,55,35,.14);
+
+        --accent1:#f59e0b; /* honey */
+        --accent2:#fb923c; /* orange */
+        --accent3:#ef4444; /* tomato */
+      }
+
+      *{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body{
+        min-height:100vh;
+        margin:0;
+        color: var(--text);
+        font-family: ui-rounded, "SF Pro Rounded", ui-sans-serif, system-ui, -apple-system,
+                     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+        overflow-x:hidden;
+      }
+
+      .bg-image{
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .page{
+        min-height:100vh;
+        padding: 22px 18px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+
+      .shell{
+        width: min(880px, 100%);
+      }
+
+      .glass{
+        position: relative;
+        border-radius: 30px;
+        border: 1px solid rgba(80,55,35,.16);
+        background: rgba(255,255,255,.90);
+        box-shadow:
+          0 22px 60px rgba(60,35,15,.18),
+          0 2px 0 rgba(255,255,255,.55) inset;
+        overflow:hidden;
+        text-align: center;
+      }
+
+      .glass::before{
+        content:"";
+        position:absolute;
+        inset:-2px;
+        background: radial-gradient(700px 260px at 25% 0%, rgba(255,255,255,.85), transparent 62%);
+        pointer-events:none;
+      }
+
+      .topline{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(80,55,35,.10);
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        color: rgba(35,24,16,.78);
+        font-size: .92rem;
+      }
+
+      .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent3));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.16);
+      }
+
+      .proj{
+        font-size:.92rem;
+        color: var(--muted2);
+      }
+
+      .content{
+        padding: 28px 22px 26px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap: 10px;
+      }
+
+      .icon-badge{
+        width: 86px;
+        height: 86px;
+        border-radius: 999px;
+        border: 1px solid rgba(245,158,11,.26);
+        background: rgba(245,158,11,.12);
+        display:grid;
+        place-items:center;
+        box-shadow: 0 14px 38px rgba(60,35,15,.10);
+      }
+
+      .title{
+        font-weight: 900;
+        letter-spacing: -0.8px;
+        margin: 6px 0 0;
+        font-size: clamp(2.0rem, 3.2vw, 2.6rem);
+      }
+
+      .subtitle{
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.55;
+        font-weight: 560;
+        max-width: 48ch;
+      }
+
+      .divider{
+        width: min(520px, 92%);
+        height: 1px;
+        background: rgba(80,55,35,.12);
+        margin: 14px auto 12px;
+      }
+
+      .hint{
+        border-radius: 18px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.62);
+        padding: 12px 12px;
+        color: rgba(35,24,16,.78);
+        font-size: .98rem;
+        max-width: 56ch;
+        margin: 0 auto;
+      }
+      .hint b{ color: rgba(35,24,16,.92); }
+
+      .chips{
+        margin-top: 12px;
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap: 10px;
+      }
+      .chip{
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: .92rem;
+        color: rgba(35,24,16,.76);
+        white-space: nowrap;
+      }
+
+      /* Decorative assets */
+      .deco{
+        position:absolute;
+        right:-18px;
+        bottom:-18px;
+        width: 240px;
+        opacity:.10;
+        transform: rotate(10deg);
+        pointer-events:none;
+      }
+      .deco2{
+        position:absolute;
+        left:-22px;
+        top: 70px;
+        width: 175px;
+        opacity:.08;
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="bg-image" src="../static/images/kitchen_bg.avif" alt="Kitchen background">
+
+    <div id="main">
+      <main class="page">
+        <div class="shell">
+          <div class="glass">
+
+            <img class="deco2" src="../static/images/garlic.png" alt="">
+            <img class="deco"  src="../static/images/tomato.png" alt="">
+
+            <div class="topline">
+              <div class="badge-pill">
+                <span class="dot"></span>
+                <span>Cookpanion</span>
+              </div>
+              <div class="proj">See you next time</div>
+            </div>
+
+            <div class="content">
+              <div class="hero">
+                <div class="icon-badge" aria-hidden="true">
+                  <!-- simple chef-hat-ish icon -->
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 20h10" stroke="currentColor" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 20v-6m8 6v-6" stroke="currentColor" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 10c-1.1 0-2-.9-2-2 0-1.2 1-2.2 2.2-2.2.2 0 .4 0 .6.1C7.2 4.2 8.8 3 10.7 3c1.4 0 2.7.7 3.4 1.8.3-.1.6-.1.9-.1 1.5 0 2.8 1.3 2.8 2.8 0 1.1-.6 2.1-1.6 2.5V14H6v-4Z"
+                          stroke="currentColor" stroke-opacity=".75" stroke-width="2" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <h1 class="title">Bon Appétit!</h1>
+                <p class="subtitle">
+                  Thanks for exploring recipes with Cookpanion. Hope you found something delicious (and easy to cook).
+                </p>
+
+                <div class="divider"></div>
+
+                <div class="hint">
+                  <b>Want another idea?</b> Just restart the agent and tell me a vibe:
+                  “comfort food”, “quick lunch”, or “something spicy”.
+                </div>
+
+                <div class="chips" aria-label="Example prompts">
+                  <span class="chip">“under 20 minutes”</span>
+                  <span class="chip">“vegetarian”</span>
+                  <span class="chip">“Italian”</span>
+                  <span class="chip">“no dairy”</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-    </body>
+      </main>
+    </div>
+  </body>
 </html>
