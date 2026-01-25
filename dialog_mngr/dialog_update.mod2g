@@ -356,10 +356,10 @@ module dialog_update {
 	
 	% Update filter history when recipe count changes (for progress tracker)
 	if recipesFiltered(Recipes), length(Recipes, N), recipeCounter(N),
-	   filterHistory(History), 
-	   (History = [] ; (History = [LastCount|_], LastCount \= N))
+	   filterHistory(History),
+	   (History = [] ; (History = [LastCount|_], LastCount \= N)),
+	   filter_history_to_json([N|History], ProgressJSON)
 	then delete(filterHistory(History)) + insert(filterHistory([N|History])) +
-	     filter_history_to_json([N|History], ProgressJSON) +
 	     webinfo('progress', ProgressJSON).
 	
 	% filters_to_strings is defined in dialogflow.pl - check it out! You need to do something
