@@ -519,8 +519,8 @@ class EISComponent(SICComponent):
         self.speakers_output.stream.write(wav_audio.waveform)
 
     def local_tts(self, text):
-        # GLaDOS-like voice: female, slower, lower pitch
-        call(["espeak", "-ven+f3", "-s130", "-p35", text])
+        # GLaDOS-like voice: female, faster, lower pitch
+        call(["espeak", "-ven+f3", "-s170", "-p35", text])
 
 
 
