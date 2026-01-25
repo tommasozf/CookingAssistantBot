@@ -11,11 +11,11 @@ nr_of_ingredients(RecipeID, Count) :-
     count_items(Ingredients, Count).
 
 nr_of_steps(RecipeID, Count) :-
-    steps(RecipeID, Steps),
-    count_items(Steps, Count).
+    findall(N, step(RecipeID, N, _), Ns),
+    length(Ns, Count).
 
 recipe_duration(RecipeID, Minutes) :-
-    duration(RecipeID, Minutes).
+    time(RecipeID, Minutes).
 
 /**
  * currentRecipe(-RecipeID:atom)
