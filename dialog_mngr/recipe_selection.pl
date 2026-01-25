@@ -3,6 +3,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- dynamic recipeCounter/1.
 
+count_items(List, Count) :-
+    length(List, Count).
+
+nr_of_ingredients(RecipeID, Count) :-
+    ingredients(RecipeID, Ingredients),
+    count_items(Ingredients, Count).
+
+nr_of_steps(RecipeID, Count) :-
+    findall(N, step(RecipeID, N, _), Ns),
+    length(Ns, Count).
+
+recipe_duration(RecipeID, Minutes) :-
+    time(RecipeID, Minutes).
+
 /**
  * currentRecipe(-RecipeID:atom)
  *
@@ -52,6 +66,10 @@ ingredients(RecipeID, IngredientList) :-
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
 %
 % Instruction: Add a definition for steps/2 here.
+
+steps(RecipeID, StepList) :-
+    findall(Text, step(RecipeID, _, Text), StepList).
+
 
 
 % Project Assignment: Capability 6: Filter by Number of Ingredients & Recipe Steps
@@ -234,6 +252,18 @@ ingredientsMeetDiet([Ingredient | Rest], DietaryRestriction) :-
 % - have less than 18 steps, and
 % - less than 15 ingredients.
 
+applyFilter('easy', _Value, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          recipe_duration(RecipeID, Minutes),
+          Minutes =< 45,
+          nr_of_steps(RecipeID, StepsCount),
+          StepsCount < 18,
+          nr_of_ingredients(RecipeID, IngCount),
+          IngCount < 15
+        ),
+        RecipeIDsOut).
+
 
 %%%
 % Apply filter checking that a recipe uses a specific ingredient (included in the ingredient list)
@@ -310,6 +340,13 @@ applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
 % You first may want to define a helper for counting the number of ingredients in a list of ingredients. Define this at the top of 
 % the file, where we defined ingredients/2. Then return here to define applyFilter('nrOfIngredients', Value, RecipeIDsIn, RecipeIDsOut).
 
+applyFilter('nrOfIngredients', Max, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          nr_of_ingredients(RecipeID, Count),
+          Count =< Max
+        ),
+        RecipeIDsOut).
 
 %%% 
 % Apply filter to filter recipes on maximum number of recipe instruction steps.
@@ -322,6 +359,14 @@ applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
 % the file. Then return here to define applyFilter('nrOfSteps', Value, RecipeIDsIn, RecipeIDsOut)
 
 
+applyFilter('nrOfSteps', Max, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          nr_of_steps(RecipeID, Count),
+          Count =< Max
+        ),
+        RecipeIDsOut).
+
 %%% 
 % Apply filter to filter recipes on maximum duration.
 %
@@ -330,6 +375,13 @@ applyFilter('mealType', MealType, RecipeIDsIn, RecipeIDsOut) :-
 % Instruction: Add a clause for 
 %		applyFilter('duration', MaxMinutes, RecipeIDsIn, RecipeIDsOut)
 
+applyFilter('duration', MaxMinutes, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        ( member(RecipeID, RecipeIDsIn),
+          recipe_duration(RecipeID, Minutes),
+          Minutes =< MaxMinutes
+        ),
+        RecipeIDsOut).
 
 %%%
 % Apply filter to select recipes that can be made fast (meaning e.g. under 30 minutes).

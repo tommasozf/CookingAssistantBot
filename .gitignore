@@ -178,3 +178,7 @@ cython_debug/
 .idea/
 
 *.rdb
+
+# NLU model checkpoints
+*.pt
+social-interaction-cloud/sic_framework/services/nlu/utils/checkpoints/

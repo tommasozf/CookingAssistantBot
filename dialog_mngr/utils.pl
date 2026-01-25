@@ -85,6 +85,35 @@ log_info(TypeString, Term, InfoString) :-
 % JSON Formatters for Visuals
 % ---------------------------------------------------------
 
+% Convert filter history list to JSON for progress tracker
+% Input: [12, 45, 150, 800] (most recent first)
+% Output: '{"history":[800,150,45,12],"current":12,"start":800,"percentage":98}'
+filter_history_to_json([], '{"history":[],"current":0,"start":0,"percentage":0}').
+filter_history_to_json(History, JSONString) :-
+    History \= [],
+    reverse(History, Chronological),  % Convert to chronological order [800, 150, 45, 12]
+    Chronological = [Start|_],
+    History = [Current|_],
+    % Calculate percentage of recipes filtered out
+    (Start > 0 -> Percentage is round(((Start - Current) / Start) * 100) ; Percentage = 0),
+    % Build the history array string
+    atomic_list_concat_numbers(Chronological, ',', HistoryStr),
+    % Construct JSON
+    atomic_list_concat([
+        '{"history":[', HistoryStr, '],',
+        '"current":', Current, ',',
+        '"start":', Start, ',',
+        '"percentage":', Percentage, '}'
+    ], JSONString).
+
+% Helper to concatenate a list of numbers into a comma-separated string
+atomic_list_concat_numbers([], _, '').
+atomic_list_concat_numbers([X], _, Str) :- atom_number(Str, X).
+atomic_list_concat_numbers([X,Y|Rest], Sep, Str) :-
+    atom_number(XStr, X),
+    atomic_list_concat_numbers([Y|Rest], Sep, RestStr),
+    atomic_list_concat([XStr, Sep, RestStr], Str).
+
 % Convert a list of Recipe IDs into a JSON string for the Grid View (Overview 2)
 % Output format: '[{"name":"Pizza", "image":"url"}, ...]'
 recipes_to_json([], "[]").

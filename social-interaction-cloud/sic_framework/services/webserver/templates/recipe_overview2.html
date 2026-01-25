@@ -22,6 +22,20 @@
                     <h2 class="bg-white d-inline-block p-2 rounded">I found these recipes for you!</h2>
                 </div>
 
+                <!-- Progress Tracker -->
+                <div class="mx-auto mb-3" style="max-width: 500px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Started with <span id="progressStart">-</span> recipes</small>
+                        <small class="text-muted"><span id="progressPercent">0</span>% filtered</small>
+                    </div>
+                    <div class="progress" style="height: 15px; background-color: rgba(255,255,255,0.7);">
+                        <div class="progress-bar bg-success" id="progressBar" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-1" id="progressSteps">
+                        <!-- Steps will be dynamically added here -->
+                    </div>
+                </div>
+
                 <div class="alert alert-info text-center mx-auto w-75 mb-4" id="currentFilters">
                     Filters: <span id="filterListDisplay">None</span>
                 </div>

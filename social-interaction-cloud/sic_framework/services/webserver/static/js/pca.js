@@ -124,6 +124,47 @@ socket.on("recipecounter", (number) => {
     document.getElementById("recipecounter").innerHTML = recipecounter;
 })
 
+// Progress tracker handler - shows filtering journey
+socket.on("progress", (dataString) => {
+    console.log("Progress update:", dataString);
+    try {
+        var data = JSON.parse(dataString);
+        
+        // Update progress bar
+        var progressBar = document.getElementById("progressBar");
+        var progressPercent = document.getElementById("progressPercent");
+        var progressStart = document.getElementById("progressStart");
+        var progressSteps = document.getElementById("progressSteps");
+        
+        if (progressBar) {
+            progressBar.style.width = data.percentage + "%";
+            progressBar.setAttribute("aria-valuenow", data.percentage);
+        }
+        if (progressPercent) {
+            progressPercent.innerHTML = data.percentage;
+        }
+        if (progressStart) {
+            progressStart.innerHTML = data.start;
+        }
+        
+        // Build step indicators showing the filtering journey
+        if (progressSteps && data.history && data.history.length > 0) {
+            var stepsHtml = "";
+            data.history.forEach((count, index) => {
+                var isLast = (index === data.history.length - 1);
+                var badgeClass = isLast ? "badge bg-success" : "badge bg-secondary";
+                stepsHtml += '<span class="' + badgeClass + ' mx-1">' + count + '</span>';
+                if (!isLast) {
+                    stepsHtml += '<span class="text-muted">→</span>';
+                }
+            });
+            progressSteps.innerHTML = stepsHtml;
+        }
+    } catch (e) {
+        console.log("Error parsing progress data:", e);
+    }
+});
+
 // Example showing how to work with templates
 // Adding filters to a card deck on an HTML page
 socket.on("filters", (filterString) => {
