@@ -1,61 +1,373 @@
 <!DOCTYPE html>
 <html>
-	<head>
-        <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Project Conversational Agents - Recipe Overview</title>
 
-        <title>Project Conversational Agents - Recipe Overview</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
 
-        <!-- Suppress favicon.ico request; https://www.reddit.com/r/flask/comments/aucgy9/template_rendering/ -->
-        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <script src="static/js/socket.io.min.js"></script>
+    <script src="static/js/pca.js" defer></script>
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <style>
+      :root{
+        --text: rgba(35,24,16,.92);
+        --muted: rgba(35,24,16,.65);
+        --muted2: rgba(35,24,16,.50);
+        --border: rgba(80,55,35,.14);
 
-        <!-- Bootstrap JS Bundle -->
-        <script src="static/js/bootstrap.bundle.min.js"></script>
+        --accent1:#f59e0b; /* honey */
+        --accent2:#fb923c; /* orange */
+        --accent3:#ef4444; /* tomato */
+      }
 
-         <!-- jQuery from a CDN -->
-         <script src="static/js/jquery-3.7.1.min.js"></script>
+      *{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-        <!-- Socket.IO JS Bundle -->
-        <script src="static/js/socket.io.min.js"></script>
+      body{
+        min-height:100vh;
+        margin:0;
+        color: var(--text);
+        font-family: ui-rounded, "SF Pro Rounded", ui-sans-serif, system-ui, -apple-system,
+                     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+        overflow-x:hidden;
+      }
 
-        <!-- JS for Project Conversational Agents (feel free to add and/or edit) -->
-        <script src="static/js/pca.js" defer></script>
-	</head>
-	<body>
-        <div id="main">
-            </div><nav class="navbar mb-1" style="position: static">
-                <button class="btn" id="mic">
-                    <img class="img-fluid" style="width:1.5rem;" id="micimg" src="static/images/mic_out.png" alt="Can not show this image">
+      /* Full background */
+      .bg-image{
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Main page layout */
+      .page{
+        min-height:100vh;
+        padding: 22px 18px 76px; /* footer space */
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+
+      .shell{
+        width: min(980px, 100%);
+      }
+
+      /* Premium card */
+      .glass{
+        position: relative;
+        border-radius: 30px;
+        border: 1px solid rgba(80,55,35,.16);
+        background: rgba(255,255,255,.90);
+        box-shadow:
+          0 22px 60px rgba(60,35,15,.18),
+          0 2px 0 rgba(255,255,255,.55) inset;
+        overflow:hidden;
+      }
+      .glass::before{
+        content:"";
+        position:absolute;
+        inset:-2px;
+        background: radial-gradient(700px 260px at 25% 0%, rgba(255,255,255,.85), transparent 62%);
+        pointer-events:none;
+      }
+
+      /* Topline */
+      .topline{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(80,55,35,.10);
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        color: rgba(35,24,16,.78);
+        font-size: .92rem;
+      }
+      .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent3));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.16);
+      }
+      .proj{
+        font-size:.92rem;
+        color: var(--muted2);
+      }
+
+      /* Mic button: compact but clear */
+      .mic-btn{
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 14px;
+        padding: 8px 10px;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        transition: transform .12s ease;
+      }
+      .mic-btn:hover{ transform: translateY(-1px); }
+      .mic-btn img{ width: 1.55rem; height: 1.55rem; }
+      .mic-label{
+        font-size: .92rem;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .content{
+        padding: 22px 22px 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .title{
+        font-weight: 780;
+        letter-spacing: -0.6px;
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+      }
+      .sub{
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.55;
+        font-weight: 520;
+      }
+
+      /* Status row */
+      .status{
+        margin-top: 14px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 18px;
+        padding: 14px 14px;
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap: 12px;
+      }
+
+      .count-pill{
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(245,158,11,.14);
+        border: 1px solid rgba(245,158,11,.25);
+        font-weight: 800;
+        color: rgba(35,24,16,.90);
+        white-space: nowrap;
+      }
+
+      .status-text{
+        color: var(--muted);
+        font-size: .97rem;
+        margin: 0;
+      }
+      .status-text b{ color: rgba(35,24,16,.92); }
+
+      /* Filters area */
+      .filters-wrap{
+        margin-top: 14px;
+        border: 1px dashed rgba(80,55,35,.18);
+        background: rgba(255,255,255,.52);
+        border-radius: 22px;
+        padding: 14px;
+      }
+
+      .filters-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom: 10px;
+      }
+      .filters-title{
+        font-weight: 760;
+        margin: 0;
+        font-size: 1rem;
+      }
+      .filters-hint{
+        margin: 0;
+        font-size: .92rem;
+        color: var(--muted2);
+      }
+
+      /* The container JS fills */
+      #addFiltersHere{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px;
+        align-items:flex-start;
+      }
+
+      /* Filter chip style */
+      .filter-chip{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.72);
+        box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+        max-width: 100%;
+      }
+      .chip-dot{
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.14);
+        flex: 0 0 auto;
+      }
+      .chip-text{
+        margin: 0;
+        font-weight: 700;
+        color: rgba(35,24,16,.82);
+        font-size: .95rem;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 320px;
+      }
+
+      /* Decorative assets */
+      .deco{
+        position:absolute;
+        right:-18px;
+        bottom:-18px;
+        width: 220px;
+        opacity:.10;
+        transform: rotate(10deg);
+        pointer-events:none;
+      }
+      .deco2{
+        position:absolute;
+        left:-22px;
+        top: 70px;
+        width: 165px;
+        opacity:.08;
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+
+      /* Transcript footer */
+      footer{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,.72);
+        border-top: 1px solid rgba(80,55,35,.12);
+        backdrop-filter: blur(6px);
+      }
+      #transcript{
+        margin: 0;
+        padding: 8px 12px;
+        font-size: .85rem;
+        text-align: center;
+        color: rgba(35,24,16,.60);
+        min-height: 1.6rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="bg-image" src="../static/images/kitchen_bg.avif" alt="Kitchen background">
+
+    <div id="main">
+      <main class="page">
+        <div class="shell">
+          <div class="glass">
+
+            <img class="deco2" src="../static/images/garlic.png" alt="">
+            <img class="deco"  src="../static/images/tomato.png" alt="">
+
+            <div class="topline">
+              <div class="badge-pill">
+                <span class="dot"></span>
+                <span>Cookpanion</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="proj d-none d-sm-block">Project Conversational Agents</div>
+
+                <!-- Keep mic hook IDs -->
+                <button class="mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                  <img id="micimg" src="../static/images/mic_out.png" alt="Mic">
+                  <span class="mic-label d-none d-md-inline">Talk to refine</span>
                 </button>
-            </nav>
-            <main class="container-fluid" style="width:100vw; height:60vh">
-                <img class="bg-image" style="width: 100%; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1;" src="https://images.pexels.com/photos/349609/pexels-photo-349609.jpeg" alt="Can not show this image">
-                <br>
-                <center>
-                    <h2>What kind of recipe are you looking for?</h2>
-                </center>
-                <br>
-                <div class="alert bg-secondary text-white mx-auto">
-                    <center><h5><span id="recipecounter"></span> recipes have the following features:</h5></center>
+              </div>
+            </div>
+
+            <div class="content">
+              <h1 class="title">What kind of recipe are you looking for?</h1>
+              <p class="sub">
+                Tell me one or two more preferences and I’ll narrow the list down. You can mention ingredients, cuisine, diet, or time.
+              </p>
+
+              <div class="status">
+                <div>
+                  <p class="status-text mb-1">
+                    Right now I found <b><span id="recipecounter"></span></b> matching recipes.
+                  </p>
+                  <p class="status-text mb-0">
+                    Keep refining until we’re at 15 or fewer — then you can pick visually.
+                  </p>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="card-deck" id="addFiltersHere">
-                    </div>
-                    <template id="filterCardTemplate">
-                        <div class="card text-center bg-light m-1" style="border:4px solid #07bc4c; max-width: 10rem">
-                            <div class="card-body">
-                                <p class="card-text" id="filterText">Without garlic</p>
-                            </div>
-                        </div>
-                    </template>
+
+                <div class="count-pill">
+                  <span id="recipecounter"></span> recipes
                 </div>
-            </main>
-            <!-- Footer is used to show transcripts received from ASR -->
-            <footer class="fixed-bottom">
-                <p class="lead mb-0 bg-light text-center" style="min-height:0rem" id="transcript"></p>
-            </footer>
+              </div>
+
+              <div class="filters-wrap">
+                <div class="filters-head">
+                  <p class="filters-title">Filters applied so far</p>
+                  <p class="filters-hint">Say something like “no dairy” or “with chicken”.</p>
+                </div>
+
+                <!-- JS fills this -->
+                <div id="addFiltersHere"></div>
+
+                <!-- Template kept but redesigned into chips -->
+                <template id="filterCardTemplate">
+                  <div class="filter-chip">
+                    <span class="chip-dot"></span>
+                    <p class="chip-text" id="filterText">Without garlic</p>
+                  </div>
+                </template>
+              </div>
+
+            </div>
+          </div>
         </div>
-    </body>
+      </main>
+
+      <footer>
+        <p id="transcript"></p>
+      </footer>
+    </div>
+  </body>
 </html>
