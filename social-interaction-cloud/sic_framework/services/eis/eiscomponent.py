@@ -520,7 +520,7 @@ class EISComponent(SICComponent):
 
     def local_tts(self, text):
         # GLaDOS-like voice: female, faster, lower pitch
-        call(["espeak", "-ven+f3", "-s170", "-p35", text])
+        call(["espeak-ng", "-ven+f3", "-s170", "-p35", text])
 
 
 
