@@ -1,57 +1,419 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Confirm Recipe</title>
-        <link rel="stylesheet" href="static/css/bootstrap.min.css">
-        <script src="static/js/bootstrap.bundle.min.js"></script>
-        <script src="static/js/jquery-3.7.1.min.js"></script>
-        <script src="static/js/socket.io.min.js"></script>
-        <script src="static/js/pca.js" defer></script>
-    </head>
-    <body class="bg-light">
-        <div id="main" class="container mt-5">
-            <nav class="navbar mb-1" style="position: absolute; top: 0; right: 0;">
-                <button class="btn" id="mic">
-                    <img class="img-fluid" style="width:2.5rem;" id="micimg" src="static/images/mic_out.png" alt="Mic">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Confirm Recipe</title>
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <script src="static/js/socket.io.min.js"></script>
+    <script src="static/js/pca.js" defer></script>
+
+    <style>
+      :root{
+        --text: rgba(35,24,16,.92);
+        --muted: rgba(35,24,16,.65);
+        --muted2: rgba(35,24,16,.50);
+        --border: rgba(80,55,35,.14);
+
+        --accent1:#f59e0b; /* honey */
+        --accent2:#fb923c; /* orange */
+        --accent3:#ef4444; /* tomato */
+      }
+
+      *{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body{
+        min-height:100vh;
+        margin:0;
+        color: var(--text);
+        font-family: ui-rounded, "SF Pro Rounded", ui-sans-serif, system-ui, -apple-system,
+                     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+        overflow-x:hidden;
+      }
+
+      .bg-image{
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .page{
+        min-height:100vh;
+        padding: 22px 18px 76px;
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+
+      .shell{
+        width: min(1100px, 100%);
+      }
+
+      .glass{
+        position: relative;
+        border-radius: 30px;
+        border: 1px solid rgba(80,55,35,.16);
+        background: rgba(255,255,255,.90);
+        box-shadow:
+          0 22px 60px rgba(60,35,15,.18),
+          0 2px 0 rgba(255,255,255,.55) inset;
+        overflow:hidden;
+      }
+      .glass::before{
+        content:"";
+        position:absolute;
+        inset:-2px;
+        background: radial-gradient(700px 260px at 25% 0%, rgba(255,255,255,.85), transparent 62%);
+        pointer-events:none;
+      }
+
+      .topline{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(80,55,35,.10);
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        color: rgba(35,24,16,.78);
+        font-size: .92rem;
+      }
+      .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent3));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.16);
+      }
+      .proj{
+        font-size:.92rem;
+        color: var(--muted2);
+      }
+
+      .mic-btn{
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 14px;
+        padding: 8px 10px;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        transition: transform .12s ease;
+      }
+      .mic-btn:hover{ transform: translateY(-1px); }
+      .mic-btn img{ width: 1.55rem; height: 1.55rem; }
+
+      .content{
+        padding: 18px 18px 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .layout{
+        display:grid;
+        grid-template-columns: 1.05fr .95fr;
+        gap: 16px;
+      }
+      @media (max-width: 992px){
+        .layout{ grid-template-columns: 1fr; }
+      }
+
+      /* Left: image panel */
+      .image-panel{
+        border-radius: 22px;
+        overflow:hidden;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.75);
+        box-shadow: 0 10px 28px rgba(60,35,15,.10);
+        position: relative;
+        min-height: 360px;
+      }
+      #confirmImg{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display:block;
+        min-height: 360px;
+      }
+      .image-overlay{
+        position:absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,.00) 35%, rgba(0,0,0,.38) 100%);
+        pointer-events:none;
+      }
+      .image-caption{
+        position:absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        display:flex;
+        align-items:flex-end;
+        justify-content:space-between;
+        gap: 12px;
+        color: rgba(255,255,255,.92);
+        pointer-events:none;
+      }
+      .caption-title{
+        font-weight: 820;
+        letter-spacing: -0.3px;
+        margin: 0;
+        font-size: 1.15rem;
+        line-height: 1.2;
+        text-shadow: 0 8px 20px rgba(0,0,0,.35);
+      }
+      .caption-sub{
+        margin: 0;
+        font-size: .92rem;
+        opacity:.85;
+        text-shadow: 0 8px 20px rgba(0,0,0,.35);
+      }
+
+      /* Right: details */
+      .panel{
+        border-radius: 22px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.78);
+        box-shadow: 0 10px 28px rgba(60,35,15,.10);
+        padding: 16px 16px;
+      }
+
+      .title{
+        font-weight: 860;
+        letter-spacing: -0.6px;
+        margin: 0 0 6px;
+        font-size: clamp(1.5rem, 2.6vw, 2.0rem);
+      }
+      .question{
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 1.0rem;
+        line-height: 1.45;
+        font-weight: 540;
+      }
+
+      .callout{
+        border-radius: 18px;
+        border: 1px solid rgba(245,158,11,.26);
+        background: rgba(245,158,11,.12);
+        padding: 12px 12px;
+        color: rgba(35,24,16,.82);
+        font-weight: 650;
+        font-size: .95rem;
+        display:flex;
+        gap: 10px;
+        align-items:flex-start;
+        margin-bottom: 12px;
+      }
+      .callout svg{ flex:0 0 auto; margin-top: 2px; }
+
+      .section-title{
+        font-weight: 820;
+        margin: 14px 0 8px;
+        font-size: 1.0rem;
+      }
+
+      .meta{
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 560px){
+        .meta{ grid-template-columns: 1fr; }
+      }
+
+      .meta-card{
+        border-radius: 18px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.72);
+        padding: 10px 12px;
+      }
+      .meta-k{
+        font-size: .85rem;
+        color: var(--muted2);
+        margin: 0 0 2px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+      }
+      .meta-v{
+        margin: 0;
+        font-weight: 820;
+        color: rgba(35,24,16,.86);
+      }
+
+      /* Ingredients list */
+      #confirmIngredients .list-group-item{
+        border-radius: 14px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.72);
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        color: rgba(35,24,16,.82);
+      }
+
+      /* Instructions list */
+      #confirmInstructions{
+        padding-left: 1.1rem;
+        margin-bottom: 0;
+      }
+      #confirmInstructions li{
+        margin-bottom: 10px;
+        color: rgba(35,24,16,.78);
+        line-height: 1.45;
+      }
+
+      /* Decorative assets */
+      .deco{
+        position:absolute;
+        right:-18px;
+        bottom:-18px;
+        width: 220px;
+        opacity:.10;
+        transform: rotate(10deg);
+        pointer-events:none;
+      }
+      .deco2{
+        position:absolute;
+        left:-22px;
+        top: 70px;
+        width: 165px;
+        opacity:.08;
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+
+      footer{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,.72);
+        border-top: 1px solid rgba(80,55,35,.12);
+        backdrop-filter: blur(6px);
+      }
+      #transcript{
+        margin: 0;
+        padding: 8px 12px;
+        font-size: .85rem;
+        text-align: center;
+        color: rgba(35,24,16,.60);
+        min-height: 1.6rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="bg-image" src="../static/images/kitchen_bg.avif" alt="Kitchen background">
+
+    <div id="main">
+      <main class="page">
+        <div class="shell">
+          <div class="glass">
+
+            <img class="deco2" src="../static/images/garlic.png" alt="">
+            <img class="deco"  src="../static/images/tomato.png" alt="">
+
+            <div class="topline">
+              <div class="badge-pill">
+                <span class="dot"></span>
+                <span>Cookpanion</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="proj d-none d-sm-block">Confirm recipe</div>
+
+                <!-- Keep mic hook IDs -->
+                <button class="mic-btn" id="mic" aria-label="Confirm or change recipe">
+                  <img class="img-fluid" id="micimg" src="static/images/mic_out.png" alt="Mic">
                 </button>
-            </nav>
-
-            <div class="card shadow mx-auto" style="max-width: 800px;">
-                <div class="row no-gutters">
-                    <div class="col-md-6">
-                        <img id="confirmImg" src="" class="card-img h-100" alt="Recipe Image" style="object-fit: cover; min-height: 300px;">
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h3 class="card-title" id="confirmTitle">Recipe Name</h3>
-                            <p class="card-text text-muted">Is this what you would like to cook?</p>
-
-                            <hr>
-                            <h5 class="mt-3">Details</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Time:</strong> <span id="confirmTime">-</span> mins</li>
-                                <li class="list-group-item"><strong>Servings:</strong> <span id="confirmServings">-</span></li>
-                                <li class="list-group-item"><strong>Cuisine:</strong> <span id="confirmCuisine">-</span></li>
-                            </ul>
-
-                            <hr>
-                            <h5 class="mt-3">Ingredients</h5>
-                            <ul class="list-group mb-3" id="confirmIngredients">
-                            </ul>
-
-                            <h5 class="mt-3">Instructions</h5>
-                            <ol id="confirmInstructions">
-                            </ol>
-                        </div>
-
-                    </div>
-                </div>
+              </div>
             </div>
-            
-            <footer class="fixed-bottom">
-                <p class="lead mb-0 bg-light text-center" style="min-height:2rem; font-size: 0.8rem;" id="transcript">...</p>
-            </footer>
+
+            <div class="content">
+              <div class="layout">
+
+                <!-- LEFT -->
+                <div class="image-panel">
+                  <img id="confirmImg" src="" alt="Recipe image">
+                  <div class="image-overlay"></div>
+                  <div class="image-caption">
+                    <div>
+                      <p class="caption-title">Confirm this recipe</p>
+                      <p class="caption-sub">Looks good? Confirm or say “no”.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="panel">
+                  <h1 class="title" id="confirmTitle">Recipe Name</h1>
+                  <p class="question">Is this what you would like to cook?</p>
+
+                  <div class="callout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M12 16h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                      <path d="M10.3 3.5h3.4c.7 0 1.3.4 1.6 1l6 11.5c.6 1.2-.2 2.6-1.6 2.6H4.3c-1.4 0-2.2-1.4-1.6-2.6l6-11.5c.3-.6.9-1 1.6-1Z" stroke="currentColor" stroke-opacity=".55" stroke-width="1.6"/>
+                    </svg>
+                    <div>
+                      <b>Use the mic to decide:</b> say “yes” to confirm, or “no” to go back and choose another.
+                    </div>
+                  </div>
+
+                  <div class="section-title">Details</div>
+                  <div class="meta">
+                    <div class="meta-card">
+                      <p class="meta-k">Time</p>
+                      <p class="meta-v"><span id="confirmTime">-</span> mins</p>
+                    </div>
+                    <div class="meta-card">
+                      <p class="meta-k">Servings</p>
+                      <p class="meta-v"><span id="confirmServings">-</span></p>
+                    </div>
+                    <div class="meta-card">
+                      <p class="meta-k">Cuisine</p>
+                      <p class="meta-v"><span id="confirmCuisine">-</span></p>
+                    </div>
+                  </div>
+
+                  <div class="section-title">Ingredients</div>
+                  <ul class="list-group mb-2" id="confirmIngredients"></ul>
+
+                  <div class="section-title">Instructions</div>
+                  <ol id="confirmInstructions"></ol>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
         </div>
-    </body>
+      </main>
+
+      <footer>
+        <p id="transcript">...</p>
+      </footer>
+    </div>
+  </body>
 </html>

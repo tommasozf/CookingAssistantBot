@@ -1,64 +1,436 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Project Conversational Agents - Select Recipe</title>
-        <link rel="stylesheet" href="static/css/bootstrap.min.css">
-        <script src="static/js/bootstrap.bundle.min.js"></script>
-        <script src="static/js/jquery-3.7.1.min.js"></script>
-        <script src="static/js/socket.io.min.js"></script>
-        <script src="static/js/pca.js" defer></script>
-    </head>
-    <body>
-        <div id="main">
-            <nav class="navbar mb-1" style="position: absolute; top: 0; right: 0; z-index: 100;">
-                <button class="btn" id="mic">
-                    <img class="img-fluid" style="width:2.5rem;" id="micimg" src="static/images/mic_out.png" alt="Mic">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Project Conversational Agents - Select Recipe</title>
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <script src="static/js/socket.io.min.js"></script>
+    <script src="static/js/pca.js" defer></script>
+
+    <style>
+      :root{
+        --text: rgba(35,24,16,.92);
+        --muted: rgba(35,24,16,.65);
+        --muted2: rgba(35,24,16,.50);
+        --border: rgba(80,55,35,.14);
+
+        --accent1:#f59e0b; /* honey */
+        --accent2:#fb923c; /* orange */
+        --accent3:#ef4444; /* tomato */
+      }
+
+      *{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body{
+        min-height:100vh;
+        margin:0;
+        color: var(--text);
+        font-family: ui-rounded, "SF Pro Rounded", ui-sans-serif, system-ui, -apple-system,
+                     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+        overflow-x:hidden;
+      }
+
+      .bg-image{
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .page{
+        min-height:100vh;
+        padding: 22px 18px 76px;
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+
+      .shell{
+        width: min(1100px, 100%);
+      }
+
+      .glass{
+        position: relative;
+        border-radius: 30px;
+        border: 1px solid rgba(80,55,35,.16);
+        background: rgba(255,255,255,.90);
+        box-shadow:
+          0 22px 60px rgba(60,35,15,.18),
+          0 2px 0 rgba(255,255,255,.55) inset;
+        overflow:hidden;
+      }
+
+      .glass::before{
+        content:"";
+        position:absolute;
+        inset:-2px;
+        background: radial-gradient(700px 260px at 25% 0%, rgba(255,255,255,.85), transparent 62%);
+        pointer-events:none;
+      }
+
+      .topline{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(80,55,35,.10);
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        color: rgba(35,24,16,.78);
+        font-size: .92rem;
+      }
+
+      .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent3));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.16);
+      }
+
+      .proj{
+        font-size:.92rem;
+        color: var(--muted2);
+      }
+
+      .mic-btn{
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 14px;
+        padding: 8px 10px;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        transition: transform .12s ease;
+      }
+      .mic-btn:hover{ transform: translateY(-1px); }
+      .mic-btn img{ width: 1.55rem; height: 1.55rem; }
+
+      .content{
+        padding: 22px 22px 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .title{
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        margin: 0 0 6px;
+        font-size: clamp(1.6rem, 2.7vw, 2.15rem);
+      }
+      .sub{
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.55;
+        font-weight: 520;
+      }
+
+      /* Filters */
+      .filters-wrap{
+        margin-top: 14px;
+        border: 1px dashed rgba(80,55,35,.18);
+        background: rgba(255,255,255,.52);
+        border-radius: 22px;
+        padding: 12px 14px;
+      }
+      .filters-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom: 10px;
+      }
+      .filters-title{
+        font-weight: 760;
+        margin: 0;
+        font-size: 1rem;
+      }
+      .filters-hint{
+        margin: 0;
+        font-size: .92rem;
+        color: var(--muted2);
+      }
+
+      .chips{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px;
+        align-items:flex-start;
+      }
+
+      .chip{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.72);
+        max-width: 100%;
+      }
+
+      .chip-dot{
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.14);
+        flex: 0 0 auto;
+      }
+
+      #filterListDisplay{
+        font-weight: 720;
+        color: rgba(35,24,16,.78);
+      }
+
+      /* Recipes grid */
+      .grid-head{
+        margin-top: 16px;
+        display:flex;
+        align-items:flex-end;
+        justify-content:space-between;
+        gap: 10px;
+      }
+      .grid-title{
+        font-weight: 780;
+        margin: 0;
+        font-size: 1.05rem;
+      }
+      .grid-sub{
+        margin: 0;
+        font-size: .92rem;
+        color: var(--muted2);
+      }
+
+      #recipeContainer{
+        margin-top: 12px;
+      }
+
+      /* Card tile */
+      .recipe-tile{
+        border-radius: 20px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.78);
+        box-shadow: 0 10px 28px rgba(60,35,15,.10);
+        overflow:hidden;
+        height: 100%;
+        cursor: pointer;
+        transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+        position: relative;
+      }
+      .recipe-tile:hover{
+        transform: translateY(-4px);
+        box-shadow: 0 18px 44px rgba(60,35,15,.14);
+        filter: brightness(1.01);
+      }
+      .recipe-tile:active{
+        transform: translateY(-1px);
+      }
+
+      /* make it keyboard-friendly */
+      .recipe-tile:focus-within{
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(245,158,11,.18), 0 18px 44px rgba(60,35,15,.14);
+      }
+
+      .recipe-img{
+        height: 168px;
+        width: 100%;
+        object-fit: cover;
+        display:block;
+      }
+
+      .tile-body{
+        padding: 12px 12px 12px;
+        display:flex;
+        flex-direction:column;
+        gap: 8px;
+      }
+
+      .recipe-title{
+        margin: 0;
+        font-weight: 820;
+        letter-spacing: -0.2px;
+        font-size: 1rem;
+        line-height: 1.2;
+        color: rgba(35,24,16,.90);
+      }
+
+      .tile-cta{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-top: 2px;
+      }
+
+      .select-pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 7px 10px;
+        border: 1px solid rgba(245,158,11,.28);
+        background: rgba(245,158,11,.12);
+        color: rgba(35,24,16,.86);
+        font-weight: 780;
+        font-size: .88rem;
+      }
+
+      .arrow{
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        border: 1px solid rgba(80,55,35,.12);
+        background: rgba(255,255,255,.70);
+        display:grid;
+        place-items:center;
+      }
+
+      /* Decorative images */
+      .deco{
+        position:absolute;
+        right:-18px;
+        bottom:-18px;
+        width: 220px;
+        opacity:.10;
+        transform: rotate(10deg);
+        pointer-events:none;
+      }
+      .deco2{
+        position:absolute;
+        left:-22px;
+        top: 70px;
+        width: 165px;
+        opacity:.08;
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+
+      footer{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,.72);
+        border-top: 1px solid rgba(80,55,35,.12);
+        backdrop-filter: blur(6px);
+      }
+      #transcript{
+        margin: 0;
+        padding: 8px 12px;
+        font-size: .85rem;
+        text-align: center;
+        color: rgba(35,24,16,.60);
+        min-height: 1.6rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="bg-image" src="../static/images/kitchen_bg.avif" alt="Kitchen background">
+
+    <div id="main">
+      <main class="page">
+        <div class="shell">
+          <div class="glass">
+
+            <img class="deco2" src="../static/images/garlic.png" alt="">
+            <img class="deco"  src="../static/images/tomato.png" alt="">
+
+            <div class="topline">
+              <div class="badge-pill">
+                <span class="dot"></span>
+                <span>Cookpanion</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="proj d-none d-sm-block">Pick a recipe</div>
+
+                <!-- Keep mic hook IDs -->
+                <button class="mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                  <img class="img-fluid" id="micimg" src="../static/images/mic_out.png" alt="Mic">
                 </button>
-            </nav>
+              </div>
+            </div>
 
-            <main class="container-fluid pt-5">
-                <div class="text-center mb-4">
-                    <h2 class="bg-white d-inline-block p-2 rounded">I found these recipes for you!</h2>
+            <div class="content">
+              <h1 class="title">I found these recipes for you!</h1>
+              <p class="sub">Tap a recipe card to select it, or use the microphone to refine your filters.</p>
+
+              <div class="filters-wrap" id="currentFilters">
+                <div class="filters-head">
+                  <p class="filters-title">Your current filters</p>
+                  <p class="filters-hint">You can still say “no garlic” or “under 20 minutes”.</p>
                 </div>
 
-                <!-- Progress Tracker -->
-                <div class="mx-auto mb-3" style="max-width: 500px;">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <small class="text-muted">Started with <span id="progressStart">-</span> recipes</small>
-                        <small class="text-muted"><span id="progressPercent">0</span>% filtered</small>
-                    </div>
-                    <div class="progress" style="height: 15px; background-color: rgba(255,255,255,0.7);">
-                        <div class="progress-bar bg-success" id="progressBar" role="progressbar" style="width: 0%;"></div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-1" id="progressSteps">
-                        <!-- Steps will be dynamically added here -->
-                    </div>
+                <div class="chips">
+                  <span class="chip">
+                    <span class="chip-dot"></span>
+                    <span id="filterListDisplay">None</span>
+                  </span>
                 </div>
+              </div>
 
-                <div class="alert alert-info text-center mx-auto w-75 mb-4" id="currentFilters">
-                    Filters: <span id="filterListDisplay">None</span>
+              <div class="grid-head">
+                <div>
+                  <p class="grid-title">Recipes</p>
+                  <p class="grid-sub">Hover to preview — click to choose.</p>
                 </div>
+              </div>
 
-                <div class="row justify-content-center" id="recipeContainer">
+              <div class="row g-3" id="recipeContainer"></div>
+
+              <!-- Template kept but upgraded to premium clickable tiles -->
+              <template id="recipeCardTemplate">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                  <div class="recipe-tile h-100">
+                    <img src="" class="recipe-img" alt="Recipe image">
+                    <div class="tile-body">
+                      <h6 class="recipe-title">Title</h6>
+                      <div class="tile-cta">
+                        <span class="select-pill">Select</span>
+                        <span class="arrow" aria-hidden="true">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </span>
+                      </div>
                     </div>
+                  </div>
+                </div>
+              </template>
 
-                <template id="recipeCardTemplate">
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="" class="card-img-top recipe-img" alt="Recipe" style="height: 150px; object-fit: cover;">
-                            <div class="card-body">
-                                <h6 class="card-title recipe-title font-weight-bold">Title</h6>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-            </main>
-
-            <footer class="fixed-bottom">
-                <p class="lead mb-0 bg-light text-center" style="min-height:2rem; font-size: 0.8rem;" id="transcript">...</p>
-            </footer>
+            </div>
+          </div>
         </div>
-    </body>
+      </main>
+
+      <footer>
+        <p id="transcript">...</p>
+      </footer>
+    </div>
+  </body>
 </html>
