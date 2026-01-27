@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title>Confirm Recipe</title>
+    <title>Project Conversational Agents - Recipe Overview</title>
 
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
@@ -38,6 +38,7 @@
         overflow-x:hidden;
       }
 
+      /* Full background */
       .bg-image{
         position: fixed;
         inset: 0;
@@ -47,18 +48,20 @@
         object-fit: cover;
       }
 
+      /* Main page layout */
       .page{
         min-height:100vh;
-        padding: 22px 18px 76px;
+        padding: 22px 18px 76px; /* footer space */
         display:flex;
         align-items:flex-start;
         justify-content:center;
       }
 
       .shell{
-        width: min(1100px, 100%);
+        width: min(980px, 100%);
       }
 
+      /* Premium card */
       .glass{
         position: relative;
         border-radius: 30px;
@@ -77,6 +80,7 @@
         pointer-events:none;
       }
 
+      /* Topline */
       .topline{
         display:flex;
         align-items:center;
@@ -111,6 +115,7 @@
         color: var(--muted2);
       }
 
+      /* Mic button: compact but clear */
       .mic-btn{
         border: 1px solid rgba(80,55,35,.14);
         background: rgba(255,255,255,.62);
@@ -123,164 +128,128 @@
       }
       .mic-btn:hover{ transform: translateY(-1px); }
       .mic-btn img{ width: 1.55rem; height: 1.55rem; }
+      .mic-label{
+        font-size: .92rem;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
 
       .content{
-        padding: 18px 18px 18px;
+        padding: 22px 22px 18px;
         position: relative;
         z-index: 1;
       }
 
-      .layout{
-        display:grid;
-        grid-template-columns: 1.05fr .95fr;
-        gap: 16px;
+      .title{
+        font-weight: 780;
+        letter-spacing: -0.6px;
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 2.8vw, 2.1rem);
       }
-      @media (max-width: 992px){
-        .layout{ grid-template-columns: 1fr; }
+      .sub{
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.55;
+        font-weight: 520;
       }
 
-      /* Left: image panel */
-      .image-panel{
-        border-radius: 22px;
-        overflow:hidden;
-        border: 1px solid rgba(80,55,35,.12);
-        background: rgba(255,255,255,.75);
-        box-shadow: 0 10px 28px rgba(60,35,15,.10);
-        position: relative;
-        min-height: 360px;
-      }
-      #confirmImg{
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display:block;
-        min-height: 360px;
-      }
-      .image-overlay{
-        position:absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,.00) 35%, rgba(0,0,0,.38) 100%);
-        pointer-events:none;
-      }
-      .image-caption{
-        position:absolute;
-        left: 14px;
-        right: 14px;
-        bottom: 14px;
+      /* Status row */
+      .status{
+        margin-top: 14px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 18px;
+        padding: 14px 14px;
         display:flex;
-        align-items:flex-end;
+        align-items:flex-start;
         justify-content:space-between;
         gap: 12px;
-        color: rgba(255,255,255,.92);
-        pointer-events:none;
       }
-      .caption-title{
-        font-weight: 820;
-        letter-spacing: -0.3px;
+
+      .count-pill{
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(245,158,11,.14);
+        border: 1px solid rgba(245,158,11,.25);
+        font-weight: 800;
+        color: rgba(35,24,16,.90);
+        white-space: nowrap;
+      }
+
+      .status-text{
+        color: var(--muted);
+        font-size: .97rem;
         margin: 0;
-        font-size: 1.15rem;
-        line-height: 1.2;
-        text-shadow: 0 8px 20px rgba(0,0,0,.35);
       }
-      .caption-sub{
+      .status-text b{ color: rgba(35,24,16,.92); }
+
+      /* Filters area */
+      .filters-wrap{
+        margin-top: 14px;
+        border: 1px dashed rgba(80,55,35,.18);
+        background: rgba(255,255,255,.52);
+        border-radius: 22px;
+        padding: 14px;
+      }
+
+      .filters-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom: 10px;
+      }
+      .filters-title{
+        font-weight: 760;
+        margin: 0;
+        font-size: 1rem;
+      }
+      .filters-hint{
         margin: 0;
         font-size: .92rem;
-        opacity:.85;
-        text-shadow: 0 8px 20px rgba(0,0,0,.35);
+        color: var(--muted2);
       }
 
-      /* Right: details */
-      .panel{
-        border-radius: 22px;
-        border: 1px solid rgba(80,55,35,.12);
-        background: rgba(255,255,255,.78);
-        box-shadow: 0 10px 28px rgba(60,35,15,.10);
-        padding: 16px 16px;
-      }
-
-      .title{
-        font-weight: 860;
-        letter-spacing: -0.6px;
-        margin: 0 0 6px;
-        font-size: clamp(1.5rem, 2.6vw, 2.0rem);
-      }
-      .question{
-        margin: 0 0 12px;
-        color: var(--muted);
-        font-size: 1.0rem;
-        line-height: 1.45;
-        font-weight: 540;
-      }
-
-      .callout{
-        border-radius: 18px;
-        border: 1px solid rgba(245,158,11,.26);
-        background: rgba(245,158,11,.12);
-        padding: 12px 12px;
-        color: rgba(35,24,16,.82);
-        font-weight: 650;
-        font-size: .95rem;
+      /* The container JS fills */
+      #addFiltersHere{
         display:flex;
+        flex-wrap:wrap;
         gap: 10px;
         align-items:flex-start;
-        margin-bottom: 12px;
-      }
-      .callout svg{ flex:0 0 auto; margin-top: 2px; }
-
-      .section-title{
-        font-weight: 820;
-        margin: 14px 0 8px;
-        font-size: 1.0rem;
       }
 
-      .meta{
-        display:grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-      @media (max-width: 560px){
-        .meta{ grid-template-columns: 1fr; }
-      }
-
-      .meta-card{
-        border-radius: 18px;
-        border: 1px solid rgba(80,55,35,.12);
-        background: rgba(255,255,255,.72);
+      /* Filter chip style */
+      .filter-chip{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
         padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.72);
+        box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+        max-width: 100%;
       }
-      .meta-k{
-        font-size: .85rem;
-        color: var(--muted2);
-        margin: 0 0 2px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .6px;
+      .chip-dot{
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.14);
+        flex: 0 0 auto;
       }
-      .meta-v{
+      .chip-text{
         margin: 0;
-        font-weight: 820;
-        color: rgba(35,24,16,.86);
-      }
-
-      /* Ingredients list */
-      #confirmIngredients .list-group-item{
-        border-radius: 14px;
-        border: 1px solid rgba(80,55,35,.12);
-        background: rgba(255,255,255,.72);
-        margin-bottom: 8px;
-        padding: 10px 12px;
+        font-weight: 700;
         color: rgba(35,24,16,.82);
-      }
-
-      /* Instructions list */
-      #confirmInstructions{
-        padding-left: 1.1rem;
-        margin-bottom: 0;
-      }
-      #confirmInstructions li{
-        margin-bottom: 10px;
-        color: rgba(35,24,16,.78);
-        line-height: 1.45;
+        font-size: .95rem;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 320px;
       }
 
       /* Decorative assets */
@@ -303,6 +272,7 @@
         pointer-events:none;
       }
 
+      /* Transcript footer */
       footer{
         position: fixed;
         bottom: 0;
@@ -337,82 +307,66 @@
             <div class="topline">
               <div class="badge-pill">
                 <span class="dot"></span>
-                <span>GLaDOS</span>
+                <span>Cookpanion</span>
               </div>
 
               <div class="d-flex align-items-center gap-2">
-                <div class="proj d-none d-sm-block">Confirmation required</div>
+                <div class="proj d-none d-sm-block">Project Conversational Agents</div>
 
                 <!-- Keep mic hook IDs -->
-                <button class="btn mic-btn" id="mic" aria-label="Confirm or change recipe">
-                  <img class="img-fluid" id="micimg" src="static/images/mic_out.png" alt="Mic">
+                <button class="btn mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                  <img id="micimg" src="../static/images/mic_out.png" alt="Mic">
+                  <span class="mic-label d-none d-md-inline">Talk to refine</span>
                 </button>
               </div>
             </div>
 
             <div class="content">
-              <div class="layout">
+              <h1 class="title">What kind of recipe are you looking for?</h1>
+              <p class="sub">
+                Tell me one or two more preferences and I’ll narrow the list down. You can mention ingredients, cuisine, diet, or time.
+              </p>
 
-                <!-- LEFT -->
-                <div class="image-panel">
-                  <img id="confirmImg" src="" alt="Recipe image">
-                  <div class="image-overlay"></div>
-                  <div class="image-caption">
-                    <div>
-                      <p class="caption-title">Confirm this recipe</p>
-                      <p class="caption-sub">Looks good? Confirm or say “no”.</p>
-                    </div>
-                  </div>
+              <div class="status">
+                <div>
+                  <p class="status-text mb-1">
+                    Right now I found <b><span id="recipecounter"></span></b> matching recipes.
+                  </p>
+                  <p class="status-text mb-0">
+                    Keep refining until we’re at 15 or fewer — then you can pick visually.
+                  </p>
                 </div>
 
-                <!-- RIGHT -->
-                <div class="panel">
-                  <h1 class="title" id="confirmTitle">Recipe Name</h1>
-                  <p class="question">Is this what you would like to cook?</p>
-
-                  <div class="callout">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M12 8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M12 16h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                      <path d="M10.3 3.5h3.4c.7 0 1.3.4 1.6 1l6 11.5c.6 1.2-.2 2.6-1.6 2.6H4.3c-1.4 0-2.2-1.4-1.6-2.6l6-11.5c.3-.6.9-1 1.6-1Z" stroke="currentColor" stroke-opacity=".55" stroke-width="1.6"/>
-                    </svg>
-                    <div>
-                      <b>Use the mic to decide:</b> say “yes” to confirm, or “no” to go back and choose another.
-                    </div>
-                  </div>
-
-                  <div class="section-title">Details</div>
-                  <div class="meta">
-                    <div class="meta-card">
-                      <p class="meta-k">Time</p>
-                      <p class="meta-v"><span id="confirmTime">-</span> mins</p>
-                    </div>
-                    <div class="meta-card">
-                      <p class="meta-k">Servings</p>
-                      <p class="meta-v"><span id="confirmServings">-</span></p>
-                    </div>
-                    <div class="meta-card">
-                      <p class="meta-k">Cuisine</p>
-                      <p class="meta-v"><span id="confirmCuisine">-</span></p>
-                    </div>
-                  </div>
-
-                  <div class="section-title">Ingredients</div>
-                  <ul class="list-group mb-2" id="confirmIngredients"></ul>
-
-                  <div class="section-title">Instructions</div>
-                  <ol id="confirmInstructions"></ol>
+                <div class="count-pill">
+                  <span id="recipecounter"></span> recipes
                 </div>
-
               </div>
-            </div>
 
+              <div class="filters-wrap">
+                <div class="filters-head">
+                  <p class="filters-title">Filters applied so far</p>
+                  <p class="filters-hint">Say something like “no dairy” or “with chicken”.</p>
+                </div>
+
+                <!-- JS fills this -->
+                <div id="addFiltersHere"></div>
+
+                <!-- Template kept but redesigned into chips -->
+                <template id="filterCardTemplate">
+                  <div class="filter-chip">
+                    <span class="chip-dot"></span>
+                    <p class="chip-text" id="filterText">Without garlic</p>
+                  </div>
+                </template>
+              </div>
+
+            </div>
           </div>
         </div>
       </main>
 
       <footer>
-        <p id="transcript">...</p>
+        <p id="transcript"></p>
       </footer>
     </div>
   </body>
