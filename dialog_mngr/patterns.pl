@@ -172,6 +172,57 @@ pattern([
     N =< 100,
     N > 0.
 
+% Variant: Handle disconfirmation as noMoreFilters during recipe selection.
+% When user says "No" to "Would you like to add another preference?", treat as done with filters.
+% Example:
+%	A: Would you like to add another preference?
+%	U: No.
+%	A: OK. Here is a list of recipes that you can choose from.
+pattern([
+    a21noMoreFilters,
+    [user, disconfirmation],
+    [agent, pictureGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N =< 100,
+    N > 0.
+
+% Variant: Handle disconfirmation when too many recipes remain.
+pattern([
+    a21noMoreFilters,
+    [user, disconfirmation],
+    [agent, pictureNotGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N > 100.
+
+% Variant: Handle appreciation as noMoreFilters (e.g., "That's it, thank you")
+pattern([
+    a21noMoreFilters,
+    [user, appreciation],
+    [agent, pictureGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N =< 100,
+    N > 0.
+
+% Variant: Handle appreciation when too many recipes remain.
+pattern([
+    a21noMoreFilters,
+    [user, appreciation],
+    [agent, pictureNotGranted]
+]) :-
+    currentTopLevel(a50recipeSelect),
+    recipesFiltered(L),
+    length(L, N),
+    N > 100.
+
 % Variant for when there are more than 100 recipes left.
 % Example:
 % 	U: I don't want to add anything else.
@@ -352,6 +403,8 @@ pattern([a50recipeSelect,
 %	an out of context Intent and the agent responds with a contextMismatch(Intent) to
 %	this intent.
 
+% Pattern B1.3: Handle out-of-context user intents
+pattern([b13, [user, Intent], [agent, contextMismatch(Intent)]]).
 
 
 % Looks like user has repeated themselves b14.

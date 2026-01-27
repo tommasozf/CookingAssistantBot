@@ -354,6 +354,14 @@ module dialog_update {
 	if recipesFiltered(Recipes), length(Recipes, N), recipeCounter(M), not(N=M)
 		then delete(recipeCounter(M))+insert(recipeCounter(N))+webinfo('recipecounter', N).
 	
+	% Update filter history when recipe count changes (for progress tracker)
+	if recipesFiltered(Recipes), length(Recipes, N), recipeCounter(N),
+	   filterHistory(History),
+	   (History = [] ; (History = [LastCount|_], LastCount \= N)),
+	   filter_history_to_json([N|History], ProgressJSON)
+	then delete(filterHistory(History)) + insert(filterHistory([N|History])) +
+	     webinfo('progress', ProgressJSON).
+	
 	% filters_to_strings is defined in dialogflow.pl - check it out! You need to do something
 	% similar for converting recipes to strings in dialogflow.pl, then come back here and create a similar rule to the one below
 	% to send the recipe strings using webinfo

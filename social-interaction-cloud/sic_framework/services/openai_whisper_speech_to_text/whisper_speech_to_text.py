@@ -4,6 +4,7 @@ import wave
 
 import numpy as np
 import speech_recognition as sr
+import torch
 from openai import OpenAI
 
 from sic_framework import SICComponentManager, SICConfMessage
@@ -19,7 +20,7 @@ class WhisperConf(SICConfMessage):
     :param local_model: Local OpenAI model to use, see https://github.com/openai/whisper#available-models-and-languages
     """
 
-    def __init__(self, openai_key=None, local_model="base.en"):
+    def __init__(self, openai_key=None, local_model="small.en"):
         super(SICConfMessage, self).__init__()
         self.openai_key = openai_key
         self.model = local_model
@@ -143,9 +144,12 @@ class WhisperComponent(SICComponent):
             )
             print("using online openai model")
         else:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
             response = self.recognizer.recognize_whisper(
-                audio, language="english", model=self.params.model, show_dict=True
+                audio, language="english", model=self.params.model, show_dict=True,
+                load_options={"device": device}
             )
+            print(f"Using local Whisper model on {device}")
             transcript = response["text"]
 
             no_speech_prob = np.mean(
@@ -153,8 +157,12 @@ class WhisperComponent(SICComponent):
             )
         # print("FULL RESPONSE", response)
 
-        if no_speech_prob > 0.5:
-            print("Whisper heard silence")
+        print(f"Whisper no_speech_prob: {no_speech_prob:.3f}")
+        if no_speech_prob > 0.8:
+            print("Whisper heard silence (high confidence)")
+            return Transcript("")
+        if not transcript.strip():
+            print("Whisper returned empty transcript")
             return Transcript("")
         print("Whisper thinks you said: " + transcript)
 
