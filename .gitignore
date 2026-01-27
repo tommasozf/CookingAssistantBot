@@ -39,8 +39,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 dialogflow-keyfile.json
-social-interaction-cloud/sic_framework/services/eis/google-key.json
-
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
