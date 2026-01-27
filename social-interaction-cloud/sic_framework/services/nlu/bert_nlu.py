@@ -113,7 +113,7 @@ class NLUComponent(SICComponent):
         model = BERTNLUModel(num_intents=self.num_intents, num_slots=self.num_slots).to(
             self.device
         )
-        model.load_state_dict(torch.load(self.params.model_path, weights_only=True))
+        model.load_state_dict(torch.load(self.params.model_path, map_location=self.device, weights_only=True))
 
         start_time = time.time()
         intent, intent_confidence, slots, slot_confidences = predict(
