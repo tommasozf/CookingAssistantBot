@@ -38,7 +38,7 @@ module dialog_init {
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%% Initialize behavioural parameters (to finetune agent behavior)	%%%
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	if true then insert(agentName('Gordon Ramsay'), lastTopicCheck).
+	if true then insert(agentName('GLadOS'), lastTopicCheck).
 	
 	% Keep track of recipes that have been selected. Insert initial fact here;
 	% Update module will update to correct value.

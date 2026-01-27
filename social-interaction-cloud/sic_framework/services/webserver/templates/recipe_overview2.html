@@ -363,27 +363,27 @@
             <div class="topline">
               <div class="badge-pill">
                 <span class="dot"></span>
-                <span>Cookpanion</span>
+                <span>GLaDOS</span>
               </div>
 
               <div class="d-flex align-items-center gap-2">
-                <div class="proj d-none d-sm-block">Pick a recipe</div>
+                <div class="proj d-none d-sm-block">Select a recipe</div>
 
                 <!-- Keep mic hook IDs -->
-                <button class="mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                <button class="btn mic-btn" id="mic" aria-label="Speak to GLaDOS">
                   <img class="img-fluid" id="micimg" src="../static/images/mic_out.png" alt="Mic">
                 </button>
               </div>
             </div>
 
             <div class="content">
-              <h1 class="title">I found these recipes for you!</h1>
-              <p class="sub">Tap a recipe card to select it, or use the microphone to refine your filters.</p>
+              <h1 class="title">Here are your options.</h1>
+              <p class="sub">Select a recipe card, or use the microphone to adjust filters. The choice is yours. For now.</p>
 
               <div class="filters-wrap" id="currentFilters">
                 <div class="filters-head">
-                  <p class="filters-title">Your current filters</p>
-                  <p class="filters-hint">You can still say “no garlic” or “under 20 minutes”.</p>
+                  <p class="filters-title">Active filters</p>
+                  <p class="filters-hint">You may still say "no garlic" or "under 20 minutes". If you must.</p>
                 </div>
 
                 <div class="chips">
@@ -391,13 +391,29 @@
                     <span class="chip-dot"></span>
                     <span id="filterListDisplay">None</span>
                   </span>
+                <!-- Progress Tracker -->
+                <div class="mx-auto mb-3" style="max-width: 500px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Started with <span id="progressStart">-</span> recipes</small>
+                        <small class="text-muted"><span id="progressPercent">0</span>% filtered</small>
+                    </div>
+                    <div class="progress" style="height: 15px; background-color: rgba(255,255,255,0.7);">
+                        <div class="progress-bar bg-success" id="progressBar" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-1" id="progressSteps">
+                        <!-- Steps will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="alert alert-info text-center mx-auto w-75 mb-4" id="currentFilters">
+                    Filters: <span id="filterListDisplay">None</span>
                 </div>
               </div>
 
               <div class="grid-head">
                 <div>
-                  <p class="grid-title">Recipes</p>
-                  <p class="grid-sub">Hover to preview — click to choose.</p>
+                  <p class="grid-title">Available recipes</p>
+                  <p class="grid-sub">Hover to preview. Click to select. It's not complicated.</p>
                 </div>
               </div>
 

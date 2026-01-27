@@ -307,45 +307,68 @@
             <div class="topline">
               <div class="badge-pill">
                 <span class="dot"></span>
-                <span>Cookpanion</span>
+                <span>GLaDOS</span>
               </div>
 
               <div class="d-flex align-items-center gap-2">
-                <div class="proj d-none d-sm-block">Project Conversational Agents</div>
+                <div class="proj d-none d-sm-block">Aperture Recipe Initiative</div>
 
                 <!-- Keep mic hook IDs -->
-                <button class="mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                <button class="btn mic-btn" id="mic" aria-label="Speak to GLaDOS">
                   <img id="micimg" src="../static/images/mic_out.png" alt="Mic">
-                  <span class="mic-label d-none d-md-inline">Talk to refine</span>
+                  <span class="mic-label d-none d-md-inline">Speak to refine</span>
                 </button>
               </div>
             </div>
 
             <div class="content">
-              <h1 class="title">What kind of recipe are you looking for?</h1>
+              <h1 class="title">Specify your requirements.</h1>
               <p class="sub">
-                Tell me one or two more preferences and I’ll narrow the list down. You can mention ingredients, cuisine, diet, or time.
+                Provide additional preferences and I will narrow down the options. Mention ingredients, cuisine, dietary restrictions, or time constraints. I'll wait.
               </p>
 
               <div class="status">
                 <div>
                   <p class="status-text mb-1">
-                    Right now I found <b><span id="recipecounter"></span></b> matching recipes.
+                    Current results: <b><span id="recipecounter"></span></b> matching recipes.
                   </p>
                   <p class="status-text mb-0">
-                    Keep refining until we’re at 15 or fewer — then you can pick visually.
+                    Continue filtering until 15 or fewer remain. Then you may select visually. Even you can handle that.
                   </p>
                 </div>
 
                 <div class="count-pill">
                   <span id="recipecounter"></span> recipes
+            </nav>
+            <main class="container-fluid" style="width:100vw; height:60vh">
+                <img class="bg-image" style="width: 100%; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1;" src="https://images.pexels.com/photos/349609/pexels-photo-349609.jpeg" alt="Can not show this image">
+                <br>
+                <center>
+                    <h2>What kind of recipe are you looking for?</h2>
+                </center>
+                <br>
+                <!-- Progress Tracker -->
+                <div class="mx-auto mb-3" style="max-width: 600px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Started with <span id="progressStart">-</span> recipes</small>
+                        <small class="text-muted"><span id="progressPercent">0</span>% filtered</small>
+                    </div>
+                    <div class="progress" style="height: 20px; background-color: rgba(255,255,255,0.7);">
+                        <div class="progress-bar bg-success" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-1" id="progressSteps">
+                        <!-- Steps will be dynamically added here -->
+                    </div>
+                </div>
+                <div class="alert bg-secondary text-white mx-auto">
+                    <center><h5><span id="recipecounter"></span> recipes have the following features:</h5></center>
                 </div>
               </div>
 
               <div class="filters-wrap">
                 <div class="filters-head">
-                  <p class="filters-title">Filters applied so far</p>
-                  <p class="filters-hint">Say something like “no dairy” or “with chicken”.</p>
+                  <p class="filters-title">Active filters</p>
+                  <p class="filters-hint">You could say "no dairy" or "with chicken". Just a suggestion.</p>
                 </div>
 
                 <!-- JS fills this -->
