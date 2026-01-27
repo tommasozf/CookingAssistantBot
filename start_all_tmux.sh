@@ -11,7 +11,9 @@
 SESSION="sic"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONDA_ENV="PCA26"
-CONDA_INIT="source ~/anaconda3/etc/profile.d/conda.sh && conda activate $CONDA_ENV"
+
+# Detect OS
+OS="$(uname -s)"
 
 # Colors
 GREEN='\033[0;32m'
@@ -20,7 +22,32 @@ NC='\033[0m'
 
 # Check if tmux is installed
 if ! command -v tmux &> /dev/null; then
-    echo "ERROR: tmux is not installed. Install it with: sudo apt install tmux"
+    echo "ERROR: tmux is not installed."
+    if [[ "$OS" == "Darwin" ]]; then
+        echo "Install it with: brew install tmux"
+    else
+        echo "Install it with: sudo apt install tmux"
+    fi
+    exit 1
+fi
+
+# Detect conda installation path
+if [[ -f ~/anaconda3/etc/profile.d/conda.sh ]]; then
+    CONDA_INIT="source ~/anaconda3/etc/profile.d/conda.sh && conda activate $CONDA_ENV"
+elif [[ -f ~/miniconda3/etc/profile.d/conda.sh ]]; then
+    CONDA_INIT="source ~/miniconda3/etc/profile.d/conda.sh && conda activate $CONDA_ENV"
+elif [[ -f /opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh ]]; then
+    # Common Homebrew miniconda location on Apple Silicon
+    CONDA_INIT="source /opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh && conda activate $CONDA_ENV"
+elif [[ -f /usr/local/Caskroom/miniconda/base/etc/profile.d/conda.sh ]]; then
+    # Common Homebrew miniconda location on Intel Mac
+    CONDA_INIT="source /usr/local/Caskroom/miniconda/base/etc/profile.d/conda.sh && conda activate $CONDA_ENV"
+elif command -v conda &> /dev/null; then
+    # Fallback: conda is in PATH, use conda's own init
+    CONDA_INIT="eval \"\$(conda shell.bash hook)\" && conda activate $CONDA_ENV"
+else
+    echo "ERROR: Could not find conda installation."
+    echo "Please install Anaconda or Miniconda first."
     exit 1
 fi
 
