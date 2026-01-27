@@ -520,7 +520,11 @@ class EISComponent(SICComponent):
 
     def local_tts(self, text):
         # GLaDOS-like voice: female, faster, lower pitch
-        call(["espeak-ng", "-ven+f3", "-s170", "-p35", text])
+        # Try espeak-ng first, fallback to espeak if not available
+        try:
+            call(["espeak-ng", "-ven+f3", "-s170", "-p35", text])
+        except FileNotFoundError:
+            call(["espeak", "-ven+f3", "-s170", "-p35", text])
 
 
 
