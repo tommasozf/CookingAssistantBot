@@ -25,6 +25,13 @@ var socket = io();
 // Initially, it is the agent's turn; DO NOT CHANGE here, this flag is set by EISComponent in SIC framework
 var user_turn = false;
 
+// Persist turn across page navigations (otherwise it resets to false after redirects)
+try {
+  const storedTurn = sessionStorage.getItem("user_turn");
+  if (storedTurn !== null) user_turn = (storedTurn === "true");
+} catch (e) {}
+
+
 // Variable to keep track of number of recipes that fullfill criteria
 var recipecounter = -1;
 
@@ -47,7 +54,7 @@ for (var i = 0; i < elements.length; i++) {
 // - The socket handler for 'transcript' event turns it off again, see below.
 var micButton = document.getElementById('mic');
 
-if (micButton) {
+/* if (micButton) {
     micButton.addEventListener('click', function() {
         if (user_turn) {
             document.getElementById('micimg').src  = 'static/images/mic_on.png';
@@ -55,7 +62,21 @@ if (micButton) {
             alert("It is not your turn.")
         }
     });
+} */
+
+if (micButton) {
+  micButton.addEventListener('click', function (e) {
+    if (user_turn) {
+      const micimg = document.getElementById('micimg');
+      if (micimg) micimg.src = 'static/images/mic_on.png';
+    } else {
+      alert("It is not your turn.");
+      e.preventDefault();
+      e.stopImmediatePropagation(); // prevents the generic .btn handler from firing too
+    }
+  });
 }
+
 
 // Event handler for successful connection
 socket.on('connect', function() {
@@ -72,12 +93,20 @@ socket.on('disconnect', function() {
     console.log('Disconnected from the server.');
 });
 
-// Event handler for transcript event
+//Event handler for transcript event
+// socket.on("transcript", (text) => {
+//     document.getElementById("transcript").innerHTML = text;
+// });
+
 socket.on("transcript", (text) => {
-    document.getElementById("transcript").innerHTML = text;
+  const el = document.getElementById("transcript");
+  if (el) el.innerHTML = text;
 });
 
-socket.on("pattern", (pattern) => {
+
+
+// trying recipe confirmation fix
+/* socket.on("pattern", (pattern) => {
     switch(pattern) {
         case "a50recipeSelect":
             if (recipecounter > 15) {
@@ -95,19 +124,34 @@ socket.on("pattern", (pattern) => {
         default:
             window.location.href = "closing.html";
     }
+}); */
+socket.on("pattern", (pattern) => {
+  console.log("[pattern]", pattern);
+
+  // Fallback navigation ONLY for early pages, because your backend
+  // apparently doesn't send a 'page' event for them yet.
+  if (pattern === "start") {
+    window.location.href = "start.html";
+  } else if (pattern === "c10") {
+    window.location.href = "welcome.html";
+  }
+
+  // Important: no default redirect to closing!
 });
+
 
 
 // Allow explicit page navigation from the agent
 socket.on("page", (pageName) => {
     // Only redirect if we aren't already on that page to prevent loops
+    console.log("[page]", pageName);
     if (window.location.pathname.indexOf(pageName) === -1) {
         window.location.href = pageName;
     }
 });
 
 // Event handler for switching turns
-socket.on("set_turn", (whoseturn) => {
+/* socket.on("set_turn", (whoseturn) => {
     if (whoseturn=="true") {
         user_turn = true;
     } else {
@@ -117,12 +161,33 @@ socket.on("set_turn", (whoseturn) => {
     if (!user_turn) {
         document.getElementById('micimg').src  = 'static/images/mic_out.png';
     }
-})
+}) */
+
+socket.on("set_turn", (whoseturn) => {
+  user_turn = (whoseturn === "true");
+
+  // persist across page redirects
+  try { sessionStorage.setItem("user_turn", user_turn ? "true" : "false"); } catch (e) {}
+
+  // update mic icon if it exists on this page
+  const micimg = document.getElementById('micimg');
+  if (!user_turn && micimg) {
+    micimg.src = 'static/images/mic_out.png';
+  }
+});
+
+
+// socket.on("recipecounter", (number) => {
+//     recipecounter = number;
+//     document.getElementById("recipecounter").innerHTML = recipecounter;
+// })
 
 socket.on("recipecounter", (number) => {
-    recipecounter = number;
-    document.getElementById("recipecounter").innerHTML = recipecounter;
-})
+  recipecounter = number;
+  const el = document.getElementById("recipecounter");
+  if (el) el.innerHTML = recipecounter;
+});
+
 
 // Progress tracker handler - shows filtering journey
 socket.on("progress", (dataString) => {

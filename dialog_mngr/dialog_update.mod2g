@@ -397,10 +397,13 @@ module dialog_update {
 
     % Show Filters List (When list is big > 15)
     % Note: Uses existing filters_to_strings helper
+    % added two guards for recipe_confirmation
     if currentPattern(a50recipeSelect),
        recipesFiltered(RecipeIDs),
        length(RecipeIDs, Count),
        Count > 15,
+       \+ lastAddedIntentTriple([agent, pictureGranted, _]),
+       \+ memoryKeyValue('show', 'true'),
        filters_to_strings(FilterList),
        atomic_list_concat(FilterList, ',', FilterString),
        atom_concat('[', FilterString, Temp1), atom_concat(Temp1, ']', FinalJSON)
