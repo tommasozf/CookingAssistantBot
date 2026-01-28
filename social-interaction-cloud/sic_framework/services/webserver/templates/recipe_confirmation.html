@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title>Project Conversational Agents - Recipe Overview</title>
+    <title>Project Conversational Agents - Recipe Confirmation</title>
 
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
@@ -18,10 +18,9 @@
         --muted: rgba(35,24,16,.65);
         --muted2: rgba(35,24,16,.50);
         --border: rgba(80,55,35,.14);
-
-        --accent1:#f59e0b; /* honey */
-        --accent2:#fb923c; /* orange */
-        --accent3:#ef4444; /* tomato */
+        --accent1:#f59e0b;
+        --accent2:#fb923c;
+        --accent3:#ef4444;
       }
 
       *{
@@ -38,7 +37,6 @@
         overflow-x:hidden;
       }
 
-      /* Full background */
       .bg-image{
         position: fixed;
         inset: 0;
@@ -48,10 +46,9 @@
         object-fit: cover;
       }
 
-      /* Main page layout */
       .page{
         min-height:100vh;
-        padding: 22px 18px 76px; /* footer space */
+        padding: 22px 18px 76px;
         display:flex;
         align-items:flex-start;
         justify-content:center;
@@ -61,7 +58,6 @@
         width: min(980px, 100%);
       }
 
-      /* Premium card */
       .glass{
         position: relative;
         border-radius: 30px;
@@ -80,7 +76,6 @@
         pointer-events:none;
       }
 
-      /* Topline */
       .topline{
         display:flex;
         align-items:center;
@@ -115,7 +110,6 @@
         color: var(--muted2);
       }
 
-      /* Mic button: compact but clear */
       .mic-btn{
         border: 1px solid rgba(80,55,35,.14);
         background: rgba(255,255,255,.62);
@@ -155,104 +149,95 @@
         font-weight: 520;
       }
 
-      /* Status row */
-      .status{
-        margin-top: 14px;
-        border: 1px solid rgba(80,55,35,.14);
-        background: rgba(255,255,255,.62);
-        border-radius: 18px;
-        padding: 14px 14px;
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap: 12px;
-      }
-
-      .count-pill{
-        border-radius: 999px;
-        padding: 8px 12px;
-        background: rgba(245,158,11,.14);
-        border: 1px solid rgba(245,158,11,.25);
-        font-weight: 800;
-        color: rgba(35,24,16,.90);
-        white-space: nowrap;
-      }
-
-      .status-text{
-        color: var(--muted);
-        font-size: .97rem;
-        margin: 0;
-      }
-      .status-text b{ color: rgba(35,24,16,.92); }
-
-      /* Filters area */
-      .filters-wrap{
-        margin-top: 14px;
-        border: 1px dashed rgba(80,55,35,.18);
-        background: rgba(255,255,255,.52);
-        border-radius: 22px;
-        padding: 14px;
-      }
-
-      .filters-head{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        margin-bottom: 10px;
-      }
-      .filters-title{
-        font-weight: 760;
-        margin: 0;
-        font-size: 1rem;
-      }
-      .filters-hint{
-        margin: 0;
-        font-size: .92rem;
-        color: var(--muted2);
-      }
-
-      /* The container JS fills */
-      #addFiltersHere{
-        display:flex;
-        flex-wrap:wrap;
-        gap: 10px;
-        align-items:flex-start;
-      }
-
-      /* Filter chip style */
-      .filter-chip{
-        display:inline-flex;
-        align-items:center;
-        gap: 8px;
-        padding: 10px 12px;
-        border-radius: 999px;
+      /* Recipe Card */
+      .recipe-card{
+        border-radius: 24px;
         border: 1px solid rgba(80,55,35,.14);
         background: rgba(255,255,255,.72);
-        box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
-        max-width: 100%;
-      }
-      .chip-dot{
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, var(--accent1), var(--accent2));
-        box-shadow: 0 0 0 4px rgba(245,158,11,.14);
-        flex: 0 0 auto;
-      }
-      .chip-text{
-        margin: 0;
-        font-weight: 700;
-        color: rgba(35,24,16,.82);
-        font-size: .95rem;
-        line-height: 1.2;
-        white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 320px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 16px rgba(60,35,15,.10);
       }
 
-      /* Decorative assets */
+      .recipe-img-container{
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(245,158,11,.08), rgba(251,146,60,.08));
+      }
+
+      #confirmImg{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .recipe-details{
+        padding: 20px;
+      }
+
+      #confirmTitle{
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+
+      .recipe-meta{
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .meta-item{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba(245,158,11,.10);
+        border-radius: 8px;
+        font-size: .92rem;
+        color: var(--muted);
+      }
+
+      .meta-label{
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* Sections */
+      .recipe-section{
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(80,55,35,.10);
+      }
+
+      .section-title{
+        font-weight: 700;
+        font-size: 1.08rem;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+
+      #confirmIngredients, #confirmInstructions{
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .list-group-item{
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(80,55,35,.08);
+        padding: 10px 0;
+        color: var(--muted);
+        font-size: .95rem;
+      }
+
+      .list-group-item:last-child{
+        border-bottom: none;
+      }
+
       .deco{
         position:absolute;
         right:-18px;
@@ -272,7 +257,6 @@
         pointer-events:none;
       }
 
-      /* Transcript footer */
       footer{
         position: fixed;
         bottom: 0;
@@ -313,51 +297,60 @@
               <div class="d-flex align-items-center gap-2">
                 <div class="proj d-none d-sm-block">Project Conversational Agents</div>
 
-                <!-- Keep mic hook IDs -->
                 <button class="btn mic-btn" id="mic" aria-label="Speak to Cookpanion">
                   <img id="micimg" src="../static/images/mic_out.png" alt="Mic">
-                  <span class="mic-label d-none d-md-inline">Talk to refine</span>
+                  <span class="mic-label d-none d-md-inline">Confirm or reject</span>
                 </button>
               </div>
             </div>
 
             <div class="content">
-              <h1 class="title">What kind of recipe are you looking for?</h1>
+              <h1 class="title">Does this recipe sound good?</h1>
               <p class="sub">
-                Tell me one or two more preferences and I’ll narrow the list down. You can mention ingredients, cuisine, diet, or time.
+                Tell me if you'd like to cook this recipe or if you'd prefer something different.
               </p>
 
-              <div class="status">
-                <div>
-                  <p class="status-text mb-1">
-                    Right now I found <b><span id="recipecounter"></span></b> matching recipes.
-                  </p>
-                  <p class="status-text mb-0">
-                    Keep refining until we’re at 15 or fewer — then you can pick visually.
-                  </p>
+              <!-- Recipe Card -->
+              <div class="recipe-card">
+                <div class="recipe-img-container">
+                  <img id="confirmImg" src="" alt="Recipe image">
                 </div>
 
-                <div class="count-pill">
-                  <span id="recipecounter"></span> recipes
-                </div>
-              </div>
+                <div class="recipe-details">
+                  <h2 id="confirmTitle">Recipe Name</h2>
 
-              <div class="filters-wrap">
-                <div class="filters-head">
-                  <p class="filters-title">Filters applied so far</p>
-                  <p class="filters-hint">Say something like “no dairy” or “with chicken”.</p>
-                </div>
-
-                <!-- JS fills this -->
-                <div id="addFiltersHere"></div>
-
-                <!-- Template kept but redesigned into chips -->
-                <template id="filterCardTemplate">
-                  <div class="filter-chip">
-                    <span class="chip-dot"></span>
-                    <p class="chip-text" id="filterText">Without garlic</p>
+                  <!-- Meta Information -->
+                  <div class="recipe-meta">
+                    <div class="meta-item">
+                      <span class="meta-label">Time:</span>
+                      <span id="confirmTime">-</span> min
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Servings:</span>
+                      <span id="confirmServings">-</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Cuisine:</span>
+                      <span id="confirmCuisine">-</span>
+                    </div>
                   </div>
-                </template>
+
+                  <!-- Ingredients Section -->
+                  <div class="recipe-section">
+                    <h3 class="section-title">Ingredients</h3>
+                    <ul class="list-group" id="confirmIngredients">
+                      <li class="list-group-item">Loading ingredients...</li>
+                    </ul>
+                  </div>
+
+                  <!-- Instructions Section -->
+                  <div class="recipe-section">
+                    <h3 class="section-title">Instructions</h3>
+                    <ol class="list-group" id="confirmInstructions">
+                      <li class="list-group-item">Loading instructions...</li>
+                    </ol>
+                  </div>
+                </div>
               </div>
 
             </div>

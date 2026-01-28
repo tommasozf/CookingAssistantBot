@@ -104,40 +104,24 @@ socket.on("transcript", (text) => {
 });
 
 
-
-// trying recipe confirmation fix
-/* socket.on("pattern", (pattern) => {
+socket.on("pattern", (pattern) => {
     switch(pattern) {
-        case "a50recipeSelect":
-            if (recipecounter > 15) {
-                window.location.href = "recipe_overview.html";
-            } else {
-                window.location.href = "recipe_overview2.html";
-            }
-            break;
         case "start":
             window.location.href = "start.html";
             break;
         case "c10":
             window.location.href = "welcome.html";
             break;
+        case "a50recipeSelect":
+            window.location.href = "recipe_overview.html";
+            break;
+        case "a50recipeConfirm":
+            window.location.href = "recipe_confirmation.html";
+            break;
         default:
-            window.location.href = "closing.html";
-    }
-}); */
-socket.on("pattern", (pattern) => {
-  console.log("[pattern]", pattern);
-
-  // Fallback navigation ONLY for early pages, because your backend
-  // apparently doesn't send a 'page' event for them yet.
-  if (pattern === "start") {
-    window.location.href = "start.html";
-  } else if (pattern === "c10") {
-    window.location.href = "welcome.html";
-  }
-
-  // Important: no default redirect to closing!
-});
+          window.location.href = "closing.html";
+      }
+})
 
 
 
