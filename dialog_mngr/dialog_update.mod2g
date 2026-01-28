@@ -161,6 +161,17 @@ module dialog_update {
 		cleanParams(Params, Cleaned)
 	then delete(intent(Intent, Params, Conf, Txt, Source))
 		+ insert(intent(Intent, Cleaned, Conf, Txt, Source)).
+		
+	% --- Guard: drop duration slots like "15 ingredients" so they can't crash time parsing later
+	if intent(Intent, Params, Conf, Txt, Source),
+   		member(duration=Dur, Params),
+   		\+ valid_duration(Dur),
+   		remove([duration=Dur], Params, NewParams),
+   		log_info("Dropped invalid duration slot: ", Dur, Info)
+	then delete(intent(Intent, Params, Conf, Txt, Source))
+   		+ insert(intent(Intent, NewParams, Conf, Txt, Source))
+   		+ log(Info).
+	
 
 	% Update the agent's memory (recording parameters provided as user input).
 	% We take a simple approach for now, not taking context into account, where:

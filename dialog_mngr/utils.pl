@@ -158,3 +158,13 @@ recipe_to_json(ID, JSONString) :-
         '"servings":', Servings, ', ',
         '"cuisine":"', Cuisine, '"}'
     ], JSONString).
+
+% Accept only real time expressions
+valid_duration(Dur) :-
+    term_to_atom(Dur, A0),
+    downcase_atom(A0, A),
+    ( sub_atom(A, _, _, _, 'min')
+    ; sub_atom(A, _, _, _, 'minute')
+    ; sub_atom(A, _, _, _, 'hour')
+    ; sub_atom(A, _, _, _, 'hr')
+    ).
