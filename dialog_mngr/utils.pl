@@ -146,18 +146,41 @@ recipe_to_json(ID, JSONString) :-
     time(ID, Time),
     servings(ID, Servings),
     cuisine(ID, CuisineAtom),
-    
+
+    (findall(IQ, ingredientAndQuantity(ID, IQ), IQs), IQs \= [] -> IngredientsList = IQs ; findall(I, ingredient(ID, I), IngredientsList)),
+    findall(StepText, step(ID, _, StepText), StepsList),
+
     atom_string(NameAtom, Name),
     atom_string(URLAtom, URL),
     atom_string(CuisineAtom, Cuisine),
-    
+
+    % Convert Prolog lists to JSON arrays of strings
+    list_to_json_array(IngredientsList, IngredientsJSON),
+    list_to_json_array(StepsList, InstructionsJSON),
+
     atomic_list_concat([
         '{"name":"', Name, '", ',
         '"image":"', URL, '", ',
         '"time":', Time, ', ',
         '"servings":', Servings, ', ',
-        '"cuisine":"', Cuisine, '"}'
+        '"cuisine":"', Cuisine, '", ',
+        '"ingredients":', IngredientsJSON, ', ',
+        '"instructions":', InstructionsJSON, '}'
     ], JSONString).
+
+% to convert to json
+list_to_json_array([], "[]").
+list_to_json_array(List, JSON) :-
+    findall(EscapedQuoted, (
+        member(Item, List), convert_to_string(Item, S), escape_double_quotes(S, Esc), atomic_list_concat(['"', Esc, '"'], '', EscapedQuoted)
+    ), QuotedList),
+    atomic_list_concat(QuotedList, ',', Inner),
+    atomic_list_concat(['[', Inner, ']'], JSON).
+
+escape_double_quotes(In, Out) :-
+    split_string(In, '"', '"', Parts),
+    atomic_list_concat(Parts, '\\"', Out).
+
 
 % Accept only real time expressions
 valid_duration(Dur) :-
