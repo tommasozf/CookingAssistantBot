@@ -218,12 +218,38 @@ socket.on("progress", (dataString) => {
 // Adding filters to a card deck on an HTML page
 socket.on("filters", (filterString) => {
     const filtersString = filterString.substring(1, filterString.length-1);
+
+    function updateCompactDisplay(filtersArr) {
+        const disp = (filtersArr && filtersArr.length) ? filtersArr.join(', ') : 'None';
+        document.querySelectorAll('#filterListDisplay').forEach(el => el.textContent = disp);
+        const fallback = document.getElementById('filterFallback');
+        if (fallback) {
+            if (filtersArr && filtersArr.length) fallback.classList.add('d-none');
+            else fallback.classList.remove('d-none');
+        }
+    }
+
     if (filterString.length != 0) {
-        const filters = filtersString.split(',');
-        document.getElementById("addFiltersHere").innerHTML = "";
+        if (filtersString.trim().length === 0) {
+            const addArea = document.getElementById("addFiltersHere");
+            if (addArea) addArea.innerHTML = "";
+            updateCompactDisplay([]);
+            return;
+        }
+
+        const filters = filtersString.split(',').map(f => f.trim()).filter(f => f.length > 0);
+        const addArea = document.getElementById("addFiltersHere");
+        if (addArea) addArea.innerHTML = "";
+
         filters.forEach((element) => {
-            filterCard(element);
+            if (addArea) filterCard(element);
         });
+
+        updateCompactDisplay(filters);
+    } else {
+        const addArea = document.getElementById("addFiltersHere");
+        if (addArea) addArea.innerHTML = "";
+        updateCompactDisplay([]);
     }
 })
 
@@ -244,14 +270,39 @@ socket.on("show_recipes", (data) => {
 
         recipes.forEach((recipe) => {
             var clone = template.content.cloneNode(true);
-            
+
             // Set Title
             clone.querySelector(".recipe-title").textContent = recipe.name;
-            
+
             // Set Image
             var img = clone.querySelector(".recipe-img");
             if (img) img.src = recipe.image;
-            
+
+            // Add a click handler for selection: emit a buttonClick with the recipe name
+            // and navigate to the confirmation page so the user sees the selected recipe.
+            const selectBtn = clone.querySelector('.select-pill');
+            const tile = clone.querySelector('.recipe-tile');
+
+            const onSelect = (evt) => {
+                if (evt && evt.stopPropagation) evt.stopPropagation();
+                // Inform server/agent that a recipe was selected
+                socket.emit('buttonClick', recipe.name);
+                // Navigate to confirmation page immediately; the server will shortly send
+                // the 'show_confirmation' event to populate the page.
+                window.location.href = 'recipe_confirmation.html';
+            };
+
+            if (selectBtn) {
+                selectBtn.setAttribute('role', 'button');
+                selectBtn.addEventListener('click', onSelect);
+            }
+
+            if (tile) {
+                // Make the whole tile clickable as well
+                tile.style.cursor = 'pointer';
+                tile.addEventListener('click', onSelect);
+            }
+
             container.appendChild(clone);
         });
     }
