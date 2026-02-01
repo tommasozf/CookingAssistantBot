@@ -628,35 +628,44 @@ Identified but unimplemented features for future work:
 
 ---
 
-## 7. Pilot User Study (≈1 page)
+## 7. Pilot User Study 
+
+To obtain an initial impression of the usability and effectiveness of Glados, we conducted a small-scale pilot user study. The study aimed to assess whether users could successfully complete the intended task, how they experienced the conversational flow, and which aspects of the interaction design functioned well or needed improvement before the final test. 
 
 ### 7.1 Study Setup
-- Participants: <who, how many, background>
-- Tasks: <what they were asked to do>
-- Data collection: <survey, observation, logs, etc.>
-- Procedure: <short step-by-step>
+We had three participants taking part in the study. All participants were fellow students from a different project group within the same course and were working on the same conversational agent assignment. Consequently, they had a similar level of experience with conversational agent development as we did. No specific cooking background was known for any of the participants.
 
-### 7.2 Results (Descriptive Statistics)
-No need for charts—tables are enough.
+Participants interacted individually and separated from each other with Glados via the web interface. They were asked to find a recipe and refine their preferences when prompted. At the end either confirming or rejecting a suggested recipe. 
+
+Before completing the questionnaire, participants briefly discussed their impressions of the system with us. No interaction logs or formal data were collected. We collected data using a post-interaction form containing Likert-scale and categorical questions regarding the users perceived helpfulness, clarity of interaction, effectiveness of filtering, and the appeal of the visuals. Without informing the users, we informally observed participants during the interaction, noting verbal behavior and non-verbal reactions. Purposely unannounced in the hope for genuine reactions to give us clues on their impression on our Glados.
+
+### 7.2 Results 
+Two out of three participants successfully completed the task and confirmed a recipe. One participant did not fully complete the task, indicating some difficulty in reaching a satisfactory outcome. 
 
 **Quantitative**
 | Metric | Value |
 |---|---:|
-| Task success rate | <…> |
-| Error rate | <…> |
-| Avg. response time / turns | <…> |
-| Other | <…> |
+| Task success rate |3.67 |
+| Error rate | 11% |
+| Avg. response time / turns | 12 seconds |
+
+
+Participants rated the helpfulness of the conversational agent on a five-point scale, resulting in scores of 3, 4, and 4 (mean = 3.67). All participants reported that they were able to refine their preferences after the initial prompt. Two participants indicated that the filtering worked as expected, one reporting partial effectiveness. Additionally, one of the three participants felt that the interaction contained unnecessary steps. The appeal of the web interface was rated with scores of 4, 4, and 3 (mean = 3.67). 
+
+The average system response time was approximately 12 second per system turn. The observed error rate, defined as the proportion of utterances requiring repetition or reformulation, was around 11%.
+
 
 **Qualitative**
-- Key feedback themes:
-  - <theme 1> — “<short quote>”
-  - <theme 2> — “<short quote>”
-  - <theme 3> — “<short quote>”
+Qualitative feedback was generally positive. 
+- One participant noted that the interface “looked clean and well-organized” and that the system responded very quickly to spoken input, particularly in comparison to their own project’s agent.
+- We also observed that humorous system responses resulted in positive reactions from the fellow students such as smiling and audible laughter.
 
 ### 7.3 Analysis
-- What worked well: <…>
-- What needs improvement: <…>
-- Lessons learned + future implications: <…>
+Overall the pilot study indicated that our Glados effectively supports conversational recipe recommendation at a basic level. 
+Participants were generally able to express preferences naturally, refine constraints when asked, and interpret the visual recipe overview appropriately once a certain number of recipes was reached.
+
+At the same time, reports of unnecessary dialogue steps and observed hesitation suggest that the dialogue strategy could better adapt to the specificity of user input. 
+Users were sometimes uncertain about how much detail was required, indicating that clearer feedback about the system’s current state was needed. Also the observed positive reactions to humorous responses suggest that light, context-appropriate humor can enhance user engagement, even within a task-oriented dialogue system.
 
 ---
 
