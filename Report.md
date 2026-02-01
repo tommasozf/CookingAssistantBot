@@ -32,21 +32,21 @@ Design and Implementation of a Task-Oriented Spoken Dialogue System
 - **Why TOSDS fits recipe recommendation:**  
   <Structured task, constraints, user goals, etc.>
 
-### 2.3 Goals (Concrete + Specific)
+### 2.3 Goals 
 > The main goal with our project is to design and implement a task-oriented spoken dialogue system which supports personalized recipe recommendation through conversational interactions, to enable users to express constraints related to cuisine, dietary requirements, ingredients, etc..
 > All of this to support correction and refinement of preferences during the interaction and to integrate voice-based interaction with visual recipe overviews and presentations.
 > The project demonstrates how a task-oriented spoken dialogue system can be applied effectively to a practical recommendation task in a structured and well-defined domain.
 
 ---
 
-## 3. How Does Your Conversational Agent Work? (≈2 pages)
+## 3. How Does Your Conversational Agent Work? 
 
 ### 3.1 Primary Use Cases
-Our Cookpanion is designed to support conversational recipe recommendation through a limited set of pre-defined use cases. All interactions are centered around helping the user identify and confirm a suitable recipe based on spoken preferences. 
+Our Glados is designed to support conversational recipe recommendation through a limited set of pre-defined use cases. All interactions are centered around helping the user identify and confirm a suitable recipe based on spoken preferences. 
 
-- Use case A: A primary use case is requesting a recipe recommendation using one or more constraints, for example one might specify preferences related to                     cuisine type, preparation time, or dietary requirements such as “Recommend me an Albanian recipe with olive oil” or “Show me vegetarian dinners”.
-- Use case B: Users can incrementally add constraints or exclusions at any point during the interaction, for example by saying ‘No olive oil’ or ‘With garlic’.               These refinements are combined with existing preferences and applied through exclusion-based filtering, allowing users to narrow down results                   without restating every constraint.
-- Use case C: the agent supports confirmation and rejection of individual recipes. After a recipe is presented in detail, users can confirm their choice or                   reject it and request an alternative. This allows users to remain in control of the final selection while the system manages the dialogue flow.
+- (A) A primary use case is requesting a recipe recommendation using one or more constraints, for example one might specify preferences related to                     cuisine type, preparation time, or dietary requirements such as “Recommend me an Albanian recipe with olive oil” or “Show me vegetarian dinners”.
+- (B) Users can incrementally add constraints or exclusions at any point during the interaction, for example by saying ‘No olive oil’ or ‘With garlic’.               These refinements are combined with existing preferences and applied through exclusion-based filtering, allowing users to narrow down results                   without restating every constraint.
+- (C) the agent supports confirmation and rejection of individual recipes. After a recipe is presented in detail, users can confirm their choice or                   reject it and request an alternative. This allows users to remain in control of the final selection while the system manages the dialogue flow.
 
 
 
@@ -61,7 +61,7 @@ Our Cookpanion is designed to support conversational recipe recommendation throu
 
 - The processing pipeline of Glados starts with spoken user input, which is converted into text through speech-to-text processing. After this the transcribed input is analyzed by the NLU component which performs intent recognition and slot filling. Based on this information the dialogue management component updates the dialogue state and applies the system’s decision logic. Afterwards the active preferences are used to query the recipe database. At last, the response is generated and presented to the user through both spoken output and visuals.
 
-### 3.3 Conversational Flow (Typical Interaction Walkthrough)
+### 3.3 Conversational Flow 
 User: “I want some Albanian food please.”
 
 NLU output:
