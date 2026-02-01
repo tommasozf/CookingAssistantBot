@@ -140,12 +140,13 @@ Include results for your best model, and optionally earlier iterations.
 
 **Confusion matrix (Intent)**
 |Intent|	Model|	Precision	|Recall	|F1-Score	| Support
+|---|---:|---:|---:|---:| ---:|
 |noMoreFilters | Baseline |	0.90 |	0.36 |	0.51 |	100
-               |Improved |	0.90 |	0.72 |	0.80 |	100
-|addFilter |	Baseline | 	0.95 |	0.97 |	0.96 |	917
-           |Improved |	0.97	 | 0.99  |	0.98 |	917
+|               |Improved |	0.90 |	0.72 |	0.80 |	100
+|addFilter  |	Baseline | 	0.95 |	0.97 |	0.96 |	917
+|           | Improved |	0.97	 | 0.99  |	0.98 |	917
 |Weighted Avg |	Baseline |	0.90 |	0.89 |	0.89 |	2331
-              |  Improved |	0.93 |	0.93 |	0.93 |	2331
+|             |  Improved |	0.93 |	0.93 |	0.93 |	2331
 
 ### 4.4 Threshold Compliance
 The project established success thresholds based on the initial baseline metrics.
