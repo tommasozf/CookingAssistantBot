@@ -5,10 +5,10 @@ Keep the main report self-contained; appendices are optional extras.
 -->
 
 
-**Group <R3>**  
+**Group R3**  
 **Students:** 
 -  Krista K. Dērica- 2857960 - k.k.derica@student.vu.nl,
--  Louis G.P. Battle - xxxxxxx - l.g.p.battle@student.vu.nl,
+-  Louis G.P. Battle - 2845431 - l.g.p.battle@student.vu.nl,
 -  Nicolau R. Vilaclara Enomoto - 2860722 - n.r.vilaclaraenomoto@student.vu.nl,
 -  Bartosz J. Szajda- 2763456 - b.j.szajda@student.vu.nl,
 -  Tommaso Zambelli Franz - 2825713 - t.zambellifranz@student.vu.nl ,
