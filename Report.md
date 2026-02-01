@@ -106,9 +106,8 @@ Intent: confirm_recipe
 Interaction outcome: 
 The recipe is confirmed, and the interaction concludes.
 
-### 3.4 Testable Example Dialogues (We can try these)
+### 3.4 Testable Example Dialogues 
 
-Provide 5–10 examples that reliably work in your system.
 
 **Example 1 — Basic request:**
  Basic cuisine-based recommendation
@@ -142,7 +141,7 @@ Provide 5–10 examples that reliably work in your system.
 - Expected behavior: The system filters Albanian recipes and retains only those that include feta cheese
 
 ---
-## 4. Intent and Slot Classifier (≈1–2 pages)
+## 4. Intent and Slot Classifier 
 
 ### 4.1 Why Intent + Slots Matter
 Our pipeline workflow ensures that when a user provides spoken input, it is converted into text and then analyzed to understand its semantic meaning. These inputs vary in form, ranging from questions and requests to direct orders, and our model is designed to recognize two main components: the user's primary goal, known as intent, and the specific details provided, known as slots. This recognised slots and intents are needed, since pipeline's next components are designed to perform their search based on the extracted and defined intents or slots. 
@@ -175,14 +174,12 @@ Include results for your best model, and optionally earlier iterations.
 | Model / Iteration | Accuracy | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|
 | Baseline | 0.89 | 0.90 | 0.89 | 0.89 |
-| Improved v1 | <…> | <…> | <…> | <…> |
 | Final | 0.93 | 0.93 | 0.93 | 0.93 |
 
 **Slot metrics**
 | Model / Iteration | Precision | Recall | F1 |
 |---|---:|---:|---:|
 | Baseline | 0.98 | 0.98 | 0.98 | 0.98 |
-| Improved v1 | <…> | <…> | <…> | 
 | Final | 0.995 | 1.00 | 1.00 | 0.995  |
 
 **Confusion matrix (Intent)**
