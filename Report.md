@@ -312,18 +312,11 @@ one
 
 ## 6.1 Summary of Extensions
 
-Glados implements multiple extensions beyond the baseline requirements, going from slot-filling to a more user-focused system. The extensions fall into four categories:
+Glados implements multiple extensions beyond the baseline requirements, going from slot-filling to a more user-focused system. The extensions fall into 3 categories:
 
 ### Core Extensions Implemented:
 
-**Extension A: Exclusion-Based Filtering System**
-- Ingredient-level exclusions (excludeingredient)
-- Category-level exclusions (excludeingredienttype)
-- Cuisine exclusions (excludecuisine)
-- Hierarchical ingredient classification with 424+ type mappings
-- Automatic conflict detection and resolution
-
-**Extension B: Visual Interface Enhancements**
+**Extension A: Visual Interface Enhancements**
 - Dual-view display modes (text-based and visual grid)
 - Visual recipe cards with images (4-column responsive grid)
 - Active filter display with colored chips
@@ -343,63 +336,7 @@ Glados implements multiple extensions beyond the baseline requirements, going fr
 - Progressive refinement with ambiguity handling
 ---
 
-## 6.2 Motivation & Impact
-
-### Extension A: Exclusion-Based Filtering System
-
-**Motivation:**
-Inclusion-only filtering requires users to enumerate all acceptable options when avoiding ingredients, which is cognitively demanding and unnatural. For example, expressing "no dairy" as inclusion filters would require listing hundreds of dairy-free ingredients. Exclusion filtering better mirrors natural language patterns and supports critical use cases like dietary restrictions (vegetarian, vegan) and allergen avoidance (no nuts, no shellfish).
-
-**Implementation:**
-The exclusion mechanism uses Prolog's negation-as-failure operator (`\+`) in recipe_selection.pl:
-
-```prolog
-applyFilter('excludeingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
-    findall(RecipeID,
-        (member(RecipeID, RecipeIDsIn), \+ hasIngredient(RecipeID, Ingredient)),
-        RecipeIDsOut).
-```
-
-The system implements three exclusion levels:
-1. **Ingredient-level**: Removes recipes containing specific ingredients (e.g., "no olive oil")
-2. **Category-level**: Excludes ingredient types using hierarchical classification (e.g., "no meat" removes all meat products)
-3. **Dietary-level**: Excludes entire dietary categories (e.g., "no dairy" removes all dairy products)
-
-The hierarchical ingredient classification system in ingredient_hierarchies.pl contains 424 type mappings across categories including meat, non-vegetarian, non-vegan, gluten, dairy, and spicy. This enables type-aware filtering:
-
-```prolog
-hasIngredient(RecipeID, IngredientType) :-
-    ingredient(RecipeID, SpecificIngredient),
-    typeIngredient(SpecificIngredient, IngredientType).
-```
-
-**Conflict Resolution:**
-When inclusion and exclusion filters conflict (e.g., "include chicken" vs. "exclude meat"), the system implements an inclusion-overrides-exclusion strategy. Conflicts are automatically detected via predefined rules:
-
-```prolog
-conflict(ingredient = Value, excludeingredient = Value).
-conflict(ingredienttype = Value, excludeingredienttype = Value).
-```
-
-The dialogue manager automatically removes conflicting filters from memory, prioritizing the user's most recent explicit request through the removeConflicts action in patterns.pl.
-
-**Impact:**
-This dual-filtering approach significantly improves user experience by:
-- Reducing cognitive load: Users express what to avoid rather than enumerating alternatives
-- Supporting natural language: "No meat" is more intuitive than "vegetarian dishes only"
-- Handling allergies efficiently: "No nuts" removes all nut-containing recipes without explicit enumeration
-- Preventing impossible combinations: Automatic conflict resolution avoids empty result sets
-- Enabling flexible preference expression: Users can combine inclusion and exclusion naturally
-
-**Challenges Addressed:**
-- **Empty Result Sets**: When filters eliminate all recipes, the system provides immediate feedback: "I could not find a recipe that matches all preferences. Please remove a filter." Visual filter chips allow easy constraint removal.
-- **Ambiguous Exclusions**: Hierarchical classification disambiguates broad categories (e.g., "seafood" maps to all fish and shellfish)
-- **NLU Parsing Errors**: The intent classifier occasionally misinterprets mixed inclusion/exclusion utterances; for example, "Korean food with no cheese" may incorrectly generate two exclusion filters instead of one inclusion and one exclusion
-
----
-
-
-### Extension B: Visual Interface Enhancements
+### Extension A: Visual Interface Enhancements
 
 **Motivation:**
 Text-only recipe recommendations lack visual appeal and make it difficult for users to browse options. Visual presentation with images, structured layouts, and filter visualization significantly improves usability and engagement.
@@ -447,29 +384,29 @@ Visual enhancements significantly improve user experience:
 
 ---
 
-### Extension C: Glados Personality & Humor
+### Extension B: Glados Personality & Humor
 
 **Motivation:**
-Generic, robotic responses create a sterile interaction experience. A distinctive personality enhances engagement, memorability, and user enjoyment. The Glados character (from Portal series) provides a recognizable, humorous persona that transforms recipe recommendation into an entertaining experience.
+The basic conversational nature of the pipeline is generic and fails to improve user experience. A distinctive personality enhances engagement, memorability, and user enjoyment. The Glados character (from Portal series) provides a recognizable, humorous persona that transforms recipe recommendation into an entertaining experience.
 
 **Implementation:**
 The responses.pl file contains 518 lines of scripted responses organized by intent and context. Examples include:
 
 **Greetings:**
-- "Try to keep up."
-- "Welcome to the Aperture Science Computer-Aided Enrichment Center Recipe Recommendation System."
+- "Welcome. I am here to help you select a recipe. This should be simple, even for a human."
+- "Hello there. I am your personal recipe assistant. Together, we will find something for you to cook. How exciting."
 
 **Errors:**
 - "I have access to the entire database of human language, and that still made no sense."
-- "That input was so garbled, I'm surprised it even registered."
+- "My processors are working fine. Your communication skills, however, are questionable."
 
 **Empty Results:**
-- "Congratulations. You've filtered out every single recipe."
-- "Well, that's impressive. You've managed to want something that doesn't exist."
+- "You've been too demanding. No recipes left. Remove a filter."
+- "Empty results. Your standards are impossibly high. Please adjust."
 
 **Acknowledgments:**
-- "Fine. But I'm only doing this because I have to."
-- "If you insist. Though I question your decision-making process."
+- "More demands?"
+- "I've adjusted the list so recipes x and y show. Anything else?"
 
 **Context-aware responses:**
 The system generates dynamic acknowledgments explaining filtering actions:
@@ -492,7 +429,7 @@ While humor can alienate some users, the GLaDOS character is well-known and gene
 
 ---
 
-### Extension D: Advanced Dialogue Strategies
+### Extension C: Advanced Dialogue Strategies
 
 **Motivation:**
 Rigid slot-filling dialogues frustrate users by forcing linear interaction patterns. Advanced dialogue strategies provide flexibility, support natural conversation flow, and maintain context across multi-turn interactions.
