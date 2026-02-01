@@ -292,23 +292,28 @@ No need for charts—tables are enough.
 
 ---
 
-## 8. Conclusion (≈1 page)
+## 8. Conclusion 
 
 ### 8.1 Project Outcomes
-Summarize what you built + what it achieves.
-- Outcome 1: <…>
-- Outcome 2: <…>
-- Outcome 3: <…>
+We developed GLaDOS, a conversational agent designed to assist with discovering, personalising, and managing recipe searches through dialogue. The implemented pipeline successfully accomplishes language understanding, contextual dialogue management, and recipe retrieval and display.
+- Outcome 1: High Accuracy NLU system
+- Outcome 2: Implementation of dialog manager logic
+- Outcome 3: Strategic architecture of the whole pipeline (BERT, Google STT, updated visuals)
 
 ### 8.2 Reflection
-- What went well: <teamwork, design decisions, etc.>
-- What could be improved: <time management, data quality, evaluation, etc.>
+During development, we trained an intent and slot classifier that achieved an intent accuracy of 93.9%, a slot F1 score of 99.5%, and a slot accuracy of 99.5%, exceeding the specified project thresholds. 
+The model was built on a BERT-based architecture as the underlying pre-trained model, which provided a strong foundation for robust language understanding. We chose this custom approach over using a platform like Dialogflow to maintain greater control and specificity. For speech recognition, we used Google STT after determining it was more reliable and faster than Whisper, which proved too slow and inaccurate for our use case. These design decisions resulted in a more reliable and controllable pipeline.
+The full pipeline enabled a complete user journey. From an initial greeting, through recipe recommendations based on user-provided filters, to the display of a chosen recipe and the conclusion of the session.
+
+However, the model exhibited systematic errors. For example, it correctly identified the mealType slot (e.g., breakfast, lunch, dinner) only in short, direct prompts, and often failed when the target phrase appeared within longer or more natural sentences. It also occasionally misclassified numerical values, such as ingredient counts as the duration slot.
+Following the pilot study, we recognised several integration pitfalls. The pipeline could have been made more robust, and a dedicated validation set would have helped verify that the model was not overfitting. A key lesson is that a larger, more varied training dataset would reduce overfitting and improve the agent’s ability to process longer, more natural sentences.
+Moreover, the dialogue manager followed a strict, linear script. It expected users to provide filters in a predictable sequence. If a user didn’t follow that, for example, by asking a clarifying question or by providing filters in an unexpected order, the system lacks the flexibility to handle the interruption and gracefully guide the conversation back on track and agent has to be restarted. 
+
 
 ### 8.3 Future Work
-List 3–6 concrete improvements/extensions.
-- <…>
-- <…>
-- <…>
+- adding a validation set with also more challenging natural language examples to evaluate model better and monitor overfitting
+- adding more extensions to enhance flexibility, for example, adding an undo button to handle interruptions and preventing the conversation flow from getting stuck
+- creating additional training examples for the slots, like mealType, in which model performed poorly in order to teach better patterns and improve model performance on edge cases
 
 ---
 
