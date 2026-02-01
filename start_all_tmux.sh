@@ -26,7 +26,7 @@ if ! command -v tmux &> /dev/null; then
     if [[ "$OS" == "Darwin" ]]; then
         echo "Install it with: brew install tmux"
     else
-        echo "Install it with: sudo apt install tmux"
+        echo "Install it with: sudo apt install tmux (ubuntu/debian), sudo dnf install tmux (fedora), etc."
     fi
     exit 1
 fi

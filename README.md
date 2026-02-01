@@ -1,29 +1,42 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/CDzWubzf)
+# GLadOS Agent
 
-# Project Conversational Agents Repository
+A conversational agent for recommending recipes using speech interaction.
 
-Welcome to the repository for the **Project Conversational Agents** course. This project focuses on developing a conversational agent capable of recommending recipes from a database of nearly 1,000 options. The agent will use **speech** as its primary interaction mode, supported by a **visual interface** for displaying relevant information.
+## Repository Structure
 
-### **Project Goals**
-- Understand user preferences and constraints (e.g., ingredients, cooking time, dish type).
-- Reason over a large recipe database to provide accurate recommendations.
-- Handle diverse conversational styles while maintaining task focus.
+As outlined in the [project deliverables](https://socialrobotics.atlassian.net/wiki/spaces/PCA21/pages/3117780447/Project+Deliverables) section:
 
-Starting from a **Prolog database** and a basic agent template, students will develop core functionalities, systematically test the agent, and refine its performance. Teams are encouraged to add creative features to enhance usability and functionality.
+- ```main``` "contains the full codebase for inclusion, exclusion and all extensions. It contains the full code we ran during the agent grading session with our TA;
+- ```inclusion-only``` contains the codebase with inclusion logic only
+- ```inclusion_exclusion``` contains the codebase for inclusion and exclusion logic combined
+- ```whisper-on-gpu``` contains our parallel efforts to use whisper instead of google-stt for speech recognition. We ended up using the latter in the final pipeline, but for the record, and to document our efforts, we left this working branch in the repository. Trying to run the agent from this branch will most likely not result in a successful attempt.
 
-### **Resources**
-- **Course Confluence Home**: [https://socialrobotics.atlassian.net/wiki/spaces/PCA21/pages/3117779057/Home+-+PCA+2026+Overview](https://socialrobotics.atlassian.net/wiki/spaces/PCA21/pages/3117779057/Home+-+PCA+2026+Overview)
-- **Canvas Course Page**: [https://canvas.vu.nl/courses/85428]([https://canvas.vu.nl/courses/77576](https://canvas.vu.nl/courses/85428))
 
-Collaborate effectively, track contributions, and make regular commits to ensure a successful project!
 
----
-## Files You Need for the Project
-sic = [social interaction cloud](https://socialrobotics.atlassian.net/wiki/spaces/CBSR/overview)
-We use V2.
-- `sic_applications/demo_asr_nlu.py`
-- `Bot-PCA-2026.zip`
-- `environment.yaml`
-- `Report.md`
-- `sic-student-version/sic_framework/services/nlu/*`
-- `sic-student-version/sic_framework/services/webserver/*`
+## Running the Agent
+
+### Prerequisites
+
+- Conda environment `PCA26` configured
+
+### Start
+
+Follow the instructions [here](https://socialrobotics.atlassian.net/wiki/spaces/PCA21/pages/3117779539/Run+your+Conversational+Agent), or simply:
+
+```bash
+./start_all_tmux.sh
+```
+
+This launches all components (Redis, Google STT, NLU, Webserver, Framework, EIS) in separate tmux windows.
+
+You will also need to separately run the dialogmngr-pca2026-basic.mas2g file in the Eclipse IDE and go to http://localhost:8080/start.html to interact with the agent.
+
+### Tmux Controls
+
+| Command | Action |
+|---------|--------|
+| `tmux attach -t sic` | Reattach to session |
+| `Ctrl+b` then `0-5` | Switch windows |
+| `Ctrl+b` then `n/p` | Next/Previous window |
+| `Ctrl+b` then `d` | Detach |
+| `Ctrl+b` then `:kill-session` | Stop all |
