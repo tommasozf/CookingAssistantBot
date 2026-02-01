@@ -98,14 +98,28 @@ Provide 5–10 examples that reliably work in your system.
 ## 4. Intent and Slot Classifier (≈1–2 pages)
 
 ### 4.1 Why Intent + Slots Matter
-- **Intent classification:** <What it decides, why it’s needed.>
-- **Slot filling:** <What it extracts (cuisine, dietary restrictions, mealType, time, etc.).>
+Our pipeline workflow ensures that when a user provides spoken input, it is converted into text and then analyzed to understand its semantic meaning. These inputs vary in form, ranging from questions and requests to direct orders, and our model is designed to recognize two main components: the user's primary goal, known as intent, and the specific details provided, known as slots. This recognised slots and intents are needed, since pipeline's next components are designed to perform their search based on the extracted and defined intents or slots. 
 
 ### 4.2 Data & Labeling (If Applicable)
-- Dataset source: <…>
-- Label schema: intents list + slot types
-- Train/val/test split: <…>
-- Any augmentation: <…>
+Data used for the training part is first given as a piece of the raw data in a JSON format , with a unique ID, the text of the user’s input, intent of the input and a dictionary with slots where each slot type is mapped to their values.
+
+
+Label schema: 
+
+The pipeline uses a multi-layered labeling schema to enable joint intent classification and entity extraction. The intent list consists of 14 distinct categories, ranging from task-oriented commands like addFilter and recipeRequest to conversational signals such as greeting and appreciation. 
+For the slot-filling task, the schema defines 11 high-level slot types including cuisine, ingredient, dietaryRestriction, and duration, which allow the model to capture various details of a user’s request.
+To handle these entities at the token level, we use the BIO format, which marks the start of a value with a B- prefix and any continuing tokens with an I- prefix. 
+By combining these global intent labels with token-level BIO tags, the model can understand what the user wants to do and which specific parameters need to be extracted to capture the request.
+
+Train/val/test split: 
+A fixed training ratio of 0.8 is used, resulting in eighty percent of the data being allocated to the training set and twenty percent to the test set. Because no validation path exists, the model uses training loss for performance monitoring and early stopping criteria during the optimization process.
+
+
+Any augmentation:
+We used synonym replacement to help the model focus on semantic meaning rather than specific word choices. 
+Slot value swapping was also applied, allowing us to rotate different ingredients or cuisines within the same sentence structure to improve entity recognition. 
+Back-translation was used to introduce syntactic variety by translating utterances into a pivot language and back to English. 
+
 
 ### 4.3 Evaluation Metrics
 Include results for your best model, and optionally earlier iterations.
@@ -113,38 +127,67 @@ Include results for your best model, and optionally earlier iterations.
 **Intent metrics**
 | Model / Iteration | Accuracy | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|
-| Baseline | <…> | <…> | <…> | <…> |
+| Baseline | 0.89 | 0.90 | 0.89 | 0.89 |
 | Improved v1 | <…> | <…> | <…> | <…> |
-| Final | <…> | <…> | <…> | <…> |
+| Final | 0.93 | 0.93 | 0.93 | 0.93 |
 
 **Slot metrics**
 | Model / Iteration | Precision | Recall | F1 |
 |---|---:|---:|---:|
-| Baseline | <…> | <…> | <…> |
-| Improved v1 | <…> | <…> | <…> |
-| Final | <…> | <…> | <…> |
+| Baseline | 0.98 | 0.98 | 0.98 | 0.98 |
+| Improved v1 | <…> | <…> | <…> | 
+| Final | 0.995 | 1.00 | 1.00 | 0.995  |
 
 **Confusion matrix (Intent)**
-<Insert table or a small matrix-style list. Keep it readable.>
+|Intent|	Model|	Precision	|Recall	|F1-Score	| Support
+|noMoreFilters | Baseline |	0.90 |	0.36 |	0.51 |	100
+               |Improved |	0.90 |	0.72 |	0.80 |	100
+|addFilter |	Baseline | 	0.95 |	0.97 |	0.96 |	917
+           |Improved |	0.97	 | 0.99  |	0.98 |	917
+|Weighted Avg |	Baseline |	0.90 |	0.89 |	0.89 |	2331
+              |  Improved |	0.93 |	0.93 |	0.93 |	2331
 
 ### 4.4 Threshold Compliance
-Explain how your classifier compares to the **Intent and Slot Classifier Evaluation Thresholds**.
-- Thresholds: <state required threshold(s)>
-- Your results: <state your numbers>
-- Pass/fail + interpretation: <be direct>
+The project established success thresholds based on the initial baseline metrics.
+The required Intent Classification Accuracy was set at 0.89. 
+For the slot filling task, the required benchmark was a weighted average F1-score of 0.86,
+
+The evaluation of the improved model shows an increase across all core metrics:
+Intent Classification Accuracy: 0.93
+Merged Slot Weighted F1-score: 0.995
+Token-level Slot Accuracy: 0.995
+
+The improved classifier passed all evaluation criteria, exceeding the required intent accuracy by 4% and the slot F1-score by about 13.
+Furthermore the intent accuracy of 93% confirms that the system can correctly categorize user goals with minimal error.
+
 
 ### 4.5 Challenges
-- Ambiguous intents: <examples>
-- Overlapping slots: <examples>
-- Data sparsity: <…>
-- Error analysis: <top 3 frequent errors + why>
+Ambiguous intents: Semantic overlap between classes created significant confusion in the initial stages of the project. Specifically, the baseline model struggled to distinguish between disconfirmation and fallback, which resulted in low F1-scores of 0.73 and 0.71, respectively. 
+The noMoreFilters intent proved to be the most difficult for the baseline to isolate, yielding a recall of only 0.36. 
+
+Overlapping slots: Distinguishing between filterType, cuisine, and ingredient was difficult because these slots often share similar vocabulary. In the baseline version, this led to a low recall of 0.59 for the filterType category.
+
+Data sparsity: Extreme class imbalance was a major hurdle for the baseline, where high-support intents like addFilter (917 samples) dwarfed minority labels such as deleteParameter (104 samples).
+
+Error analysis: The baseline evaluation revealed three top errors: 
+1) low recall for noMoreFilters
+2) confusion between filter categories and values
+3) hyperparameter sensitivity
+   
+Assigning the correct training settings, such as number of epochs, learning rate, and batch size, was a persistent challenge that led to instability in early tests. 
+
 
 ### 4.6 Improvements Made
-- Pre-trained models (e.g., BERT / embeddings): <what you used>
-- Hyperparameter tuning: <what changed + why>
-- Training methodology: <augmentation, balancing, prompts, etc.>
-- Architecture modifications: <…>
-- Impact: <what improved and by how much>
+Pre-trained models (e.g., BERT / embeddings): The model utilizes a pre-trained BERT backbone to generate contextualized embeddings
+
+Hyperparameter tuning: We transitioned from the baseline defaults of 3 epochs and a batch size of 2 to a more robust configuration of 7 epochs and a batch size of 32. This change was critical for stabilizing gradient updates and allowing the model sufficient time to converge on a joint loss for both intent and slot tasks.
+
+Training methodology: We implemented the AdamW optimizer to prevent overfitting and utilized a multi-task learning approach that sums CrossEntropyLoss for both objectives during the forward pass. Data was shuffled and split with a 0.8 training ratio to ensure diverse exposure within each batch.
+
+Architecture modifications: The system features dual linear heads branching from the BERT encoder, allowing for simultaneous global intent classification and token-level BIO slot tagging. The slot-filling head uses sequence reshaping to compute loss across all tokens, ensuring precise alignment between the text and extracted entities.
+
+Impact: These refinements boosted intent accuracy from 89% to 93% and nearly doubled the recall for difficult classes like noMoreFilters. Slot filling performance saw the most significant gain, reaching a 99.5% F1-score compared to the baseline's 86%.
+
 
 ---
 
