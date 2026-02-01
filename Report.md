@@ -4,25 +4,28 @@ Rule of thumb: 1 page ≈ 500 words. Total main text ≤ 10 pages (≈ 5000 word
 Keep the main report self-contained; appendices are optional extras.
 -->
 
-# <Project Title>  
-**Group <##>**  
-**Students:** <Name Surname> (<student email>) — <student number>  
-<Add more lines as needed>
+
+**Group <R3>**  
+**Students:** 
+-  Krista K. Dērica- 2857960 - k.k.derica@student.vu.nl,
+-  Louis G.P. Battle - xxxxxxx - l.g.p.battle@student.vu.nl,
+-  Nicolau R. Vilaclara Enomoto - 2860722 - n.r.vilaclaraenomoto@student.vu.nl,
+-  Bartosz J. Szajda- 2763456 - b.j.szajda@student.vu.nl,
+-  Tommaso Zambelli Franz - 2825713 - t.zambellifranz@student.vu.nl ,
+-  Youssef El Haddouchi - 2811420 - y.el.haddouchi@student.vu.nl
 
 ---
 
-## 1. Title (≈0.25 page)
-> **Goal:** Eye-catching, informative title + required group/student info above.
+## 1. <Glados: Finding Recipes Through Conversation>  
+Design and Implementation of a Task-Oriented Spoken Dialogue System
 
----
 
-## 2. Introduction (≈0.75 page)
+## 2. Introduction 
 
 ### 2.1 Project Overview
-- **What is a conversational recipe recommendation agent?**  
-  <Define clearly, 2–4 sentences.>
-- **Purpose / value:**  
-  <Why it exists, what problem it solves.>
+- Our conversational recipe recommendation agent is a system that supports users in finding recipes through natural language interaction. Instead of relying on traditional search interfaces with multiple filters, an agent like this allows users to express preferences conversationally, like specifying a certain cuisine or ingredients. The system interprets these preferences and narrows down the available options step by step with the intention to find a suitable recipe.
+  
+- Glados is a task-oriented spoken dialogue system developed for this purpose. Task-oriented dialogue systems are designed to help users complete well-defined tasks through structured interaction instead of engaging in open-ended conversation. In Glados the task consists of guiding the user toward a single recipe that matches their constraints. The recipe recommendation domain is suited to a task-oriented conversational approach. Recipes can be described using a finite set of attributes that align naturally with slot-filling dialogue strategies. Users often begin a recipe search without a fully specified goal and a conversational interface supports this exploratory behavior allowing preferences to be added, modified, or corrected during the interaction. 
 
 ### 2.2 Task-Oriented Spoken Dialogue Systems (TOSDS)
 - **Definition:** <1–3 sentences.>
@@ -30,50 +33,87 @@ Keep the main report self-contained; appendices are optional extras.
   <Structured task, constraints, user goals, etc.>
 
 ### 2.3 Goals (Concrete + Specific)
-List 3–6 goals that match *your* implementation.
-- G1: <e.g., Recommend recipes personalized to cuisine + diet constraints>
-- G2: <e.g., Support exclusions (ingredients/cuisines/meal types)>
-- G3: <e.g., Robust clarification when information is missing>
-- G4: <…>
+> The main goal with our project is to design and implement a task-oriented spoken dialogue system which supports personalized recipe recommendation through conversational interactions, to enable users to express constraints related to cuisine, dietary requirements, ingredients, etc..
+> All of this to support correction and refinement of preferences during the interaction and to integrate voice-based interaction with visual recipe overviews and presentations.
+> The project demonstrates how a task-oriented spoken dialogue system can be applied effectively to a practical recommendation task in a structured and well-defined domain.
 
 ---
 
 ## 3. How Does Your Conversational Agent Work? (≈2 pages)
 
 ### 3.1 Primary Use Cases
-Describe what users can do.
-- Use case A: <e.g., “Recommend me a spicy Korean chicken recipe”>
-- Use case B: <e.g., “Show me vegetarian dinners under 30 minutes”>
-- Use case C: <e.g., “Exclude peanuts and dairy”>
-- Use case D: <…>
+Our Cookpanion is designed to support conversational recipe recommendation through a limited set of pre-defined use cases. All interactions are centered around helping the user identify and confirm a suitable recipe based on spoken preferences. 
+
+- Use case A: A primary use case is requesting a recipe recommendation using one or more constraints, for example one might specify preferences related to                     cuisine type, preparation time, or dietary requirements such as “Recommend me an Albanian recipe with olive oil” or “Show me vegetarian dinners”.
+- Use case B: Users can incrementally add constraints or exclusions at any point during the interaction, for example by saying ‘No olive oil’ or ‘With garlic’.               These refinements are combined with existing preferences and applied through exclusion-based filtering, allowing users to narrow down results                   without restating every constraint.
+- Use case C: the agent supports confirmation and rejection of individual recipes. After a recipe is presented in detail, users can confirm their choice or                   reject it and request an alternative. This allows users to remain in control of the final selection while the system manages the dialogue flow.
+
+
 
 ### 3.2 Pipeline / System Architecture
-Explain components and how they connect.
-- **Input:** <text/speech → text>
-- **NLU:** intent recognition + slot filling
-- **Dialogue management:** state tracking, prompts, confirmations
-- **Database/KB access:** querying recipes/ontology/Prolog facts
-- **NLG / Response generation:** template-based or model-based
+- Our Glados follows a pipeline typical of task-oriented spoken dialogue systems. The input is provided through the user's speech and converted to text     using speech recognition. The transcribed input is passed to the natural language understanding (NLU) component, where intent recognition and slot filling are performed. Intents represent the user’s communicative goal, such as specifying preferences, refining constraints, confirming a recipe, or rejecting a proposal. Slots capture relevant information like cuisine type, dietary restrictions, ingredients, or preparation time.
 
-> Optional: add a simple diagram in Markdown (ASCII) or link to an image stored in repo.
+- Dialogue management is implemented in MARBEL, a Prolog-based framework for conversational agents. The dialogue manager maintains the current dialogue state and includes active filters and the current interaction phase. Based on this state, it determines the appropriate next action, think of things like presenting recipe options or moving to clarification.
+
+- The dialogue manager queries a structured recipe database represented as Prolog facts. These queries apply the active constraints to filter the available recipes. The number of matching results influences the system’s behavior, for example whether further refinement is required or whether a visual recipe overview can be shown.
+
+- System responses are generated using template-based natural language generation and communicated to the web frontend via the Social Interaction Cloud framework. The frontend updates the user interface to reflect the current dialogue state.
+
+- The processing pipeline of Glados starts with spoken user input, which is converted into text through speech-to-text processing. After this the transcribed input is analyzed by the NLU component which performs intent recognition and slot filling. Based on this information the dialogue management component updates the dialogue state and applies the system’s decision logic. Afterwards the active preferences are used to query the recipe database. At last, the response is generated and presented to the user through both spoken output and visuals.
 
 ### 3.3 Conversational Flow (Typical Interaction Walkthrough)
-Walk through one full example end-to-end.
-1. User: "<example utterance>"
-2. Agent: "<response>"
-3. NLU output (intent + slots):  
-   - Intent: `<…>`  
-   - Slots: `<slot>=<value>, ...`
-4. Backend query: <what is queried and how>
-5. Result handling: <ranking, filtering, fallbacks>
-6. Final response to user: "<…>"
+User: “I want some Albanian food please.”
+
+NLU output:
+Intent:specify_preferences
+Slots: cuisine = Albanian
+
+Backend query: 
+The dialogue manager stores the extracted slot and queries the recipe database for Albanian recipes.
+
+Result handling: 
+The result set contains multiple matching recipes, so the system requests further refinement.
+
+Agent: “I found several Albanian recipes. Do you have any dietary restrictions or ingredient preferences?”
+
+User: “I want it to be vegetarian.”
+
+NLU output: 
+Intent: refine_preferences 
+Slots: diet = vegetarian
+
+Backend query: The vegetarian constraint is added to the active filters, and the recipe database is queried again.
+
+Result handling: The result set is reduced, still containing multiple options, allowing the system to proceed to a visual overview.
+
+Agent: "Great." “I’m showing you some vegetarian Albanian recipes. Would you like to choose one?”
+
+User: “With tomato sauce.”
+
+NLU output: 
+Intent: refine_preferences 
+Slots: ingredient = tomato sauce
+
+Backend query: The ingredient-based constraint is applied, further narrowing down the result set.
+
+Final response to user: Our system presents a detailed view of a selected vegetarian Albanian recipe with tomato sauce and asks users to confirm or reject.
+
+User: “Yes.”
+
+NLU output: 
+Intent: confirm_recipe
+
+Interaction outcome: 
+The recipe is confirmed, and the interaction concludes.
 
 ### 3.4 Testable Example Dialogues (We can try these)
+
 Provide 5–10 examples that reliably work in your system.
 
-**Example 1 — Basic recommendation**
-- User: "<…>"
-- Expected behavior: <…>
+**Example 1 — Basic request:**
+ Basic cuisine-based recommendation
+ - User: “Albanian food.” 
+ - Expected behavior: The system applies a cuisine filter and, if many recipes match, asks the user to further refine their preferences.
 
 **Example 2 — Missing slot → clarification**
 - User: "<…>"
@@ -82,19 +122,26 @@ Provide 5–10 examples that reliably work in your system.
 - Agent returns: "<…>"
 
 **Example 3 — Exclusion**
-- User: "<…>"
-- Expected behavior: <…>
+- User:  “No meat.”
+- Expected behavior: All recipes containing meat products are excluded from the result set.
 
 **Example 4 — Multi-constraint**
-- User: "<…>"
-- Expected behavior: <…>
+- User: “Vegetarian Albanian food with feta cheese.” 
+- Expected behavior: The system applies all constraints and presents a limited set of matching vegetarian Albanian recipes.
 
 **Example 5 — Failure mode**
-- User: "<…>"
-- Expected fallback: <…>
+- User: “No, not that one.”
+- Expected behavior: The system returns to the recipe overview and allows the user to select an alternative recipe that still satisfies the active constraints.
+
+**Example 6 — Confirmation**
+- User: “Yes.”
+- Expected behavior: The system confirms the selected recipe and completes the interaction.
+
+**Example 7 — Ingredient-based preference**
+- User: “Albanian food with feta cheese.”
+- Expected behavior: The system filters Albanian recipes and retains only those that include feta cheese
 
 ---
-
 ## 4. Intent and Slot Classifier (≈1–2 pages)
 
 ### 4.1 Why Intent + Slots Matter
