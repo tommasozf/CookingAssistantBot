@@ -16,7 +16,7 @@ Keep the main report self-contained; appendices are optional extras.
 
 ---
 
-## 1. <Glados: Finding Recipes Through Conversation>  
+## 1. Glados: Finding Recipes Through Conversation 
 Design and Implementation of a Task-Oriented Spoken Dialogue System
 
 
