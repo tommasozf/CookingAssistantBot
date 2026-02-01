@@ -1,9 +1,3 @@
-<!--
-Report.md — Conversational Recipe Recommendation Agent
-Rule of thumb: 1 page ≈ 500 words. Total main text ≤ 10 pages (≈ 5000 words).
-Keep the main report self-contained; appendices are optional extras.
--->
-
 
 **Group R3**  
 **Students:** 
@@ -27,15 +21,10 @@ Design and Implementation of a Task-Oriented Spoken Dialogue System
   
 - Glados is a task-oriented spoken dialogue system developed for this purpose. Task-oriented dialogue systems are designed to help users complete well-defined tasks through structured interaction instead of engaging in open-ended conversation. In Glados the task consists of guiding the user toward a single recipe that matches their constraints. The recipe recommendation domain is suited to a task-oriented conversational approach. Recipes can be described using a finite set of attributes that align naturally with slot-filling dialogue strategies. Users often begin a recipe search without a fully specified goal and a conversational interface supports this exploratory behavior allowing preferences to be added, modified, or corrected during the interaction. 
 
-### 2.2 Task-Oriented Spoken Dialogue Systems (TOSDS)
-- **Definition:** <1–3 sentences.>
-- **Why TOSDS fits recipe recommendation:**  
-  <Structured task, constraints, user goals, etc.>
-
-### 2.3 Goals 
-> The main goal with our project is to design and implement a task-oriented spoken dialogue system which supports personalized recipe recommendation through conversational interactions, to enable users to express constraints related to cuisine, dietary requirements, ingredients, etc..
-> All of this to support correction and refinement of preferences during the interaction and to integrate voice-based interaction with visual recipe overviews and presentations.
-> The project demonstrates how a task-oriented spoken dialogue system can be applied effectively to a practical recommendation task in a structured and well-defined domain.
+### 2.2 Goals 
+- The main goal with our project is to design and implement a task-oriented spoken dialogue system which supports personalized recipe recommendation through conversational interactions, to enable users to express constraints related to cuisine, dietary requirements, ingredients, etc..
+- All of this to support correction and refinement of preferences during the interaction and to integrate voice-based interaction with visual recipe overviews and presentations.
+- The project demonstrates how a task-oriented spoken dialogue system can be applied effectively to a practical recommendation task in a structured and well-defined domain.
 
 ---
 
@@ -238,7 +227,7 @@ Impact: These refinements boosted intent accuracy from 89% to 93% and nearly dou
 
 ## 5.1 Motivation and Design Rationale
 
-Cookpanion implements both inclusion and exclusion filtering to reflect natural user search patterns. While inclusion filters specify desired attributes (e.g., "Italian cuisine"), exclusion filters express constraints to avoid (e.g., "no dairy"). This dual approach is more efficient than inclusion-only filtering, particularly for dietary restrictions and allergies where users would otherwise need to enumerate all acceptable alternatives.
+Glados implements both inclusion and exclusion filtering to reflect natural user search patterns. While inclusion filters specify desired attributes (e.g., "Italian cuisine"), exclusion filters express constraints to avoid (e.g., "no dairy"). This dual approach is more efficient than inclusion-only filtering, particularly for dietary restrictions and allergies where users would otherwise need to enumerate all acceptable alternatives.
 
 Exclusion filtering addresses common use cases including dietary restrictions (vegetarian, vegan), allergen avoidance (no nuts, no shellfish), and personal preferences (no cilantro). Supporting both strategies allows users to express preferences naturally without cognitive overhead.
 
@@ -319,24 +308,386 @@ one
 
 ---
 
-## 6. Extensions to the Pipeline (≈1 page)
+# Section 6: Extensions to the Pipeline
 
-### 6.1 Summary of Extensions
-List what you added beyond baseline requirements.
-- Extension A: <…>
-- Extension B: <…>
-- Extension C: <…>
+## 6.1 Summary of Extensions
 
-### 6.2 Motivation & Impact
-For each extension:
-- Why you added it
-- What problem it solves
-- How it improves experience or capabilities
+Glados implements multiple extensions beyond the baseline requirements, going from slot-filling to a more user-focused system. The extensions fall into four categories:
 
-### 6.3 Pipeline Integration Choice
-- Connected to custom NLU: **Yes/No**
-- Continued using Dialogflow: **Yes/No**
-- Rationale + implications: <brief>
+### Core Extensions Implemented:
+
+**Extension A: Exclusion-Based Filtering System**
+- Ingredient-level exclusions (excludeingredient)
+- Category-level exclusions (excludeingredienttype)
+- Cuisine exclusions (excludecuisine)
+- Hierarchical ingredient classification with 424+ type mappings
+- Automatic conflict detection and resolution
+
+**Extension B: Visual Interface Enhancements**
+- Dual-view display modes (text-based and visual grid)
+- Visual recipe cards with images (4-column responsive grid)
+- Active filter display with colored chips
+- Progress tracking and recipe counter visualization
+- Detailed recipe presentation with metadata pills
+
+**Extension C: GLaDOS Personality & Humor**
+- 518 lines of scripted responses
+- Sardonic, Portal-themed personality
+- Context-aware acknowledgments
+- Humorous error messages and feedback
+
+**Extension D: Advanced Dialogue Strategies**
+- Mixed-initiative interaction (user can add filters anytime)
+- Multi-layered context retention system
+- Multi-modal input (voice and click)
+- Progressive refinement with ambiguity handling
+---
+
+## 6.2 Motivation & Impact
+
+### Extension A: Exclusion-Based Filtering System
+
+**Motivation:**
+Inclusion-only filtering requires users to enumerate all acceptable options when avoiding ingredients, which is cognitively demanding and unnatural. For example, expressing "no dairy" as inclusion filters would require listing hundreds of dairy-free ingredients. Exclusion filtering better mirrors natural language patterns and supports critical use cases like dietary restrictions (vegetarian, vegan) and allergen avoidance (no nuts, no shellfish).
+
+**Implementation:**
+The exclusion mechanism uses Prolog's negation-as-failure operator (`\+`) in recipe_selection.pl:
+
+```prolog
+applyFilter('excludeingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), \+ hasIngredient(RecipeID, Ingredient)),
+        RecipeIDsOut).
+```
+
+The system implements three exclusion levels:
+1. **Ingredient-level**: Removes recipes containing specific ingredients (e.g., "no olive oil")
+2. **Category-level**: Excludes ingredient types using hierarchical classification (e.g., "no meat" removes all meat products)
+3. **Dietary-level**: Excludes entire dietary categories (e.g., "no dairy" removes all dairy products)
+
+The hierarchical ingredient classification system in ingredient_hierarchies.pl contains 424 type mappings across categories including meat, non-vegetarian, non-vegan, gluten, dairy, and spicy. This enables type-aware filtering:
+
+```prolog
+hasIngredient(RecipeID, IngredientType) :-
+    ingredient(RecipeID, SpecificIngredient),
+    typeIngredient(SpecificIngredient, IngredientType).
+```
+
+**Conflict Resolution:**
+When inclusion and exclusion filters conflict (e.g., "include chicken" vs. "exclude meat"), the system implements an inclusion-overrides-exclusion strategy. Conflicts are automatically detected via predefined rules:
+
+```prolog
+conflict(ingredient = Value, excludeingredient = Value).
+conflict(ingredienttype = Value, excludeingredienttype = Value).
+```
+
+The dialogue manager automatically removes conflicting filters from memory, prioritizing the user's most recent explicit request through the removeConflicts action in patterns.pl.
+
+**Impact:**
+This dual-filtering approach significantly improves user experience by:
+- Reducing cognitive load: Users express what to avoid rather than enumerating alternatives
+- Supporting natural language: "No meat" is more intuitive than "vegetarian dishes only"
+- Handling allergies efficiently: "No nuts" removes all nut-containing recipes without explicit enumeration
+- Preventing impossible combinations: Automatic conflict resolution avoids empty result sets
+- Enabling flexible preference expression: Users can combine inclusion and exclusion naturally
+
+**Challenges Addressed:**
+- **Empty Result Sets**: When filters eliminate all recipes, the system provides immediate feedback: "I could not find a recipe that matches all preferences. Please remove a filter." Visual filter chips allow easy constraint removal.
+- **Ambiguous Exclusions**: Hierarchical classification disambiguates broad categories (e.g., "seafood" maps to all fish and shellfish)
+- **NLU Parsing Errors**: The intent classifier occasionally misinterprets mixed inclusion/exclusion utterances; for example, "Korean food with no cheese" may incorrectly generate two exclusion filters instead of one inclusion and one exclusion
+
+---
+
+
+### Extension B: Visual Interface Enhancements
+
+**Motivation:**
+Text-only recipe recommendations lack visual appeal and make it difficult for users to browse options. Visual presentation with images, structured layouts, and filter visualization significantly improves usability and engagement.
+
+**Implementation:**
+
+**1. Recipe Overview Display**
+The system uses two adaptive display modes:
+- **Text-based (recipe_overview.html)**: For large result sets (>15 recipes), prompts further refinement with active filter display
+- **Visual grid (recipe_overview2.html)**: For <=15 recipes, shows 4-column responsive grid with recipe cards containing image, title, and select button
+
+**2. Detailed Recipe Presentation (recipe_confirmation.html)**
+- Recipe image
+- Title with metadata pills (time, servings, cuisine)
+- Ingredient list (unordered) with quantities
+- Step-by-step instructions (ordered list)
+
+**3. Active Filter Display**
+Filters shown as colored chips with dynamic rendering:
+- Inclusion filters: Warm colors (honey gold, orange)
+- Exclusion filters: Red tones 
+- Real-time updates via SocketIO `filters` event
+
+**4. Interaction State Visualization**
+- Recipe counter showing current matches
+- Progress bar with filtering steps (800 → 150 → 45 → 12)
+- Turn indicators (microphone enabled/disabled)
+- Page transitions reflecting dialogue states
+
+**Design System:**
+The interface uses a glassy design with:
+- Semi-transparent backgrounds
+- Soft shadows and borders
+- Rounded corners
+- Smooth color transitions
+- Responsive typography
+
+**Impact:**
+Visual enhancements significantly improve user experience:
+- **Browsing efficiency**: Grid layout allows quick visual comparison of 15 recipes simultaneously
+- **Filter awareness**: Color-coded chips make active constraints immediately visible
+- **Progress feedback**: Counter and progress bar help users understand filtering impact
+- **Aesthetic appeal**: Modern, polished interface increases engagement
+- **Accessibility**: Dual-view approach supports both refinement and browsing workflows
+
+---
+
+### Extension C: Glados Personality & Humor
+
+**Motivation:**
+Generic, robotic responses create a sterile interaction experience. A distinctive personality enhances engagement, memorability, and user enjoyment. The Glados character (from Portal series) provides a recognizable, humorous persona that transforms recipe recommendation into an entertaining experience.
+
+**Implementation:**
+The responses.pl file contains 518 lines of scripted responses organized by intent and context. Examples include:
+
+**Greetings:**
+- "Try to keep up."
+- "Welcome to the Aperture Science Computer-Aided Enrichment Center Recipe Recommendation System."
+
+**Errors:**
+- "I have access to the entire database of human language, and that still made no sense."
+- "That input was so garbled, I'm surprised it even registered."
+
+**Empty Results:**
+- "Congratulations. You've filtered out every single recipe."
+- "Well, that's impressive. You've managed to want something that doesn't exist."
+
+**Acknowledgments:**
+- "Fine. But I'm only doing this because I have to."
+- "If you insist. Though I question your decision-making process."
+
+**Context-aware responses:**
+The system generates dynamic acknowledgments explaining filtering actions:
+```prolog
+text(ackFilter, [
+    "Here are recipes that ", FilterDesc, ". Anything else?"
+])
+```
+
+**Impact:**
+Pilot study observations noted positive reactions (smiling, laughter) to humorous responses. The personality:
+- Increases memorability and distinctiveness
+- Maintains engagement during multi-turn interactions
+- Softens system errors with humor
+- Creates emotional connection beyond functional utility
+- Differentiates from generic recipe apps
+
+**Risk Mitigation:**
+While humor can alienate some users, the GLaDOS character is well-known and generally well-received. The sardonic tone remains polite and task-focused, never insulting users directly.
+
+---
+
+### Extension D: Advanced Dialogue Strategies
+
+**Motivation:**
+Rigid slot-filling dialogues frustrate users by forcing linear interaction patterns. Advanced dialogue strategies provide flexibility, support natural conversation flow, and maintain context across multi-turn interactions.
+
+**Implementation:**
+
+**1. Mixed-Initiative Interaction**
+Users can add filters anytime without explicit prompting. Implementation via dialogue patterns in patterns.pl:
+
+```prolog
+pattern([
+    a21featureRequest,
+    [user, addFilter],
+    [agent, removeConflicts(Params)],
+    [agent, ackFilter],
+    [agent, insert(a50recipeSelect)]
+]).
+```
+
+Features:
+- Additive filtering without restating preferences
+- Out-of-order specification in initial requests
+- Multi-modal selection (voice or click)
+
+**2. Context Retention**
+Multi-layered memory system maintains:
+- **Filter memory**: All active constraints as key-value pairs
+- **Session history**: Complete dialogue sequence
+- **Current recipe context**: Selected recipe ID
+- **Filter history**: Recipe count progression for progress tracking
+
+Context persists across page navigations through session storage and server-side memory.
+
+**3. Ambiguity Handling**
+The system employs:
+- Progressive refinement for underspecified input
+- Default interpretations via ingredient hierarchies
+- Automatic conflict resolution
+
+Note: Full clarification subdialogues are not implemented—users refine through iteration rather than explicit disambiguation questions.
+
+**4. Multi-Modal Input**
+Seamless voice and click integration—users can select recipes by:
+- Speaking recipe names
+- Clicking recipe cards
+
+Both methods emit events to the dialogue manager, ensuring consistent behavior regardless of modality.
+
+**5. Recipe Memory**
+Current recipe tracked via `memory([recipeName = '42'])` during confirmation phase. However, no cross-session persistence or favorites system is implemented.
+
+**Impact:**
+Advanced dialogue strategies dramatically improve flexibility:
+- **Natural conversation flow**: Users don't need to follow rigid script
+- **Reduced friction**: No need to repeat constraints when refining
+- **Error recovery**: Automatic conflict resolution prevents dead-ends
+- **Multi-tasking support**: Click-based selection complements voice input
+- **Transparent state**: Visual filter display keeps users oriented
+
+**Limitations:**
+- No explicit clarification dialogues (system acts on best interpretation)
+- No cross-session memory (fresh start each session)
+- Limited handling of out-of-order responses beyond filter addition
+
+---
+
+## 6.3 Pipeline Integration Choice
+
+**Connected to custom NLU: Yes**
+
+The extensions integrate directly with the custom BERT-based NLU system rather than Dialogflow. This decision was driven by several factors:
+
+**Rationale:**
+
+1. **Fine-grained control**: Custom NLU allows precise intent and slot definitions tailored to recipe recommendation domain
+2. **Extension support**: Adding exclusion intents (excludeingredient, excludeingredienttype, excludecuisine) was straightforward in custom training data
+3. **Performance optimization**: BERT-based system achieved 93% intent accuracy and 99.5% slot F1-score, exceeding project thresholds
+4. **Integration simplicity**: Direct Python-Prolog communication via SIC framework without external API dependencies
+5. **Cost and latency**: No per-request API costs or network latency compared to cloud-based Dialogflow
+
+**Implications:**
+
+**Advantages:**
+- Full control over intent taxonomy and slot definitions
+- Ability to rapidly iterate on NLU model without external service constraints
+- No API rate limits or costs
+- Faster response times (local inference)
+- Privacy: No user data sent to external services
+
+**Disadvantages:**
+- Requires manual training data creation and model training
+- No built-in entity resolution or spelling correction
+- Maintenance burden for model updates
+- Less robust to out-of-domain utterances compared to Dialogflow's large-scale training
+
+**Technical Integration:**
+The custom NLU outputs intent and slot labels that map directly to Prolog predicates in the dialogue manager:
+
+```python
+nlu_result = nlu.request(InferenceRequest(transcript.transcript))
+# Returns: intent, intent_confidence, slots
+```
+
+These results trigger dialogue patterns in patterns.pl, which execute actions like `removeConflicts(Params)`, `ackFilter`, and `insert(a50recipeSelect)`.
+
+**For Speech Recognition:**
+Google Speech-to-Text was chosen over OpenAI Whisper after testing revealed Whisper was too slow and inaccurate for real-time interaction. Google STT provides:
+- Faster transcription (real-time streaming)
+- Higher accuracy for conversational English
+- Better handling of disfluencies and partial utterances
+
+This choice prioritizes responsiveness over offline capability or cost optimization.
+
+---
+
+## 6.4 Additional Implementation Details
+
+### Filter Application Cascade
+
+Filters are applied recursively in recipe_selection.pl:
+
+```prolog
+recipesFiltered(RecipeIDs, [], RecipeIDs).  % Base case
+
+recipesFiltered(RecipeIDsIn, [ParamName = Value | Filters], RemainingRecipeIDs) :-
+    applyFilter(ParamName, Value, RecipeIDsIn, RecipeIDsOut),
+    recipesFiltered(RecipeIDsOut, Filters, RemainingRecipeIDs).
+```
+
+This cascade pattern ensures:
+1. Early filtering reduces search space for subsequent filters
+2. Order-independent results (set-based operations)
+3. Clean separation between filter types
+4. Easy addition of new filter types
+
+### Memory Management
+
+The dialogue manager maintains multiple memory layers:
+
+```prolog
+% Store filter
+memory([cuisine = 'Albanian'])
+
+% Track history
+filterHistory([800, 450, 120, 15])
+
+% Current recipe
+memory([recipeName = 'Tavë Kosi'])
+```
+
+Memory operations (add, remove, clear) are integrated into dialogue actions, ensuring state consistency across turns.
+
+### Frontend-Backend Communication
+
+SocketIO enables bidirectional real-time communication:
+
+**Backend → Frontend:**
+- `transcript`: Display speech recognition results
+- `filters`: Update active filter chips
+- `recipe_count`: Update counter display
+
+**Frontend → Backend:**
+- `buttonClick`: User clicks recipe card or button
+- Microphone input triggers STT → NLU → DM pipeline
+
+---
+
+## 6.5 Future Extensions
+
+Identified but unimplemented features for future work:
+
+**Integration Extensions:**
+- **External Recipe APIs**: Integration with Spoonacular or Edamam for 100,000+ recipe coverage
+- **Nutritional Information**: Display calories, macronutrients, allergens per recipe
+
+**Personalization Extensions:**
+- **User Profiling**: Track preferences across sessions, learn from behavior
+- **Favorites System**: Save and recall preferred recipes
+- **Recommendation Learning**: Adapt recommendations based on user history
+
+**Dialogue Extensions:**
+- **Confidence-Based Clarification**: Ask for confirmation on low-confidence recognition
+- **Advanced Conflict Resolution**: Present options to user rather than auto-resolving
+- **Undo/Redo**: Allow users to undo filter additions or go back in conversation
+- **Why-Not Explanations**: Explain why specific recipes were excluded
+
+**Interaction Extensions:**
+- **Cooking Mode**: Step-by-step guidance with voice commands, timers, and progress tracking
+- **Recipe Comparison**: Side-by-side comparison of multiple recipes
+- **Multi-Language Support**: Multilingual recognition and responses
+
+**Technical Extensions:**
+- **Validation Set**: Dedicated validation data to monitor overfitting during training
+- **Active Learning**: Collect and label user utterances that caused errors
+- **A/B Testing Framework**: Compare dialogue strategies systematically
 
 ---
 
