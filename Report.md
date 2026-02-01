@@ -236,50 +236,86 @@ Impact: These refinements boosted intent accuracy from 89% to 93% and nearly dou
 
 ---
 
-## 5. Exclusion (≈2 pages)
+## 5.1 Motivation and Design Rationale
 
-### 5.1 What “Exclusion” Means in Your System
-Define scope explicitly:
-- Excluding **ingredients**: <…>
-- Excluding **cuisines**: <…>
-- Excluding **mealTypes**: <…>
+Cookpanion implements both inclusion and exclusion filtering to reflect natural user search patterns. While inclusion filters specify desired attributes (e.g., "Italian cuisine"), exclusion filters express constraints to avoid (e.g., "no dairy"). This dual approach is more efficient than inclusion-only filtering, particularly for dietary restrictions and allergies where users would otherwise need to enumerate all acceptable alternatives.
 
-### 5.2 Implementation Approach
-Explain exactly how it works in your pipeline.
-- Where exclusion is applied: (NLU → dialogue state → query → ranking → response)
-- Representation of exclusions: <lists, ontology classes, Prolog predicates, etc.>
-- Rule logic: <how conflicts are resolved, precedence rules>
+Exclusion filtering addresses common use cases including dietary restrictions (vegetarian, vegan), allergen avoidance (no nuts, no shellfish), and personal preferences (no cilantro). Supporting both strategies allows users to express preferences naturally without cognitive overhead.
 
-### 5.3 Tools / Technologies
-Describe integrations:
-- MARBEL: <role in pipeline>
-- Prolog: <facts/rules/queries used>
-- Python: <glue logic / filtering / orchestration>
-- Ontology updates: <what was added or changed>
+## 5.2 Exclusion Mechanism
 
-### 5.4 Pros and Cons (Be Critical)
-**Strengths**
-- <what it does well, with examples>
+The exclusion mechanism is implemented in `recipe_selection.pl` using Prolog's negation-as-failure operator (`\+`):
 
-**Limitations**
-- <what it cannot do, edge cases, failure modes>
+```prolog
+applyFilter('excludeingredient', Ingredient, RecipeIDsIn, RecipeIDsOut) :-
+    findall(RecipeID,
+        (member(RecipeID, RecipeIDsIn), \+ hasIngredient(RecipeID, Ingredient)),
+        RecipeIDsOut).
+```
 
-### 5.5 Performance & Trade-offs
-Compare exclusion vs inclusion-only.
-- Accuracy / success rate: with vs without exclusion
-- Impact on user satisfaction: <summary of evidence>
-- Latency or complexity trade-offs: <if any>
+**Ingredient-Level Exclusions** target specific ingredients by name. When a user says "no olive oil," the system filters recipes where `ingredient(RecipeID, 'olive oil')` fails, removing all recipes containing olive oil.
 
-**Comparison table**
-| Setting | Task success rate | Avg. turns to success | Common failures |
-|---|---:|---:|---|
-| Inclusion-only | <…> | <…> | <…> |
-| With exclusion | <…> | <…> | <…> |
+**Category-Level Exclusions** operate on ingredient types using a hierarchical classification system in `ingredient_hierarchies.pl`:
 
-### 5.6 Testable Exclusion Examples
-Provide 3–6 interactions.
-- User: "<Exclude X and recommend Y>"
-- Expected: <…>
+```prolog
+typeIngredient('chicken thighs', 'meat').
+typeIngredient('beef steak', 'meat').
+typeIngredient('pork ribs', 'meat').
+```
+
+When a user excludes "meat," the system removes all recipes containing any ingredient classified as meat through the type-aware predicate:
+
+```prolog
+hasIngredient(RecipeID, IngredientType) :-
+    ingredient(RecipeID, SpecificIngredient),
+    typeIngredient(SpecificIngredient, IngredientType).
+```
+
+**Dietary Restrictions** are implemented as inclusion filters that implicitly exclude non-compliant ingredients. A "vegetarian" filter ensures all recipe ingredients satisfy `typeIngredient(Ingredient, 'vegetarian')`, effectively excluding meat, fish, and poultry.
+
+**Conflict Resolution**: When inclusion and exclusion filters conflict (e.g., "include chicken" vs. "exclude meat"), the system implements an inclusion-overrides-exclusion strategy. Conflicts are detected via:
+
+```prolog
+conflict(ingredient = Value, excludeingredient = Value).
+conflict(ingredienttype = Value, excludeingredienttype = Value).
+```
+
+The dialogue manager automatically removes conflicting filters from memory, prioritizing the user's most recent explicit request.
+
+**Filter Application**: Filters are applied recursively in a cascade pattern:
+
+```prolog
+recipesFiltered(RecipeIDs, [], RecipeIDs).  % Base case
+
+recipesFiltered(RecipeIDsIn, [ParamName = Value | Filters], RemainingRecipeIDs) :-
+    applyFilter(ParamName, Value, RecipeIDsIn, RecipeIDsOut),
+    recipesFiltered(RecipeIDsOut, Filters, RemainingRecipeIDs).
+```
+
+## 5.3 Examples of Exclusion Patterns
+
+- **"No olive oil"**: Removes recipes where `ingredient(RecipeID, 'olive oil')` succeeds
+- **"No meat"**: Removes all recipes containing ingredients with `typeIngredient(Ingredient, 'meat')`
+- **"Vegetarian"**: Retains only recipes where all ingredients satisfy vegetarian constraint
+- **"Albanian food with feta cheese but no meat"**: Applies cuisine filter, ingredient inclusion, then meat exclusion sequentially
+
+## 5.4 Challenges and Solutions
+
+**Incomplete Ingredient Data**: The system addresses this through comprehensive ingredient tagging and type-based inference. However, ingredients not recorded in the database cannot be excluded—an inherent limitation of closed-domain databases.
+
+**Ambiguous Exclusions**: Hierarchical ingredient classification disambiguates broad categories through explicit type mappings. Terms like "seafood" map to all fish and shellfish via `typeIngredient/2` predicates. Ambiguities around ingredient properties (spicy, sweet) are not fully addressed.
+
+**Empty Result Sets**: When filters eliminate all recipes, the system employs multiple recovery strategies:
+1. Immediate feedback: "I could not find a recipe that matches all preferences. Please remove a filter."
+2. Conflict detection prevents impossible combinations
+3. Visual filter chips allow easy constraint removal
+4. Dialogue patterns trigger recovery flows when `recipesFiltered([])` returns empty
+
+
+**NLU Parsing Errors**: The intent classifier occasionally misinterprets mixed inclusion/exclusion utterances; for example, "Korean food with no cheese" may incorrectly generate two exclusion filters (exclude Korean, exclude cheese) rather than one inclusion and one exclusion, resulting in opposite behavior from user intent.
+
+**Current Limitation**: The system cannot suggest which specific filter to remove. Users must manually identify overly restrictive constraints.
+one 
 
 ---
 
