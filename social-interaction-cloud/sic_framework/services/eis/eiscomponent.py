@@ -369,7 +369,7 @@ class EISComponent(SICComponent):
             # Perform ASR transcription
             if self.params.use_whisper:
                 self.logger.info("Requesting transcript from Whisper...")
-                transcript_response = self.whisper.request(GetTranscript(timeout=60, phrase_time_limit=60))
+                transcript_response = self.whisper.request(GetTranscript(timeout=15, phrase_time_limit=15))
                 transcript = getattr(transcript_response, "transcript", None)
             else:
                 self.logger.info("Requesting transcript from Google STT...")
@@ -379,8 +379,15 @@ class EISComponent(SICComponent):
                 if response_obj and hasattr(response_obj, "alternatives") and response_obj.alternatives:
                     transcript = response_obj.alternatives[0].transcript
 
-            if transcript is None or not isinstance(transcript, str) or not transcript:
+            if transcript is None or not isinstance(transcript, str):
                 raise ValueError(f"Invalid transcript: expected a string, got {type(transcript).__name__}")
+            if not transcript.strip():
+                # Handle empty transcript gracefully - let user try again
+                self.logger.warning("Empty transcript: no speech detected or silence. User can try again.")
+                self.logger.info("Sending event: ListeningDone")
+                self.redis_client.publish(self.marbel_channel, "event('ListeningDone')")
+                # Keep user turn so they can try speaking again
+                return
 
             self.logger.info(f"Received transcript: {transcript}")
 
@@ -409,7 +416,10 @@ class EISComponent(SICComponent):
             # Log any errors that occur during processing
             self.logger.error(f"Error in NLU handling: {e}")
             self.logger.debug("Exception details", exc_info=True)
-            # Optionally, send error event to MARBEL or webserver
+            # Send ListeningDone so system doesn't stay stuck
+            self.logger.info("Sending event: ListeningDone (after error)")
+            self.redis_client.publish(self.marbel_channel, "event('ListeningDone')")
+            # Also send error event
             self.redis_client.publish(self.marbel_channel, "event('ErrorOccurred')")
 
     def _intent_string(self, query_result: QueryResult) -> str:
@@ -449,15 +459,17 @@ class EISComponent(SICComponent):
 
         # Remove empty values and sanitize values
         for key, value in parameters.items():
+            # Lowercase key for Prolog compatibility (e.g., excludeIngredient -> excludeingredient)
+            key_lower = key.lower()
             if isinstance(value, list) and value:
-                # Remove punctuation from each item in the list
-                sanitized_list = [item.translate(translator) for item in value]
+                # Remove punctuation and lowercase each item in the list
+                sanitized_list = [item.translate(translator).lower() for item in value]
                 list_values = "#3#".join(sanitized_list)
-                processed_entities.append(f"{key}=[{list_values}]")  # Turn list into string
+                processed_entities.append(f"{key_lower}=[{list_values}]")  # Turn list into string
             elif isinstance(value, str) and value:
-                # Remove punctuation from the string
-                sanitized_value = value.translate(translator)
-                processed_entities.append(f"{key}={sanitized_value}")
+                # Remove punctuation and lowercase the string
+                sanitized_value = value.translate(translator).lower()
+                processed_entities.append(f"{key_lower}={sanitized_value}")
         return "#2#".join(processed_entities)
 
     def _handle_stop_listening_command(self):
@@ -507,11 +519,12 @@ class EISComponent(SICComponent):
         self.speakers_output.stream.write(wav_audio.waveform)
 
     def local_tts(self, text):
-        # uncomment for old voice
-        call(["espeak", "-s140 -ven+18 -z", text])
-        #GLaDOS voice
-        #call(["espeak", "-s120 -ven+f3 -p40", text])
-        #call(["espeak", "-ven+f3", "-s120", "-p40", text])
+        # GLaDOS-like voice: female, faster, lower pitch
+        # Try espeak-ng first, fallback to espeak if not available
+        try:
+            call(["espeak-ng", "-ven+f3", "-s170", "-p35", text])
+        except FileNotFoundError:
+            call(["espeak", "-ven+f3", "-s170", "-p35", text])
 
 
 

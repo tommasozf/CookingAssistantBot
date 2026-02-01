@@ -45,6 +45,7 @@ class NLUConf(SICConfMessage):
         ontology_path: str,
         model_path: str,
         max_length: int = 16,
+        confidence_threshold: float = None
     ):
         """
         Configuration for the NLU component.
@@ -57,6 +58,7 @@ class NLUConf(SICConfMessage):
         self.ontology_path = ontology_path
         self.max_length = max_length
         self.model_path = model_path
+        self.confidence_threshold = confidence_threshold
 
 
 class NLUComponent(SICComponent):
@@ -111,7 +113,7 @@ class NLUComponent(SICComponent):
         model = BERTNLUModel(num_intents=self.num_intents, num_slots=self.num_slots).to(
             self.device
         )
-        model.load_state_dict(torch.load(self.params.model_path, weights_only=True))
+        model.load_state_dict(torch.load(self.params.model_path, map_location=self.device, weights_only=True))
 
         start_time = time.time()
         intent, intent_confidence, slots, slot_confidences = predict(
@@ -120,6 +122,12 @@ class NLUComponent(SICComponent):
             max_length=self.params.max_length,
             device=self.device,
         )
+        if self.params.confidence_threshold is not None:
+            if intent_confidence <self.params.confidence_threshold:
+                if intent != "fallback":
+                    self.logger.info(f"Low intent confidence, overwriting {intent} as 'fallback'")
+                    intent = "fallback"
+
 
         inference_time = time.time() - start_time
         self.logger.info(f"Inference result: {intent}, {intent_confidence}, {slots}, {inference_time}")

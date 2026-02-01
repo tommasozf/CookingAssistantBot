@@ -25,6 +25,13 @@ var socket = io();
 // Initially, it is the agent's turn; DO NOT CHANGE here, this flag is set by EISComponent in SIC framework
 var user_turn = false;
 
+// Persist turn across page navigations (otherwise it resets to false after redirects)
+try {
+  const storedTurn = sessionStorage.getItem("user_turn");
+  if (storedTurn !== null) user_turn = (storedTurn === "true");
+} catch (e) {}
+
+
 // Variable to keep track of number of recipes that fullfill criteria
 var recipecounter = -1;
 
@@ -47,7 +54,7 @@ for (var i = 0; i < elements.length; i++) {
 // - The socket handler for 'transcript' event turns it off again, see below.
 var micButton = document.getElementById('mic');
 
-if (micButton) {
+/* if (micButton) {
     micButton.addEventListener('click', function() {
         if (user_turn) {
             document.getElementById('micimg').src  = 'static/images/mic_on.png';
@@ -55,7 +62,21 @@ if (micButton) {
             alert("It is not your turn.")
         }
     });
+} */
+
+if (micButton) {
+  micButton.addEventListener('click', function (e) {
+    if (user_turn) {
+      const micimg = document.getElementById('micimg');
+      if (micimg) micimg.src = 'static/images/mic_on.png';
+    } else {
+      alert("It is not your turn.");
+      e.preventDefault();
+      e.stopImmediatePropagation(); // prevents the generic .btn handler from firing too
+    }
+  });
 }
+
 
 // Event handler for successful connection
 socket.on('connect', function() {
@@ -72,42 +93,49 @@ socket.on('disconnect', function() {
     console.log('Disconnected from the server.');
 });
 
-// Event handler for transcript event
+//Event handler for transcript event
+// socket.on("transcript", (text) => {
+//     document.getElementById("transcript").innerHTML = text;
+// });
+
 socket.on("transcript", (text) => {
-    document.getElementById("transcript").innerHTML = text;
+  const el = document.getElementById("transcript");
+  if (el) el.innerHTML = text;
 });
+
 
 socket.on("pattern", (pattern) => {
     switch(pattern) {
-        case "a50recipeSelect":
-            if (recipecounter > 15) {
-                window.location.href = "recipe_overview.html";
-            } else {
-                window.location.href = "recipe_overview2.html";
-            }
-            break;
         case "start":
             window.location.href = "start.html";
             break;
         case "c10":
             window.location.href = "welcome.html";
             break;
+        case "a50recipeSelect":
+            window.location.href = "recipe_overview.html";
+            break;
+        case "a50recipeConfirm":
+            window.location.href = "recipe_confirmation.html";
+            break;
         default:
-            window.location.href = "closing.html";
-    }
-});
+          window.location.href = "closing.html";
+      }
+})
+
 
 
 // Allow explicit page navigation from the agent
 socket.on("page", (pageName) => {
     // Only redirect if we aren't already on that page to prevent loops
+    console.log("[page]", pageName);
     if (window.location.pathname.indexOf(pageName) === -1) {
         window.location.href = pageName;
     }
 });
 
 // Event handler for switching turns
-socket.on("set_turn", (whoseturn) => {
+/* socket.on("set_turn", (whoseturn) => {
     if (whoseturn=="true") {
         user_turn = true;
     } else {
@@ -117,23 +145,111 @@ socket.on("set_turn", (whoseturn) => {
     if (!user_turn) {
         document.getElementById('micimg').src  = 'static/images/mic_out.png';
     }
-})
+}) */
+
+socket.on("set_turn", (whoseturn) => {
+  user_turn = (whoseturn === "true");
+
+  // persist across page redirects
+  try { sessionStorage.setItem("user_turn", user_turn ? "true" : "false"); } catch (e) {}
+
+  // update mic icon if it exists on this page
+  const micimg = document.getElementById('micimg');
+  if (!user_turn && micimg) {
+    micimg.src = 'static/images/mic_out.png';
+  }
+});
+
+
+// socket.on("recipecounter", (number) => {
+//     recipecounter = number;
+//     document.getElementById("recipecounter").innerHTML = recipecounter;
+// })
 
 socket.on("recipecounter", (number) => {
-    recipecounter = number;
-    document.getElementById("recipecounter").innerHTML = recipecounter;
-})
+  recipecounter = number;
+  const el = document.getElementById("recipecounter");
+  if (el) el.innerHTML = recipecounter;
+});
+
+
+// Progress tracker handler - shows filtering journey
+socket.on("progress", (dataString) => {
+    console.log("Progress update:", dataString);
+    try {
+        var data = JSON.parse(dataString);
+        
+        // Update progress bar
+        var progressBar = document.getElementById("progressBar");
+        var progressPercent = document.getElementById("progressPercent");
+        var progressStart = document.getElementById("progressStart");
+        var progressSteps = document.getElementById("progressSteps");
+        
+        if (progressBar) {
+            progressBar.style.width = data.percentage + "%";
+            progressBar.setAttribute("aria-valuenow", data.percentage);
+        }
+        if (progressPercent) {
+            progressPercent.innerHTML = data.percentage;
+        }
+        if (progressStart) {
+            progressStart.innerHTML = data.start;
+        }
+        
+        // Build step indicators showing the filtering journey
+        if (progressSteps && data.history && data.history.length > 0) {
+            var stepsHtml = "";
+            data.history.forEach((count, index) => {
+                var isLast = (index === data.history.length - 1);
+                var badgeClass = isLast ? "badge bg-success" : "badge bg-secondary";
+                stepsHtml += '<span class="' + badgeClass + ' mx-1">' + count + '</span>';
+                if (!isLast) {
+                    stepsHtml += '<span class="text-muted">→</span>';
+                }
+            });
+            progressSteps.innerHTML = stepsHtml;
+        }
+    } catch (e) {
+        console.log("Error parsing progress data:", e);
+    }
+});
 
 // Example showing how to work with templates
 // Adding filters to a card deck on an HTML page
 socket.on("filters", (filterString) => {
     const filtersString = filterString.substring(1, filterString.length-1);
+
+    function updateCompactDisplay(filtersArr) {
+        const disp = (filtersArr && filtersArr.length) ? filtersArr.join(', ') : 'None';
+        document.querySelectorAll('#filterListDisplay').forEach(el => el.textContent = disp);
+        const fallback = document.getElementById('filterFallback');
+        if (fallback) {
+            if (filtersArr && filtersArr.length) fallback.classList.add('d-none');
+            else fallback.classList.remove('d-none');
+        }
+    }
+
     if (filterString.length != 0) {
-        const filters = filtersString.split(',');
-        document.getElementById("addFiltersHere").innerHTML = "";
+        if (filtersString.trim().length === 0) {
+            const addArea = document.getElementById("addFiltersHere");
+            if (addArea) addArea.innerHTML = "";
+            updateCompactDisplay([]);
+            return;
+        }
+
+        const filters = filtersString.split(',').map(f => f.trim()).filter(f => f.length > 0);
+        const addArea = document.getElementById("addFiltersHere");
+        if (addArea) addArea.innerHTML = "";
+
         filters.forEach((element) => {
-            filterCard(element);
+            if (addArea) filterCard(element);
         });
+
+        updateCompactDisplay(filters);
+    } else {
+        const addArea = document.getElementById("addFiltersHere");
+        if (addArea) addArea.innerHTML = "";
+        updateCompactDisplay([]);
     }
 })
 
@@ -154,14 +270,39 @@ socket.on("show_recipes", (data) => {
 
         recipes.forEach((recipe) => {
             var clone = template.content.cloneNode(true);
-            
+
             // Set Title
             clone.querySelector(".recipe-title").textContent = recipe.name;
-            
+
             // Set Image
             var img = clone.querySelector(".recipe-img");
             if (img) img.src = recipe.image;
-            
+
+            // Add a click handler for selection: emit a buttonClick with the recipe name
+            // and navigate to the confirmation page so the user sees the selected recipe.
+            const selectBtn = clone.querySelector('.select-pill');
+            const tile = clone.querySelector('.recipe-tile');
+
+            const onSelect = (evt) => {
+                if (evt && evt.stopPropagation) evt.stopPropagation();
+                // Inform server/agent that a recipe was selected
+                socket.emit('buttonClick', recipe.name);
+                // Navigate to confirmation page immediately; the server will shortly send
+                // the 'show_confirmation' event to populate the page.
+                window.location.href = 'recipe_confirmation.html';
+            };
+
+            if (selectBtn) {
+                selectBtn.setAttribute('role', 'button');
+                selectBtn.addEventListener('click', onSelect);
+            }
+
+            if (tile) {
+                // Make the whole tile clickable as well
+                tile.style.cursor = 'pointer';
+                tile.addEventListener('click', onSelect);
+            }
+
             container.appendChild(clone);
         });
     }

@@ -1,57 +1,366 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Confirm Recipe</title>
-        <link rel="stylesheet" href="static/css/bootstrap.min.css">
-        <script src="static/js/bootstrap.bundle.min.js"></script>
-        <script src="static/js/jquery-3.7.1.min.js"></script>
-        <script src="static/js/socket.io.min.js"></script>
-        <script src="static/js/pca.js" defer></script>
-    </head>
-    <body class="bg-light">
-        <div id="main" class="container mt-5">
-            <nav class="navbar mb-1" style="position: absolute; top: 0; right: 0;">
-                <button class="btn" id="mic">
-                    <img class="img-fluid" style="width:2.5rem;" id="micimg" src="static/images/mic_out.png" alt="Mic">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Project Conversational Agents - Recipe Confirmation</title>
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <script src="static/js/socket.io.min.js"></script>
+    <script src="static/js/pca.js" defer></script>
+
+    <style>
+      :root{
+        --text: rgba(35,24,16,.92);
+        --muted: rgba(35,24,16,.65);
+        --muted2: rgba(35,24,16,.50);
+        --border: rgba(80,55,35,.14);
+        --accent1:#f59e0b;
+        --accent2:#fb923c;
+        --accent3:#ef4444;
+      }
+
+      *{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body{
+        min-height:100vh;
+        margin:0;
+        color: var(--text);
+        font-family: ui-rounded, "SF Pro Rounded", ui-sans-serif, system-ui, -apple-system,
+                     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+        overflow-x:hidden;
+      }
+
+      .bg-image{
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .page{
+        min-height:100vh;
+        padding: 22px 18px 76px;
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+
+      .shell{
+        width: min(980px, 100%);
+      }
+
+      .glass{
+        position: relative;
+        border-radius: 30px;
+        border: 1px solid rgba(80,55,35,.16);
+        background: rgba(255,255,255,.90);
+        box-shadow:
+          0 22px 60px rgba(60,35,15,.18),
+          0 2px 0 rgba(255,255,255,.55) inset;
+        overflow:hidden;
+      }
+      .glass::before{
+        content:"";
+        position:absolute;
+        inset:-2px;
+        background: radial-gradient(700px 260px at 25% 0%, rgba(255,255,255,.85), transparent 62%);
+        pointer-events:none;
+      }
+
+      .topline{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(80,55,35,.10);
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.55);
+        color: rgba(35,24,16,.78);
+        font-size: .92rem;
+      }
+      .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent3));
+        box-shadow: 0 0 0 4px rgba(245,158,11,.16);
+      }
+      .proj{
+        font-size:.92rem;
+        color: var(--muted2);
+      }
+
+      .mic-btn{
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.62);
+        border-radius: 14px;
+        padding: 8px 10px;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        transition: transform .12s ease;
+      }
+      .mic-btn:hover{ transform: translateY(-1px); }
+      .mic-btn img{ width: 1.55rem; height: 1.55rem; }
+      .mic-label{
+        font-size: .92rem;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .content{
+        padding: 22px 22px 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .title{
+        font-weight: 780;
+        letter-spacing: -0.6px;
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+      }
+      .sub{
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.55;
+        font-weight: 520;
+      }
+
+      /* Recipe Card */
+      .recipe-card{
+        border-radius: 24px;
+        border: 1px solid rgba(80,55,35,.14);
+        background: rgba(255,255,255,.72);
+        overflow: hidden;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 16px rgba(60,35,15,.10);
+      }
+
+      .recipe-img-container{
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(245,158,11,.08), rgba(251,146,60,.08));
+      }
+
+      #confirmImg{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .recipe-details{
+        padding: 20px;
+      }
+
+      #confirmTitle{
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+
+      .recipe-meta{
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .meta-item{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba(245,158,11,.10);
+        border-radius: 8px;
+        font-size: .92rem;
+        color: var(--muted);
+      }
+
+      .meta-label{
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* Sections */
+      .recipe-section{
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(80,55,35,.10);
+      }
+
+      .section-title{
+        font-weight: 700;
+        font-size: 1.08rem;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+
+      #confirmIngredients, #confirmInstructions{
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .list-group-item{
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(80,55,35,.08);
+        padding: 10px 0;
+        color: var(--muted);
+        font-size: .95rem;
+      }
+
+      .list-group-item:last-child{
+        border-bottom: none;
+      }
+
+      .deco{
+        position:absolute;
+        right:-18px;
+        bottom:-18px;
+        width: 220px;
+        opacity:.10;
+        transform: rotate(10deg);
+        pointer-events:none;
+      }
+      .deco2{
+        position:absolute;
+        left:-22px;
+        top: 70px;
+        width: 165px;
+        opacity:.08;
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+
+      footer{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,.72);
+        border-top: 1px solid rgba(80,55,35,.12);
+        backdrop-filter: blur(6px);
+      }
+      #transcript{
+        margin: 0;
+        padding: 8px 12px;
+        font-size: .85rem;
+        text-align: center;
+        color: rgba(35,24,16,.60);
+        min-height: 1.6rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img class="bg-image" src="../static/images/kitchen_bg.avif" alt="Kitchen background">
+
+    <div id="main">
+      <main class="page">
+        <div class="shell">
+          <div class="glass">
+
+            <img class="deco2" src="../static/images/garlic.png" alt="">
+            <img class="deco"  src="../static/images/tomato.png" alt="">
+
+            <div class="topline">
+              <div class="badge-pill">
+                <span class="dot"></span>
+                <span>Cookpanion</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="proj d-none d-sm-block">Project Conversational Agents</div>
+
+                <button class="btn mic-btn" id="mic" aria-label="Speak to Cookpanion">
+                  <img id="micimg" src="../static/images/mic_out.png" alt="Mic">
+                  <span class="mic-label d-none d-md-inline">Confirm or reject</span>
                 </button>
-            </nav>
-
-            <div class="card shadow mx-auto" style="max-width: 800px;">
-                <div class="row no-gutters">
-                    <div class="col-md-6">
-                        <img id="confirmImg" src="" class="card-img h-100" alt="Recipe Image" style="object-fit: cover; min-height: 300px;">
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h3 class="card-title" id="confirmTitle">Recipe Name</h3>
-                            <p class="card-text text-muted">Is this what you would like to cook?</p>
-
-                            <hr>
-                            <h5 class="mt-3">Details</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Time:</strong> <span id="confirmTime">-</span> mins</li>
-                                <li class="list-group-item"><strong>Servings:</strong> <span id="confirmServings">-</span></li>
-                                <li class="list-group-item"><strong>Cuisine:</strong> <span id="confirmCuisine">-</span></li>
-                            </ul>
-
-                            <hr>
-                            <h5 class="mt-3">Ingredients</h5>
-                            <ul class="list-group mb-3" id="confirmIngredients">
-                            </ul>
-
-                            <h5 class="mt-3">Instructions</h5>
-                            <ol id="confirmInstructions">
-                            </ol>
-                        </div>
-
-                    </div>
-                </div>
+              </div>
             </div>
-            
-            <footer class="fixed-bottom">
-                <p class="lead mb-0 bg-light text-center" style="min-height:2rem; font-size: 0.8rem;" id="transcript">...</p>
-            </footer>
+
+            <div class="content">
+              <h1 class="title">Does this recipe sound good?</h1>
+              <p class="sub">
+                Tell me if you'd like to cook this recipe or if you'd prefer something different.
+              </p>
+
+              <!-- Recipe Card -->
+              <div class="recipe-card">
+                <div class="recipe-img-container">
+                  <img id="confirmImg" src="" alt="Recipe image">
+                </div>
+
+                <div class="recipe-details">
+                  <h2 id="confirmTitle">Recipe Name</h2>
+
+                  <!-- Meta Information -->
+                  <div class="recipe-meta">
+                    <div class="meta-item">
+                      <span class="meta-label">Time:</span>
+                      <span id="confirmTime">-</span> min
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Servings:</span>
+                      <span id="confirmServings">-</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Cuisine:</span>
+                      <span id="confirmCuisine">-</span>
+                    </div>
+                  </div>
+
+                  <!-- Ingredients Section -->
+                  <div class="recipe-section">
+                    <h3 class="section-title">Ingredients</h3>
+                    <ul class="list-group" id="confirmIngredients">
+                      <li class="list-group-item">Loading ingredients...</li>
+                    </ul>
+                  </div>
+
+                  <!-- Instructions Section -->
+                  <div class="recipe-section">
+                    <h3 class="section-title">Instructions</h3>
+                    <ol class="list-group" id="confirmInstructions">
+                      <li class="list-group-item">Loading instructions...</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
-    </body>
+      </main>
+
+      <footer>
+        <p id="transcript"></p>
+      </footer>
+    </div>
+  </body>
 </html>

@@ -39,6 +39,8 @@ sic_framework/services/nlu/bert_nlu.py
 sic_framework/services/nlu/utils/__init__.py
 sic_framework/services/nlu/utils/dataset.py
 sic_framework/services/nlu/utils/evaluation.py
+sic_framework/services/nlu/utils/grid_search.py
+sic_framework/services/nlu/utils/hyperparam_search.py
 sic_framework/services/nlu/utils/model.py
 sic_framework/services/nlu/utils/predict.py
 sic_framework/services/nlu/utils/run_train_test.py

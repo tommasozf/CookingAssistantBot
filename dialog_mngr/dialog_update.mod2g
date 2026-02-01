@@ -161,6 +161,17 @@ module dialog_update {
 		cleanParams(Params, Cleaned)
 	then delete(intent(Intent, Params, Conf, Txt, Source))
 		+ insert(intent(Intent, Cleaned, Conf, Txt, Source)).
+		
+	% --- Guard: drop duration slots like "15 ingredients" so they can't crash time parsing later
+	if intent(Intent, Params, Conf, Txt, Source),
+   		member(duration=Dur, Params),
+   		\+ valid_duration(Dur),
+   		remove([duration=Dur], Params, NewParams),
+   		log_info("Dropped invalid duration slot: ", Dur, Info)
+	then delete(intent(Intent, Params, Conf, Txt, Source))
+   		+ insert(intent(Intent, NewParams, Conf, Txt, Source))
+   		+ log(Info).
+	
 
 	% Update the agent's memory (recording parameters provided as user input).
 	% We take a simple approach for now, not taking context into account, where:
@@ -354,6 +365,14 @@ module dialog_update {
 	if recipesFiltered(Recipes), length(Recipes, N), recipeCounter(M), not(N=M)
 		then delete(recipeCounter(M))+insert(recipeCounter(N))+webinfo('recipecounter', N).
 	
+	% Update filter history when recipe count changes (for progress tracker)
+	if recipesFiltered(Recipes), length(Recipes, N), recipeCounter(N),
+	   filterHistory(History),
+	   (History = [] ; (History = [LastCount|_], LastCount \= N)),
+	   filter_history_to_json([N|History], ProgressJSON)
+	then delete(filterHistory(History)) + insert(filterHistory([N|History])) +
+	     webinfo('progress', ProgressJSON).
+	
 	% filters_to_strings is defined in dialogflow.pl - check it out! You need to do something
 	% similar for converting recipes to strings in dialogflow.pl, then come back here and create a similar rule to the one below
 	% to send the recipe strings using webinfo
@@ -389,10 +408,13 @@ module dialog_update {
 
     % Show Filters List (When list is big > 15)
     % Note: Uses existing filters_to_strings helper
+    % added two guards for recipe_confirmation
     if currentPattern(a50recipeSelect),
        recipesFiltered(RecipeIDs),
        length(RecipeIDs, Count),
        Count > 15,
+       \+ lastAddedIntentTriple([agent, pictureGranted, _]),
+       \+ memoryKeyValue('show', 'true'),
        filters_to_strings(FilterList),
        atomic_list_concat(FilterList, ',', FilterString),
        atom_concat('[', FilterString, Temp1), atom_concat(Temp1, ']', FinalJSON)

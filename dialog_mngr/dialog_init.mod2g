@@ -38,11 +38,14 @@ module dialog_init {
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%% Initialize behavioural parameters (to finetune agent behavior)	%%%
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	if true then insert(agentName('Gordon Ramsay'), lastTopicCheck).
+	if true then insert(agentName('GLadOS'), lastTopicCheck).
 	
 	% Keep track of recipes that have been selected. Insert initial fact here;
 	% Update module will update to correct value.
 	if true then insert(recipeCounter(-1)).
+	
+	% Initialize filter history for progress tracking (starts empty, will add initial count)
+	if true then insert(filterHistory([])).
 
 	% Next line prints all user intents that occur in patterns to agent's console
 	if retrieveIntentsfromPatterns(user, Intents),
